@@ -12,7 +12,9 @@
   <script src="https://unpkg.com/gojs@2.2.5/extensions/Figures.js"></script>
   <script src="https://unpkg.com/gojs@2.2.5/extensions/DrawCommandHandler.js"></script>
 
-    <script id="code">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+  <script id="code">
     function init() {
 
       // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
@@ -540,31 +542,46 @@
       document.getElementById("mySavedModel").value = myDiagram.model.toJson();
       myDiagram.isModified = false;
     }
+
+
     function load() {
-      myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+
+        $.ajax({
+            type: 'GET',
+            dataType: "json",
+            url: 'http://127.0.0.1:8000/diagram/api/v1/transitions_blocks/',
+            success: function (data, status, xhr) {
+                console.log(JSON.parse(data))
+                myDiagram.model = go.Model.fromJson(JSON.parse(data));
+            },
+        });
+      {#myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);#}
     }
     window.addEventListener('DOMContentLoaded', init);
+
   </script>
 
+
+
 <div id="sample">
-  <div id="myDiagramDiv" style="border: 1px solid black; background-color: rgb(255, 255, 255); width: 100%; height: 600px; position: relative; cursor: auto;"><canvas tabindex="0" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 1054px; height: 598px; cursor: auto;" width="1054" height="598">This text is displayed if your browser does not support the Canvas HTML element.</canvas><div style="position: absolute; overflow: auto; width: 1054px; height: 598px; z-index: 1;"><div style="position: absolute; width: 1px; height: 1px;"></div></div></div>
-  <p>
-    Double-click in the background to create a new node.
-    Create groups by selecting nodes and invoking Ctrl-G; Ctrl-Shift-G to ungroup a selected group.
-    A selected node will have four orange triangles that when clicked will automatically copy the node and link to it.
-    Use the context menu to change the shape, color, thickness, and dashed-ness.
-  </p>
-  <p>
-    Links can be drawn by dragging from the side of each node.
-    A selected link can be reconnected by dragging an end handle.
-    Use the context menu to change the color, thickness, dashed-ness, and which side the link should connect with.
-    Press the F2 key to start editing the label of a selected link.
-  </p>
-  <div id="buttons">
+  <div id="myDiagramDiv" style="border: 1px solid black; background-color: rgb(255, 255, 255); width: 100%; height: 800px; position: relative; cursor: auto;"><canvas tabindex="0" style="position: absolute; top: 10px; left: 0px;  z-index: 2; user-select: none; touch-action: none; width: 1054px; height: 598px; cursor: auto;" width="1054" height="598">This text is displayed if your browser does not support the Canvas HTML element.</canvas><div style="position: absolute; overflow: auto; width: 1054px; height: 598px; z-index: 1;"><div style="position: absolute; width: 1px; height: 1px;"></div></div></div>
+{#  <p>#}
+{#    Double-click in the background to create a new node.#}
+{#    Create groups by selecting nodes and invoking Ctrl-G; Ctrl-Shift-G to ungroup a selected group.#}
+{#    A selected node will have four orange triangles that when clicked will automatically copy the node and link to it.#}
+{#    Use the context menu to change the shape, color, thickness, and dashed-ness.#}
+{#  </p>#}
+{#  <p>#}
+{#    Links can be drawn by dragging from the side of each node.#}
+{#    A selected link can be reconnected by dragging an end handle.#}
+{#    Use the context menu to change the color, thickness, dashed-ness, and which side the link should connect with.#}
+{#    Press the F2 key to start editing the label of a selected link.#}
+{#  </p>#}
+  <div id="buttons" style="height: 500px">
     <button id="loadModel" onclick="load()">Load</button>
-    <button id="saveModel" onclick="save()">Save</button>
+{#    <button id="saveModel" onclick="save()">Save</button>#}
   </div>
-  <textarea id="mySavedModel" style="width:100%;height:300px">
+  <textarea id="mySavedModel" style="width:100%;height:300px;">
       {{ a }}
   </textarea>
 
