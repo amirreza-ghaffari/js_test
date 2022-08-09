@@ -30,13 +30,11 @@ def approved_block(request, block_label):
 
                 end_block = obj.end_block
                 end_block.active = True
+                end_block.color = 'red'
                 end_block.save()
 
         except Transition.DoesNotExist:
             pass
-
-
-
 
         return JsonResponse({'detail': f'Block with id {start_block.id} and label {start_block.label} approved successfully'})
     else:
