@@ -2,6 +2,7 @@ from rest_framework import serializers
 from diagram.models import Block, Transition
 
 
+
 class BlockSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -25,6 +26,10 @@ class TransitionSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation['from'] = instance.start_block.id
         representation['to'] = instance.end_block.id
+        #TODO: add time for transitions
+
+        # if instance.active:
+        #     representation['text'] = 'Activated in ' + instance.last_modified
         representation.pop('start_block')
         representation.pop('end_block')
         return representation

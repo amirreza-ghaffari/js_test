@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # installed Packages #
     'rest_framework',
+    'simple_history',
 
 
     # users Module #
@@ -53,6 +54,9 @@ INSTALLED_APPS = [
 
     # test Module #
     'xx',
+
+    # built_in packages #
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
@@ -63,6 +67,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # simple history log #
+
+    'simple_history.middleware.HistoryRequestMiddleware',
+
 ]
 
 ROOT_URLCONF = 'js_test.urls'
@@ -143,6 +152,9 @@ STATICFILES_DIRS = (
 
 STATIC_ROOT = '/static/'
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_URL = '/media/'
+
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
@@ -151,3 +163,10 @@ TEMPLATE_DIRS = (
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = "dovominmail@gmail.com"
+EMAIL_HOST_PASSWORD = 'iqazaxlbwnzfxhqk'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

@@ -1,8 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from department.models import Department
-
-from django.utils.translation import gettext_lazy as _
+from django.contrib.humanize.templatetags.humanize import naturalday, naturaltime
+from simple_history.models import HistoricalRecords
 
 # Create your models here.
 
@@ -21,8 +21,18 @@ color_choices = (
 )
 
 
+class BlockGroup(models.Model):
+    name = models.CharField(max_length=256)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return 'Block Group ' + self.name
+
+
 class Block(models.Model):
+    group = models.ForeignKey(BlockGroup, on_delete=models.CASCADE, blank=True, null=True)
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='department')
+    updated_date = models.DateTimeField(auto_now=True, blank=True, null=True)
     label = models.CharField(max_length=256)
     figure = models.CharField(max_length=256, choices=fig_choices, null=True, blank=True)
     description = models.CharField(max_length=256)
@@ -33,23 +43,33 @@ class Block(models.Model):
     loc_length = models.IntegerField(null=True, blank=True)
     approved = models.BooleanField(default=False)
     active = models.BooleanField(default=False)
+    history = HistoricalRecords()
 
     class Meta:
         unique_together = ('department', 'label')
 
-    def __str__(self):
-        return self.label
 
     @property
     def loc(self):
         return str(self.loc_height) + ' ' + str(self.loc_length)
 
+    @property
+    def last_modified(self):
+        if self.updated_date:
+            return naturaltime(self.updated_date)
+        return None
+
+    def __str__(self):
+        return self.label
+
 
 class Transition(models.Model):
     label = models.CharField(max_length=256)
+    updated_date = models.DateTimeField(auto_now=True, blank=True, null=True)
     start_block = models.ForeignKey(Block, on_delete=models.CASCADE, related_name='start_block')
     end_block = models.ForeignKey(Block, on_delete=models.CASCADE,  related_name='end_block')
     active = models.BooleanField(default=False)
+    history = HistoricalRecords()
 
     class Meta:
         unique_together = ('start_block', 'end_block')
@@ -61,6 +81,12 @@ class Transition(models.Model):
     @property
     def flow_path(self):
         return str(self.start_block.label) + '_to_' + str(self.end_block.label)
+
+    @property
+    def last_modified(self):
+        if self.updated_date:
+            return naturaltime(self.updated_date)
+        return None
 
     def __str__(self):
         return self.flow_path
