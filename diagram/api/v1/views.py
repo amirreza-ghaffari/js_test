@@ -42,8 +42,7 @@ def full_list(request):
         transitions = Transition.objects.all()
         serializer = TransitionSerializer(transitions, many=True)
         a["linkDataArray"] = serializer.data
-        print('inja')
-        print(a)
+
         return Response(json.dumps(a))
 
 
