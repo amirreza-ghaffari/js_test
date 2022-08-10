@@ -3,6 +3,7 @@ from django.db import models
 from department.models import Department
 from django.contrib.humanize.templatetags.humanize import naturalday, naturaltime
 from simple_history.models import HistoricalRecords
+from django.contrib.auth.models import Group
 
 # Create your models here.
 
@@ -31,12 +32,13 @@ class BlockGroup(models.Model):
 
 class Block(models.Model):
     group = models.ForeignKey(BlockGroup, on_delete=models.CASCADE, blank=True, null=True)
+    user_groups = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='department')
     updated_date = models.DateTimeField(auto_now=True, blank=True, null=True)
     label = models.CharField(max_length=256)
     figure = models.CharField(max_length=256, choices=fig_choices, null=True, blank=True)
     description = models.CharField(max_length=256)
-    color = models.CharField(max_length=256, choices=color_choices, null=False, default='red')
+    color = models.CharField(max_length=256, choices=color_choices, null=False, default='black')
     thickness = models.IntegerField(default=4,  blank=True, null=True)
     fill = models.CharField(default='lightyellow', max_length=256, blank=True, null=True)
     loc_height = models.IntegerField(null=True, blank=True)
@@ -47,7 +49,6 @@ class Block(models.Model):
 
     class Meta:
         unique_together = ('department', 'label')
-
 
     @property
     def loc(self):
@@ -61,6 +62,16 @@ class Block(models.Model):
 
     def __str__(self):
         return self.label
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.approved:
+            self.color = 'green'
+        elif self.active:
+            self.color = 'red'
+        else:
+            self.color = 'black'
+        return super(Block, self).save()
 
 
 class Transition(models.Model):

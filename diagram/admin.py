@@ -7,7 +7,7 @@ from department.models import Department
 
 class BlockAdmin(admin.ModelAdmin):
     fields = ('label', 'approved', 'active', 'color', 'group', 'department', 'figure', 'description',
-              'thickness', 'fill', 'loc_height', 'loc_length',)
+              'thickness', 'fill', 'loc_height', 'loc_length', 'user_groups')
     list_display = ('label', 'approved', 'active', 'last_modified')
     list_filter = ('label', 'approved', 'active')
 
