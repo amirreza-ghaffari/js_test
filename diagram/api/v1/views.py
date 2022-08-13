@@ -5,6 +5,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.db.models import Q
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import UpdateModelMixin
 
 from ...models import Block, Transition
 from .serializers import BlockSerializer, TransitionSerializer, HistorySerializer, CustomerHistorySerializer
@@ -63,15 +67,15 @@ def approve_block_api(request, block_label):
     if start_block.active:
 
         start_block_group = start_block.group
-        start_block.approved = True
-        start_block.active = False
+        start_block.is_approved = True
+        start_block.is_active = False
         start_block.color = 'green'
         start_block.save()
 
         group_approved_flag = True
 
         for block_obj in Block.objects.filter(group=start_block_group).all():
-            if block_obj.approved is False and block_obj.group:
+            if block_obj.is_approved is False and block_obj.group:
                 group_approved_flag = False
 
         try:
@@ -80,10 +84,10 @@ def approve_block_api(request, block_label):
                 end_block = transient_obj.end_block
 
                 if (end_block.group and end_block.group == start_block_group) or (start_block_group is None) or (group_approved_flag):
-                    transient_obj.active = True
+                    transient_obj.is_active = True
                     transient_obj.save()
                     #  send email or sms or print in terminal #
-                    end_block.active = True
+                    end_block.is_active = True
                     end_block.color = 'red'
                     end_block.save()
 
@@ -110,4 +114,21 @@ def his(request):
     return Response(serializer.data)
 
 
+class TransitionPartialUpdateView(GenericAPIView, UpdateModelMixin):
+    '''
+    You just need to provide the field which is to be modified.
+    '''
+    queryset = Transition.objects.all()
+    serializer_class = TransitionSerializer
 
+    def put(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+
+class BlockPartialUpdateView(GenericAPIView, UpdateModelMixin):
+
+    queryset = Block.objects.all()
+    serializer_class = BlockSerializer
+
+    def put(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)

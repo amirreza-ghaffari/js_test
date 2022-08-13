@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .models import Block, Transition
-from django.contrib import messages
 
 
 # Create your views here.
@@ -22,15 +21,15 @@ def approved_block(request, block_label):
 
     if start_block.active:
         start_block_group = start_block.group
-        start_block.approved = True
-        start_block.active = False
+        start_block.is_approved = True
+        start_block.is_active = False
         start_block.color = 'green'
         start_block.save()
 
         group_approved_flag = True
 
         for block_obj in Block.objects.filter(group=start_block_group).all():
-            if block_obj.approved is False and block_obj.group:
+            if block_obj.is_approved is False and block_obj.group:
                 group_approved_flag = False
 
         try:
@@ -39,10 +38,10 @@ def approved_block(request, block_label):
                 end_block = transient_obj.end_block
 
                 if (end_block.group and end_block.group == start_block_group) or (start_block_group is None) or (group_approved_flag):
-                    transient_obj.active = True
+                    transient_obj.is_active = True
                     transient_obj.save()
                     #  send email or sms or print in terminal #
-                    end_block.active = True
+                    end_block.is_active = True
                     end_block.color = 'red'
                     end_block.save()
 
@@ -52,7 +51,6 @@ def approved_block(request, block_label):
         return JsonResponse({'detail': f'Block with id {start_block.id} and label {start_block.label} approved successfully'})
     else:
         return JsonResponse({'error': f'This block with id {start_block.id} and label {start_block.label} has not been activated yet'})
-
 
 
 

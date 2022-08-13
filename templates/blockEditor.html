@@ -558,19 +558,19 @@
     }
     window.addEventListener('DOMContentLoaded', init);
 
-    function approve(block_label) {
+    function approve(block_id) {
         $.ajax({
-            type: 'GET',
+            type: 'PUT',
             dataType: "json",
-            url: "http://127.0.0.1:8000/diagram/api/v1/approve_block/" + block_label + '/',
+            url: "http://127.0.0.1:8000/diagram/api/v1/approve_block/" + block_id + '/',
+            headers: {
+            "X-CSRFToken": $('[name=csrfmiddlewaretoken]').val()
+            },
+            data: {'is_approved':true},
             success: function (data, status, xhr) {
-                if(data.error){
-                    console.log(data.error)
-                }
-                if(data.detail){
-                    console.log(data.detail)
-                    location.reload()
-                }
+                console.log(JSON.stringify({'is_approved': true }))
+                load()
+
             }
         });
     }
@@ -578,6 +578,10 @@
   </script>
 
  <div class="topnav">
+ <form method="POST" class="ajax">
+      {% csrf_token %}
+ </form>
+
   <a class="active" href="#home">Home</a>
   <a href="#news">News</a>
   <a href="#contact">Contact</a>
@@ -591,9 +595,9 @@
         <div id="myDiagramDiv" style="border: 1px solid black; background-color: rgb(255, 255, 255); width: 90%; height: 800px; position: relative; cursor: auto;"><canvas tabindex="0" style="position: absolute; top: 10px; left: 0px;  z-index: 2; user-select: none; touch-action: none; width: 1054px; height: 598px; cursor: auto;" width="1054" height="598">This text is displayed if your browser does not support the Canvas HTML element.</canvas><div style="position: absolute; overflow: auto; width: 1054px; height: 598px; z-index: 1;"><div style="position: absolute; width: 1px; height: 1px;"></div></div></div>
       <div id="buttons" style="height: 50px">
         <button id="loadModel" onclick="load()">Load</button>
-    {#    <button id="saveModel" onclick="save()">Save</button>#}
+{#        <button id="saveModel" onclick="save()">Save</button>#}
       </div>
-      <textarea id="mySavedModel" style="width:100%;height:300px;display: none">
+      <textarea id="mySavedModel" style="width:100%;height:300px">
           {{ a }}
       </textarea>
     </div>
@@ -610,10 +614,10 @@
           <tr>
             <td>{{ b.label }}</td>
             <td>{{ b.description }}</td>
-            <td>{{ b.active }}</td>
-            {% if b.active and not b.approved %}
-                <td><button onclick="approve('{{ b.label }}')">Approve</button></td>
-            {% elif b.active and b.approved %}
+            <td>{{ b.is_active }}</td>
+            {% if b.is_active and not b.is_approved %}
+                <td><button onclick="approve('{{ b.id }}')">Approve</button></td>
+            {% elif b.is_active and b.is_approved %}
                 <td> Approved at {{ b.updated_date|naturaltime }}</td>
             {% else %}
                 <td> Waiting to Approve...</td>

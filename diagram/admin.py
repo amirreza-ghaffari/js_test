@@ -6,18 +6,18 @@ from department.models import Department
 
 
 class BlockAdmin(admin.ModelAdmin):
-    fields = ('label', 'approved', 'active', 'color', 'group', 'department', 'figure', 'description',
-              'thickness', 'fill', 'loc_height', 'loc_length', 'user_groups')
-    list_display = ('label', 'approved', 'active', 'last_modified')
-    list_filter = ('label', 'approved', 'active')
+    fields = ('label', 'is_approved', 'is_active', 'color', 'group', 'department', 'figure', 'description',
+              'thickness', 'fill', 'loc_height', 'loc_length', 'user_groups', 'is_conditional')
+    list_display = ('label', 'is_approved', 'is_active', 'last_modified',)
+    list_filter = ('label', 'is_approved', 'is_active')
 
 
 class TransitionAdmin(admin.ModelAdmin):
 
-    list_display = ('label', 'start_block', 'end_block', 'active', 'last_modified')
-    list_filter = ('label', 'start_block', 'end_block', 'active')
+    list_display = ('label', 'start_block', 'end_block', 'is_approved', 'is_active', 'last_modified')
+    list_filter = ('label', 'start_block', 'end_block', 'is_approved', 'is_active')
     fieldsets = (
-        (None, {'fields': ('label', 'start_block', 'end_block', 'active')}),
+        (None, {'fields': ('label', 'start_block', 'end_block', 'is_active', 'is_approved')}),
     )
 
 

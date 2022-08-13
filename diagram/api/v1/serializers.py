@@ -2,18 +2,31 @@ from rest_framework import serializers
 from diagram.models import Block, Transition
 from simple_history.models import HistoricalRecords
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 User = get_user_model()
+
 
 class BlockSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Block
-        fields = ['figure', 'color', 'loc', 'thickness', 'fill']
+        fields = ['figure', 'color', 'loc', 'thickness', 'fill', 'is_approved']
+
+    def validate(self, data):
+        orig_instance = self.instance
+        new_instance = Transition(**data)
+        if new_instance.is_approved and orig_instance.is_active is False:
+            raise serializers.ValidationError('Can not approve a non active Transition')
+        if new_instance.is_approved:
+            orig_instance.is_active = False
+            data['is_active'] = False
+        return data
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['key'] = instance.id
         representation['text'] = instance.label
+        representation.pop('is_approved')
         return representation
 
 
@@ -22,12 +35,22 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['email', 'department', 'full_name']
 
-class TransitionSerializer(serializers.ModelSerializer):
 
+class TransitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transition
-        fields = ['start_block', 'end_block']
-        
+        fields = ['start_block', 'end_block', 'is_approved', 'color']
+
+    def validate(self, data):
+        orig_instance = self.instance
+        new_instance = Transition(**data)
+        if new_instance.is_approved and orig_instance.is_active is False:
+            raise serializers.ValidationError('Can not approve a non active Transition')
+        if new_instance.is_approved:
+            orig_instance.is_active = False
+            data['is_active'] = False
+        return data
+
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['from'] = instance.start_block.id
