@@ -6,12 +6,27 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.db.models import Q
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import UpdateModelMixin
+from rest_framework import permissions
 
 from ...models import Block, Transition
 from .serializers import BlockSerializer, TransitionSerializer, HistorySerializer, CustomerHistorySerializer
+
+
+class CustomPermission(permissions.BasePermission):
+    """
+    Global permission check for blocked IPs.
+    """
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to any request,
+        # so we'll always allow GET, HEAD or OPTIONS requests.
+        user = request.user
+        if user in obj.user_groups.user_set.all() or user.is_staff or user.is_superuser:
+            return True
+        return False
+
 
 
 @api_view(['GET'])
@@ -120,6 +135,7 @@ class TransitionPartialUpdateView(GenericAPIView, UpdateModelMixin):
     '''
     queryset = Transition.objects.all()
     serializer_class = TransitionSerializer
+    permission_classes = [IsAdminUser]
 
     def put(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
@@ -129,6 +145,9 @@ class BlockPartialUpdateView(GenericAPIView, UpdateModelMixin):
 
     queryset = Block.objects.all()
     serializer_class = BlockSerializer
+    permission_classes = [CustomPermission, IsAuthenticated]
 
     def put(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
+
+

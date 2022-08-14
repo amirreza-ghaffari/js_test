@@ -13,7 +13,7 @@ fig_choices = (
         ('Terminator', 'Terminator'),
         ('CreateRequest', 'CreateRequest'),
         ('Document', 'Document'),
-        ('Diamond', 'Diamond'),
+        ('Diamond', 'Diamond')
     )
 
 color_choices = (
@@ -35,15 +35,16 @@ class BlockGroup(models.Model):
 
 class Block(models.Model):
     group = models.ForeignKey(BlockGroup, on_delete=models.CASCADE, blank=True, null=True)
-    user_groups = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
+    user_groups = models.ManyToManyField(Group, blank=True, null=True)
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='department')
     updated_date = models.DateTimeField(auto_now=True)
+    created_date = models.DateTimeField(auto_now_add=True)
     label = models.CharField(max_length=256, null=False, blank=False)
-    figure = models.CharField(max_length=256, choices=fig_choices, default='Procedure')
+    figure = models.CharField(max_length=256, choices=fig_choices, default=None, blank=True, null=True)
     description = models.TextField(null=True, blank=True)
     color = models.CharField(max_length=256, choices=color_choices, default='black')
     thickness = models.IntegerField(default=4,  blank=True, null=True)
-    fill = models.CharField(default='lightyellow', max_length=256)
+    fill = models.CharField(default=None, max_length=256, blank=True, null=True)
     loc_height = models.IntegerField(null=True, blank=True)
     loc_length = models.IntegerField(null=True, blank=True)
     is_approved = models.BooleanField(default=False)

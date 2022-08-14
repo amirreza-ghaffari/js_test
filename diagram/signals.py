@@ -3,15 +3,14 @@ from .models import Transition, Block
 from .utils import custom_send_email
 
 
-def notif_staff_signal(sender, instance, **kwargs):
-
-    block = instance.end_block
-    message = f' Block with state name {block.label}  need to be approved'
-    # custom_send_email(message, ['xx@gmail.com'])
-    print(f'email sent for the block {block} owners')
-
-
-post_save.connect(notif_staff_signal, sender=Transition)
+# def notif_staff_signal(sender, instance, **kwargs):
+#     end_block = instance.end_block
+#     if not end_block.is_conditional:
+#         groups = end_block.user_groups.all()
+#         print(f'Email sent to groups named {}')
+#
+#
+# post_save.connect(notif_staff_signal, sender=Transition)
 
 
 def active_transition_on_block_approve(sender, instance, **kwargs):

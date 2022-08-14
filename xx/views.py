@@ -14,12 +14,11 @@ def index(request):
     groups = user.groups.all()
 
     block_list = []
+
     for group in groups:
-        print(group)
-        blocks = Block.objects.filter(user_groups=group)
+        blocks = Block.objects.filter(user_groups=group).order_by('-created_date')
         for block in blocks:
             block_list.append(block)
         context['block'] = block_list
-    print(context)
     return render(request, 'blockEditor.html', context)
 

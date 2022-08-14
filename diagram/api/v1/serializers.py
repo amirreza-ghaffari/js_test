@@ -7,10 +7,10 @@ User = get_user_model()
 
 
 class BlockSerializer(serializers.ModelSerializer):
-
+    size = serializers.ReadOnlyField(default='240 100')
     class Meta:
         model = Block
-        fields = ['figure', 'color', 'loc', 'thickness', 'fill', 'is_approved']
+        fields = ['figure', 'color', 'loc', 'thickness', 'fill', 'is_approved', 'size']
 
     def validate(self, data):
         orig_instance = self.instance
@@ -39,7 +39,7 @@ class UserSerializer(serializers.ModelSerializer):
 class TransitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transition
-        fields = ['start_block', 'end_block', 'is_approved', 'color']
+        fields = ['start_block', 'end_block', 'is_approved', 'color', 'label']
 
     def validate(self, data):
         orig_instance = self.instance
@@ -55,12 +55,10 @@ class TransitionSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation['from'] = instance.start_block.id
         representation['to'] = instance.end_block.id
-        #TODO: add time for transitions
-
-        # if instance.active:
-        #     representation['text'] = 'Activated in ' + instance.last_modified
         representation.pop('start_block')
         representation.pop('end_block')
+        if instance.start_block.is_conditional:
+            representation['text'] = instance.label
         return representation
 
 
