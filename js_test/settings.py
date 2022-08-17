@@ -38,9 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     # installed Packages #
     'rest_framework',
+    'django_filters',
     'simple_history',
+    'drf_yasg',
+    'crispy_forms',
 
 
     # users Module #
@@ -49,15 +53,16 @@ INSTALLED_APPS = [
     # flowchart and diagrams Module #
     'diagram',
 
-    #department Module
-    'department',
-
     # test Module #
-    'xx',
+    'flowchart',
 
     # built_in packages #
     'django.contrib.humanize',
+
 ]
+
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -128,6 +133,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
 
 
 # Internationalization

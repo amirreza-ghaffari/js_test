@@ -4,7 +4,7 @@ from .views import approved_block
 
 
 urlpatterns = [
-    path('', include('diagram.api.v1.urls')),
+    path('api/v1/', include('diagram.api.v1.urls')),
     path('approve_block/<str:block_label>/', approved_block, name='approve_block'),
 
 ]

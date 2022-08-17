@@ -16,6 +16,11 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
   <script id="code">
+    var nodeDataArray = {};
+    var linkDataArray = {};
+    var fullDataArray = {};
+    var totalObjects = null;
+
     function init() {
 
       // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
@@ -25,6 +30,9 @@
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
           {
+            initialAutoScale: go.Diagram.Uniform,
+            {#initialDocumentSpot: go.Spot.Top,#}
+            {#initialViewportSpot: go.Spot.Top,#}
             padding: 20,  // extra space when scrolled all the way
             {#grid: $(go.Panel, "Grid",  // a simple 10x10 grid#}
             {#  $(go.Shape, "LineH", { stroke: "lightgray", strokeWidth: 0.5 }),#}
@@ -537,32 +545,47 @@
 
       load();
     }
-
+    var jsonArray2 = {};
     // Show the diagram's model in JSON format
     function save() {
-      document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+      {#document.getElementById("mySavedModel").value = myDiagram.model.toJson();#}
+
+
       myDiagram.isModified = false;
     }
 
-
     function load() {
+
+         $.ajax({
+            type: 'GET',
+            dataType: "json",
+            url: 'http://127.0.0.1:8000/diagram/api/v1/blocks/?flowchart={{ flowchart_id }}',
+            success: function (data, status, xhr) {
+                nodeDataArray= data;
+                totalObjects = Object.keys(nodeDataArray).length;
+            }
+        });
 
         $.ajax({
             type: 'GET',
             dataType: "json",
-            url: 'http://127.0.0.1:8000/diagram/api/v1/transitions_blocks/',
+            url: 'http://127.0.0.1:8000/diagram/api/v1/transitions/?flowchart={{ flowchart_id }}',
             success: function (data, status, xhr) {
-                myDiagram.model = go.Model.fromJson(JSON.parse(data));
-            },
+                linkDataArray = data;
+                fullDataArray.nodeDataArray = nodeDataArray;
+                fullDataArray.linkDataArray = linkDataArray;
+
+                myDiagram.model = go.Model.fromJson(fullDataArray);
+            }
         });
     }
     window.addEventListener('DOMContentLoaded', init);
 
     function approve(block_id) {
         $.ajax({
-            type: 'PUT',
+            type: 'PATCH',
             dataType: "json",
-            url: "http://127.0.0.1:8000/diagram/api/v1/approve_block/" + block_id + '/',
+            url: "http://127.0.0.1:8000/diagram/api/v1/blocks/" + block_id + '/',
             headers: {
             "X-CSRFToken": $('[name=csrfmiddlewaretoken]').val()
             },
@@ -595,9 +618,9 @@
         <div id="myDiagramDiv" style="border: 1px solid black; background-color: rgb(255, 255, 255); width: 100%; height: 800px; position: relative; cursor: auto;"><canvas tabindex="0" style="position: absolute; top: 10px; left: 0px;  z-index: 2; user-select: none; touch-action: none; width: 1054px; height: 598px; cursor: auto;" width="1054" height="598">This text is displayed if your browser does not support the Canvas HTML element.</canvas><div style="position: absolute; overflow: auto; width: 1054px; height: 598px; z-index: 1;"><div style="position: absolute; width: 1px; height: 1px;"></div></div></div>
       <div id="buttons" style="height: 50px">
         <button id="loadModel" onclick="load()">Load</button>
-{#        <button id="saveModel" onclick="save()">Save</button>#}
+        <button id="saveModel" onclick="save()">Save</button>
       </div>
-      <textarea id="mySavedModel" style="width:100%;height:300px">
+      <textarea id="mySavedModel" style="width:100%;height:300px;display: none">
           {{ a }}
       </textarea>
     </div>
@@ -607,21 +630,21 @@
           <tr>
             <th>Block</th>
             <th>Description</th>
-            <th>Active</th>
-            <th>Approved</th>
+            <th>Action</th>
           </tr>
-          {% for b in block %}
+          {% for block in blocks %}
           <tr>
-            <td>{{ b.label }}</td>
-            <td>{{ b.description }}</td>
-            <td>{{ b.is_active }}</td>
-            {% if b.is_active and not b.is_approved %}
-                <td><button onclick="approve('{{ b.id }}')">Approve</button></td>
-            {% elif b.is_active and b.is_approved %}
-                <td> Approved at {{ b.updated_date|naturaltime }}</td>
-            {% else %}
-                <td> Waiting to Approve...</td>
-            {% endif %}
+            <td>{{ block.label }}</td>
+              {% if block.description %}
+                <td>{{ block.description }}</td>
+              {% else %}
+                <td>-</td>
+              {% endif %}
+          {% if block.is_active %}
+            <td><button onclick="approve('{{ block.id }}')">Approve</button></td>
+          {% else %}
+           <td>Approved {{ block.updated_date|naturaltime  }}</td>
+          {% endif %}
           </tr>
           {% endfor %}
         </table>
