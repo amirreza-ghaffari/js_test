@@ -7,7 +7,7 @@ User = get_user_model()
 class BlockSerializer(serializers.ModelSerializer):
     class Meta:
         model = Block
-        fields = ['label', 'figure', 'color', 'loc', 'thickness', 'fill', 'is_approved','loc_height', 'loc_length', 'flowchart']
+        fields = ['label', 'figure', 'color', 'loc', 'thickness', 'fill', 'is_approved','loc_height', 'loc_length', 'flowchart', 'user_groups']
         read_only_fields = ('loc', )
 
     def validate(self, data):
@@ -28,7 +28,12 @@ class BlockSerializer(serializers.ModelSerializer):
         representation.pop('loc_length')
         representation.pop('loc_height')
         representation.pop('label')
-        representation['size'] = "240 120"
+        if instance.is_conditional:
+            representation['size'] = "600 350"
+
+        else:
+            representation['size'] = "450 150"
+        representation['fill'] = "beige"
         representation.pop('flowchart')
         return representation
 

@@ -12,6 +12,8 @@ urlpatterns = [
     path('transitions/', views.TransitionViewSet.as_view({'get': 'list', 'post': 'create'}), name='transition-list'),
     path('transitions/<str:pk>/', views.TransitionViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update'}), name='transition-detail'),
 
+    path('active_blocks/', views.active_blocks, name='active-blocks'),
+
     # ----------- History ----------
 
     path('history/', views.history_api, name='history'),
@@ -19,8 +21,9 @@ urlpatterns = [
 
     path('history_diff/<str:pk>/', views.HistoryChangeView.as_view({'get': 'retrieve'}), name='his_diff'),
 
-    # ----------New Flowchart -------
-    path('new_flowchart/<str:old_flowchart_name>/<str:new_flowchart_name>/', views.new_flowchart, name='new_flowchart')
+
+
+    path('test/', views.test, name='test')
 
 
     ]

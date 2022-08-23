@@ -1,6 +1,6 @@
 from flowchart.models import Flowchart
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.contrib.humanize.templatetags.humanize import naturaltime
@@ -11,6 +11,7 @@ from rest_framework import status
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 
 class CustomPermission(permissions.BasePermission):
@@ -79,33 +80,24 @@ class HistoryChangeView(ViewSet):
         else:
             return Response({'error': 'this object has no history change'}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['POST'])
-def new_flowchart(request, old_flowchart_name, new_flowchart_name):
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def active_blocks(request):
+    block = Block.objects.filter(is_active=True)
+    serializer = BlockSerializer(block, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
-    try:
-        old_flowchart_obj = Flowchart.objects.get(name=old_flowchart_name)
-    except Flowchart.DoesNotExist:
-        return Response({'error': 'flowchart does not exists'}, status=status.HTTP_404_NOT_FOUND)
 
-    try:
-        new_flowchart_obj = Flowchart.objects.get(name=new_flowchart_name)
-    except Flowchart.DoesNotExist:
-        return Response({'error': 'flowchart does not exists'}, status=status.HTTP_404_NOT_FOUND)
-    blocks = Block.objects.filter(flowchart=old_flowchart_obj)
-    transitions = Transition.objects.filter(flowchart=old_flowchart_obj)
 
-    for block in blocks:
-        block.pk = None
-        block.is_approved = False
-        block.is_active = False
-        block.flowchart = new_flowchart_obj
-        block.save()
+# @api_view(['GET'])
+# @authentication_classes([SessionAuthentication, BasicAuthentication])
+# @permission_classes([IsAuthenticated])
+# def active_transition(request):
+#     transition = Transition.objects.get(is_active=True)
+#     return Response({'data': {'height': block.loc_height, 'length': block.loc_length}}, status=status.HTTP_200_OK)
 
-    for transition in transitions:
-        transition.pk = None
-        transition.is_active = False
-        transition.is_approved = False
-        transition.flowchart = new_flowchart_obj
-        transition.save()
 
-    return Response({'detail': 'new objects created'}, status=status.HTTP_201_CREATED)
+@api_view(['GET'])
+def test(request):
+     return Response({'x': [10,11,2,7], 'y': [20,4,7,10], 'z': [4,1,8,12]})
