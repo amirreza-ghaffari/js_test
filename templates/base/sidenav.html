@@ -1,0 +1,133 @@
+{% load static %}
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a class="brand-link">
+        <img src="{% static 'img/digikala-logo-01.png' %}" alt="AdminLTE Logo" class="brand-image ">
+        <span class="brand-text font-weight-light"> BCM</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex justify-content-center">
+            <!--
+            <div class="image">
+                <img src="" class="img-circle elevation-2" alt="User Image">
+            </div>
+            -->
+            <span class="avatar rounded-circle">
+                  <img alt="Avatar" src="{% static 'img/tes.jpg' %}"
+                       style="width:60px; border-radius: 100%">
+                </span>
+            <div style="align-content: center" class="info d-flex justify-content-center">
+                <a style="align-self: center; align-content: center" href="#"
+                   class="d-block">&nbsp{{ request.user.username }}</a>
+            </div>
+        </div>
+
+        <!-- SidebarSearch Form -->
+{#        <div class="form-inline">#}
+{#            <div class="input-group" data-widget="sidebar-search">#}
+{#                <input class="form-control form-control-sidebar" type="search" placeholder="Search"#}
+{#                       aria-label="Search" id="searchbar2">#}
+{#                <div class="input-group-append">#}
+{#                    <button class="btn btn-sidebar">#}
+{#                        <i class="fas fa-search fa-fw"></i>#}
+{#                    </button>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                data-accordion="false">
+                <!-- Add icons to the links using the .nav-icon class
+                     with font-awesome or any other icon font library -->
+
+                <a href="" class="nav-link">
+                    <i class="nav-icon fas fa-tachometer-alt "></i>
+                    <p class="nav-item">
+                        &nbsp&nbsp&nbsp Dashboard
+
+                    </p>
+                </a>
+
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-project-diagram"></i>
+                        <p>
+                            Work Flows
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+
+                    <ul class="nav nav-treeview" id="flowchart-list">
+                        <li class="nav-item">
+                            <a href="" class="nav-link">
+                                <i class="fas fa-user-friends nav-icon"></i>
+                                <p>Staff Strike</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+                <a href="" class="nav-link">
+                    <i class="nav-icon fas fa-info-circle "></i>
+                    <p class="nav-item">
+                        &nbsp&nbsp&nbsp Users Info
+
+                    </p>
+                </a>
+            </ul>
+        </nav>
+
+<script>
+
+    function createElement(data){
+        for (let i = 0; i < data.length; i++) {
+
+            var flowchart = document.getElementById("flowchart-list")
+            var li = document.createElement("li")
+            li.classList.add('nav-item')
+
+            var a = document.createElement('a')
+            a.classList.add('nav-link')
+            a.href = data[i].get_absolute_url
+
+            var i_= document.createElement('i')
+            i_.classList.add("fas")
+            i_.classList.add("fa-fire")
+            i_.classList.add("nav-icon")
+
+            var p = document.createElement('p')
+            p.innerHTML = data[i].name
+
+            a.appendChild(i_)
+            a.appendChild(p)
+
+            li.appendChild(a)
+
+            flowchart.appendChild(li)
+        }
+}
+
+
+    function get_flowcharts() {
+        $.ajax({
+            type: 'GET',
+            dataType: "json",
+            url: "/flowchart/api/v1/flowcharts/",
+            headers: {
+            "X-CSRFToken": $('[name=csrfmiddlewaretoken]').val()
+            },
+            data: {'is_approved':true},
+            success: function (data, status, xhr) {
+                console.log(data)
+                createElement(data)
+
+            }
+        });
+    }
+    get_flowcharts()
+
+</script>

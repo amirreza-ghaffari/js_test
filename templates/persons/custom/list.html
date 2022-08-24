@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    {% include 'base/head.html' %}
+    <script
+            src="https://code.jquery.com/jquery-2.2.4.min.js"
+            integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+            crossorigin="anonymous"></script>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+    <!-- Preloader
+    <div class="preloader flex-column justify-content-center align-items-center">
+        <img class="animation__shake" src="{% static 'img/Badge.png' %}" alt="AdminLTELogo" height="100" width="100">
+    </div>
+    -->
+
+    <!-- Navbar -->
+    {% include 'base/rightNav.html' %}
+    <!-- /.navbar -->
+
+
+    <!-- side bar Nav -->
+    <!-- Sidebar Menu -->
+    {% include 'base/sidenav.html' %}
+    <!-- /.sidebar-menu -->
+</div>
+<!-- /.sidebar -->
+</aside>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0"></h1>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <!--
+                      <li class="breadcrumb-item"><a href="#">Home</a></li>
+                      <li class="breadcrumb-item active">Dashboard v1</li>
+                      -->
+                    </ol>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-3 col-sm-4 col-lg">
+                <div class="container-fluid">
+                    <div class="card">
+                        <div style="background-color: #BD1E51" class="card-header">
+                            <h4 style="color: white">All Emails</h4>
+                        </div>
+                    <br>
+                    <div class="container">
+                        <a class="btn btn-danger" href="{% url 'customcreate' %}">Add Email</a>
+                    </div>
+
+                        <div style="align-self: center" class="card-body">
+
+                            <table style="white-space: nowrap" id="dtVerticalScrollExample4"
+                                   class="table table-striped table-avatar">
+                                <thead class="thead-light">
+                                <tr class="text-center">
+                                    <th class="text-center" scope="col">#</th>
+                                    <th class="text-center" scope="col">Name</th>
+                                    <th class="text-center" scope="col">Email</th>
+                                    <th class="text-center" scope="col">Division</th>
+                                    <th class="text-center" scope="col">Action</th>
+                                    <th class="text-center" scope="col">Is Active</th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for field in mails %}
+                                    <tr>
+                                        <th class="text-center" scope="row">{{ forloop.counter }}</th>
+                                        <td class="text-center"> {{ field.full_name }}</td>
+                                        <td class="text-center"> {{ field.email_field }}</td>
+                                        <td class="text-center"> {{ field.group }}</td>
+                                        <td class="text-center"><a title="Update" class="fa fa-edit"
+                                                                   href="{% url 'updatecustom' field.id %}"></a></td>
+                                        {% if field.is_active %}
+                                            <td class="text-center">
+                                                <form action="{% url 'deactivecustom' field.id %}" method="post"
+                                                      id="mail.delete.{{ field.id }}">
+                                                    {% csrf_token %}
+                                                    <a href="javascript:void(0)" class="far fa-check-square"
+                                                       onclick="if (confirm('Are you sure to deactivate this mail?')) document.getElementById('mail.delete.{{ field.id }}').submit();"></a>
+                                                </form>
+
+                                            </td>
+                                        {% else %}
+                                            <td class="text-center">
+                                                <form action="{% url 'activecustom' field.id %}" method="post"
+                                                      id="mail.delete.{{ field.id }}">
+                                                    {% csrf_token %}
+                                                    <a href="javascript:void(0)" class="far fa-square"
+                                                       onclick="if (confirm('Are you sure to active this mail?')) document.getElementById('mail.delete.{{ field.id }}').submit();"></a>
+                                                </form>
+
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+
+
+    <!-- /.row (main row) -->
+</div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+<!-- footer -->
+{% include 'base/footer.html' %}
+
+
+<!-- Control Sidebar -->
+<aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+</aside>
+<!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+<!-- JavaScript File -->
+{% include 'base/js.html' %}
+</body>
+<script>
+    function search_animal() {
+        let input = document.getElementById('searchbar2').value
+        input = input.toLowerCase();
+        let x = document.getElementsByClassName('nav-item');
+
+        for (i = 0; i < x.length; i++) {
+            if (!x[i].innerHTML.toLowerCase().includes(input)) {
+                x[i].style.display = "none";
+            } else {
+                x[i].style.display = "list-item";
+            }
+        }
+    }
+</script>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
+
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#dtVerticalScrollExample4').DataTable({
+            "scrollY": "400px",
+            "scrollCollapse": true,
+
+        });
+        $('.dataTables_length').addClass('bs-select');
+    });
+
+
+</script>
+</html>

@@ -1,0 +1,12 @@
+@import "menu.css";
+@import "data.css";
+@import "dashboard table.css";
+@import "new incident button.css";
+body{
+    background-color: rgba(41, 38, 40, 0.22) !important;
+}
+*{
+    padding: 0;
+    margin: 0;
+}
+
