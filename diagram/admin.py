@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Block, Transition, BlockGroup
+from .models import Block, Transition, BlockGroup, Comment
 
 # Register your models here.
 
@@ -23,4 +23,5 @@ class TransitionAdmin(admin.ModelAdmin):
 admin.site.register(Block, BlockAdmin)
 admin.site.register(Transition, TransitionAdmin)
 admin.site.register(BlockGroup)
+admin.site.register(Comment)
 

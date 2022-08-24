@@ -4,6 +4,9 @@ from django.contrib.humanize.templatetags.humanize import naturaltime
 from simple_history.models import HistoricalRecords
 from django.contrib.auth.models import Group
 from flowchart.models import Flowchart
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 # Create your models here.
 
@@ -65,7 +68,7 @@ class Block(models.Model):
         return None
 
     def __str__(self):
-        return self.label
+        return self.label + " (" + str(self.flowchart) + ")"
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -128,5 +131,24 @@ class Transition(models.Model):
         else:
             self.color = 'black'
         return super(Transition, self).save()
+
+
+class Comment(models.Model):
+    label = models.CharField(max_length=256)
+    text = models.TextField()
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author')
+    block = models.ForeignKey(Block, on_delete=models.CASCADE, related_name='block')
+    updated_date = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.label
+
+    @property
+    def last_modified(self):
+        if self.updated_date:
+            return naturaltime(self.updated_date)
+        return None
+
 
 

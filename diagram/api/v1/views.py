@@ -5,8 +5,8 @@ from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from rest_framework import permissions, generics
-from ...models import Block, Transition
-from .serializers import BlockSerializer, TransitionSerializer, HistorySerializer, CustomerHistorySerializer, Custom2
+from ...models import Block, Transition, Comment
+from .serializers import BlockSerializer, TransitionSerializer, HistorySerializer, CustomerHistorySerializer, Custom2, CommentSerializer
 from rest_framework import status
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from rest_framework.response import Response
@@ -101,3 +101,15 @@ def active_blocks(request):
 @api_view(['GET'])
 def test(request):
      return Response({'x': [10,11,2,7], 'y': [20,4,7,10], 'z': [4,1,8,12]})
+
+
+class CommentViewSet(ModelViewSet):
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = CommentSerializer
+    # queryset = Comment.objects.all()
+    def get_queryset(self):
+        flowchart_id = self.request.GET.get('flowchart_id')
+        if flowchart_id:
+            return Comment.objects.filter(block__is_active=True, block__flowchart_id=flowchart_id)
+        return Comment.objects.filter(block__is_active=True)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from diagram.models import Block, Transition
+from diagram.models import Block, Transition, Comment
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -94,3 +94,10 @@ class Custom2(serializers.Serializer):
     field = serializers.CharField(max_length=256, read_only=True)
     old = serializers.CharField(max_length=256, read_only=True)
     new = serializers.CharField(max_length=256, read_only=True)
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = UserSerializer(many=False)
+    class Meta:
+        model = Comment
+        fields = ['label', 'text', 'author', 'last_modified']

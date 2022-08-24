@@ -6,7 +6,24 @@
     <script src="{% static 'js/go.js' %}"></script>
     <script src="{% static 'js/DrawCommandHandler.js' %}"></script>
     <script src="{% static 'js/figures.js' %}"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+{#    <script>#}
+{#        $(function () {#}
+{#            $("#example1").DataTable({#}
+{#              "responsive": true, "lengthChange": false, "autoWidth": false,#}
+{#              "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]#}
+{#            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');#}
+{#            $('#example2').DataTable({#}
+{#              "paging": true,#}
+{#              "lengthChange": false,#}
+{#              "searching": false,#}
+{#              "ordering": true,#}
+{#              "info": true,#}
+{#              "autoWidth": false,#}
+{#              "responsive": true,#}
+{#            });#}
+{#        });#}
+{#</script>#}
+
     <script id="code">
     var nodeDataArray = {};
     var linkDataArray = {};
@@ -568,7 +585,6 @@
 
     function approveBlock(block_id) {
         var token = document.getElementsByName("csrfToken").value;
-        console.log(token)
         $.ajax({
              type: 'PATCH',
              dataType: "json",
@@ -600,11 +616,11 @@
             }
         });
     }
-    function tableElement(data){
-        document.getElementById('table').innerHTML = '';
+    function actionTableElement(data){
+        document.getElementById('action-table-body').innerHTML = '';
         for (let i = 0; i < data.length; i++) {
             var id = data[i].key
-            var table = document.getElementById("table")
+            var table = document.getElementById("action-table-body")
             var tr = document.createElement('tr')
             var td1 = document.createElement('td')
             td1.innerHTML = data[i].text
@@ -615,6 +631,8 @@
             var td3 = document.createElement('td')
 
             var butt = document.createElement('button')
+            butt.classList = "btn Normal"
+            butt.style.color = 'green'
             butt.innerHTML = "Approve"
             butt.onclick = function() {approveBlock(data[i].key)}
 
@@ -628,6 +646,51 @@
         }
     }
 
+    function commentTableElement(data){
+        document.getElementById("comment-table-body").innerHTML = '';
+        for (let i = 0; i < data.length; i++) {
+            var id = data[i].key
+            var table = document.getElementById("comment-table-body")
+            var tr = document.createElement('tr')
+            var td1 = document.createElement('td')
+            td1.innerHTML = data[i].label
+
+            var td2 = document.createElement('td')
+            td2.innerHTML = data[i].text
+
+            var td3 = document.createElement('td')
+
+            var td4 = document.createElement('td')
+            td4.innerHTML = data[i].last_modified
+
+            var td5 = document.createElement('td')
+            td5.innerHTML = data[i].author.full_name
+
+            var user_email = "{{ request.user.email }}"
+            console.log(user_email)
+            var butt = document.createElement('button')
+            if(user_email===data[i].author.email){
+                butt.classList = "btn Normal"
+                butt.style.color = 'green'
+                butt.innerHTML = "Edit"
+            }
+            else{
+                butt = document.createElement("p")
+                butt.innerHTML = "-"
+            }
+
+
+            td3.appendChild(butt)
+
+            tr.appendChild(td1)
+            tr.appendChild(td2)
+            tr.appendChild(td3)
+            tr.appendChild(td4)
+            tr.appendChild(td5)
+
+            table.appendChild(tr)
+        }
+    }
 
     function getActivBlock(){
         $.ajax({
@@ -635,258 +698,25 @@
             dataType: "json",
             url: "/diagram/api/v1/active_blocks/",
             success: function (data, status, xhr) {
-                tableElement(data)
+                actionTableElement(data)
             }
         });
     }
+
+    function getComments(){
+        $.ajax({
+            type: 'GET',
+            dataType: "json",
+            url: "/diagram/api/v1/comments/?flowchart_id={{ flowchart_id }}",
+            success: function (data, status, xhr) {
+                commentTableElement(data)
+            }
+        });
+    }
+
     getActivBlock()
+    getComments()
     </script>
-    <style>
-        section.table{
-            background-color: white;
-            margin-top: 30px;
-        }
-        #DataTable {
-            position:relative;
-            padding: 15px;
-            box-sizing: border-box;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: #333;
-            color: white;
-            font-weight: bold;
-            cursor: default ;
-            background-color: rgb(64, 78, 102);
-            text-align: center !important;
-        }
-        td, th {
-            padding: 6px;
-            border: 1px solid #ccc;
-            /*text-align: left;*/
-            box-sizing: border-box;
-            text-align: center;
-        }
-
-        tr:nth-of-type(odd) {
-            background: whitesmoke;
-        }
-        tr:nth-of-type(even) {
-            background: white;
-        }
-        .box ul.pagination {
-            position: relative !important;
-            bottom: auto !important;
-            right: auto !important;
-            display: block !important;
-            width: 100%;
-            /*background-color: red;*/
-        }
-        @media
-        only screen
-        and (max-width: 760px), (min-device-width: 768px)
-        and (max-device-width: 1024px)  {
-
-            table {
-                margin-top: 106px;
-                overflow-x: auto;
-            }
-            /* Force table to not be like tables anymore */
-            table, thead, tbody, th, td, tr {
-                display: block;
-            }
-
-            /* Hide table headers (but not display: none;, for accessibility) */
-            thead tr {
-                position: absolute;
-                top: -9999px;
-                left: -9999px;
-            }
-
-            tr {
-                margin: 0 0 1rem 0;
-                overflow: auto;
-                border-bottom: 1px solid #ccc;
-                text-align: center;
-            }
-
-
-
-            tbody tr:before {
-                counter-increment: my-sec-counter;
-                content: "";
-                background-color:#333;
-                display: block;
-                height: 1px;
-            }
-
-
-            tr:nth-child(odd) {
-                background: #ccc;
-            }
-
-            td {
-                /* Behave  like a "row" */
-                border: none;
-                border-bottom: 1px solid #eee;
-                margin-right: 0%;
-                display: block;
-                border-right: 1px solid #ccc;
-                border-left: 1px solid #ccc;
-                box-sizing:border-box;
-                text-align: center;
-            }
-
-            td:before {
-                /* Top/left values mimic padding */
-                font-weight: bold;
-                width: 50%;
-                float:left;
-                box-sizing:border-box;
-                padding-left: 5px;
-            }
-
-            /*
-            Label the data
-        You could also use a data-* attribute and content for this. That way "bloats" the HTML, this way means you need to keep HTML and CSS in sync. Lea Verou has a clever way to handle with text-shadow.
-            */
-            td:nth-of-type(1):before { content: "Incident Name"; }
-            td:nth-of-type(2):before { content: "Owner"; }
-            td:nth-of-type(3):before { content: "Start Date"; }
-            td:nth-of-type(4):before { content: "Finish Date"; }
-            td:nth-of-type(5):before { content: "Status"; }
-
-            .box ul.pagination {
-                position: relative !important;
-                bottom: auto !important;
-                right: auto !important;
-                display: block !important;
-                width: 100%;
-                /*background-color: red;*/
-            }
-
-            .box {
-                text-align: center;
-                /*position: fixed;*/
-                width: 100%;
-                background-color: rgba(53, 206, 69, 0.4);
-                /*top: 0px;*/
-                /*left:0px;*/
-                /*padding: 15px;*/
-                box-sizing: border-box;
-                border-bottom: 1px solid #ccc;
-            }
-
-            .box ul.pagination {
-                display: block;
-                margin: 0px;
-            }
-
-            .box .dvrecords {
-                display: block;
-                margin-bottom: 10px;
-            }
-            .pagination>li {
-                display: inline-block;
-            }
-        }
-
-        .top-filters {
-            font-size: 0px;
-        }
-
-        .search-field {
-            text-align: right;
-            margin-bottom: 5px;
-        }
-
-        .dd-number-of-recoeds {
-            font-size: 12px;
-        }
-
-        .search-field,
-        .dd-number-of-recoeds {
-            display: inline-block;
-            width: 50%;
-        }
-
-        .box ul.pagination {
-            position: absolute;
-            /*background: #8a1253;*/
-            bottom: -45px;
-            right: 15px;
-            display: flex;
-            flex-flow: row;
-            justify-content: space-evenly;
-        }
-        .box ul.pagination>li {
-            /*background-color: #80bdff;*/
-            display: inline-block;
-            width: 25px;
-            height: 25px;
-            border: 1px solid black;
-        }
-        .box ul.pagination>li>a {
-            font-size: 20px;
-            display: inline-block;
-            width: 25px;
-            height: 25px;
-            line-height: 25px;
-            text-align: center;
-
-        }
-
-        .box .dvrecords {
-            padding: 5px 0;
-        }
-
-        .box .dvrecords .records{
-            margin-right: 5px;
-        }
-
-
-
-
-        /* button styling */
-
-        button {
-            /*padding: 1.3em 3em;*/
-            display: block !important;
-            width: 100px;
-            height: 30px;
-            margin: 0 auto !important;
-            font-size: 12px;
-            text-transform: uppercase;
-            /*letter-spacing: 2.5px;*/
-            font-weight: 500;
-            color: #000;
-            background-color: rgba(246, 208, 102, 0.34);
-            border: none;
-            border-radius: 45px !important;
-            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease 0s;
-            cursor: pointer;
-            outline: none;
-            text-align: center !important;
-            line-height: 30px !important;
-        }
-
-        button:hover {
-            background-color: #23c483;
-            box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
-            color: #fff;
-            transform: translateY(-7px);
-        }
-
-        button:active {
-            transform: translateY(-1px);
-        }
-</style>
 
 {% endblock %}
 
@@ -904,27 +734,73 @@
         <button class="button" id="loadModel" onclick="load()">Load</button>
 {#        <button id="saveModel" onclick="save()">Save</button>#}
 
-        <table>
-            <thead>
-            <tr>
-                <th>Incident Name</th>
-                <th>Owner</th>
-                <th>Approved</th>
-            </tr>
-            </thead>
-            <tbody class="scroll-pane" id="table">
-{#            <tr>#}
-{#                <td>People Protest</td>#}
-{#                <td>RAC / HR / Operation</td>#}
-{#                <td>#}
-{#                    <button>Approved</button>#}
-{#                </td>#}
-{#            </tr>#}
-            </tbody>
-        </table>
+        <!-- Actions Card --->
+        <div class="card">
+              <div style="background-color: #BD1E51; text-align: center" class="card-header">
+                <h4 style="color: white">Active Actions</h4>
+              </div>
+
+              <div class="card-body">
+                <table id="action-table" class="table table-bordered table-striped" style="text-align: center">
+                  <thead>
+                  <tr>
+                    <th>Incident Name</th>
+                    <th>Owners</th>
+                    <th>Action</th>
+                  </tr>
+                  </thead>
+                  <tbody id="action-table-body">
+                      <tr>
+                        <td>Trident</td>
+                        <td>Win 95+</td>
+                        <td><button class="btn Normal" style="background-color: greenyellow"> Approve</button></td>
+                      </tr>
+                  </tbody>
+                </table>
+              </div>
+        </div>
+        <!-- comment Card --->
+        <div class="card">
+            <div style="background-color: #BD1E51;text-align: center" class="card-header">
+                <h4 style="color: white">Comments</h4>
+            </div>
+
+            <div class="card-body">
+            <table id="comment-table" class="table table-bordered table-striped" style="text-align: center">
+              <thead>
+              <tr>
+                <th>Label</th>
+                <th>Description</th>
+                <th>Action</th>
+                <th>Updated Date</th>
+                <th>User</th>
+              </tr>
+              </thead>
+              <tbody id="comment-table-body">
+
+              </tbody>
+            </table>
+          </div>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="card-body">
+                    <div class="col">
+
+                        <label for="text">Add your comment:</label>
+                        <textarea class="form-control bg-white" type="text" name="text" id="text"
+                                  rows="5"></textarea>
+
+                        <button class="btn btn-info" id="btn_comment" name="btn_comment"
+                                type="submit">Submit
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
 
 {#      <textarea id="mySavedModel" style="width:100%;height:300px">#}
 {#          {{ a }}#}
 {#      </textarea>#}
-    </div>
 {% endblock %}
+

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from . import views
 from rest_framework.routers import DefaultRouter
 from rest_framework import routers
@@ -23,7 +23,11 @@ urlpatterns = [
 
 
 
-    path('test/', views.test, name='test')
+    path('test/', views.test, name='test'),
 
+
+    # ---------- Comment -----------
+    path('comments/', views.CommentViewSet.as_view({'get': 'list', 'post': 'create'}), name='comments'),
+    path('comments/<str:pk>/', views.CommentViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update'}), name='comment-detail'),
 
     ]
