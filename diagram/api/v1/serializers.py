@@ -1,10 +1,17 @@
 from rest_framework import serializers
 from diagram.models import Block, Transition, Comment
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 User = get_user_model()
 
 
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ('name',)
+
 class BlockSerializer(serializers.ModelSerializer):
+    user_groups =GroupSerializer(many=True)
     class Meta:
         model = Block
         fields = ['label', 'figure', 'color', 'loc', 'thickness', 'fill', 'is_approved','loc_height', 'loc_length', 'flowchart', 'user_groups']
