@@ -32,6 +32,13 @@ def active_block_on_transient_approve(sender, instance, **kwargs):
     transient = instance
     if transient.is_approved:
         end_block = transient.end_block
+        start_block = transient.start_block
+        if start_block.is_conditional:
+            transients = Transition.objects.filter(start_block=start_block).exclude(id=transient.id)
+            for tr in transients:
+                tr.is_active = False
+                tr.save()
+
         end_block.is_active = True
         end_block.save()
 
