@@ -13,6 +13,9 @@ urlpatterns = [
     path('transitions/<str:pk>/', views.TransitionViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update'}), name='transition-detail'),
 
     path('active_blocks/', views.active_blocks, name='active-blocks'),
+    path('active_transitions/', views.active_transitions, name='active-transients'),
+
+
 
     # ----------- History ----------
 
