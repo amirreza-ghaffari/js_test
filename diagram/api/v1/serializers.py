@@ -54,7 +54,7 @@ class UserSerializer(serializers.ModelSerializer):
 class TransitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transition
-        fields = ['start_block', 'end_block', 'is_approved', 'color', 'label']
+        fields = ['start_block', 'end_block', 'is_approved', 'color', 'label', 'id']
 
     def validate(self, data):
         orig_instance = self.instance
