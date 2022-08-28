@@ -119,8 +119,8 @@ class CommentViewSet(ModelViewSet):
     def get_queryset(self):
         flowchart_id = self.request.GET.get('flowchart_id')
         if flowchart_id:
-            return Comment.objects.filter(block__is_active=True, block__flowchart_id=flowchart_id)
-        return Comment.objects.filter(block__is_active=True)
+            return Comment.objects.filter(block__is_active=True, block__flowchart_id=flowchart_id).order_by('-updated_date')
+        return Comment.objects.filter(block__is_active=True).order_by('-updated_date')
 
 @api_view(['Post'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
