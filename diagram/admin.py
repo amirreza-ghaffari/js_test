@@ -19,9 +19,16 @@ class TransitionAdmin(admin.ModelAdmin):
         (None, {'fields': ('label', 'start_block', 'end_block', 'is_active', 'is_approved', 'flowchart')}),
     )
 
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('label', 'author', 'block')
+    list_filter = ('author', 'block')
+    fieldsets = (
+        (None, {'fields': ('label', 'text', 'author', 'block')}),
+    )
+
 
 admin.site.register(Block, BlockAdmin)
 admin.site.register(Transition, TransitionAdmin)
 admin.site.register(BlockGroup)
-admin.site.register(Comment)
+admin.site.register(Comment, CommentAdmin)
 
