@@ -115,12 +115,38 @@ class CommentViewSet(ModelViewSet):
 
     permission_classes = [IsAuthenticated]
     serializer_class = CommentSerializer
-    # queryset = Comment.objects.all()
-    def get_queryset(self):
+    queryset = Comment.objects.all().order_by('-updated_date')
+    # def get_queryset(self):
+    #     flowchart_id = self.request.GET.get('flowchart_id')
+    #     if flowchart_id:
+    #         return Comment.objects.filter(block__is_active=True, block__flowchart_id=flowchart_id).order_by('-updated_date')
+    #     return Comment.objects.filter(block__is_active=True).order_by('-updated_date')
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        user = self.request.user
+        if instance.author == user:
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'message': "You are not author of this comment", 'error': True},
+                        status=status.HTTP_401_UNAUTHORIZED)
+
+    def list(self, request, *args, **kwargs):
         flowchart_id = self.request.GET.get('flowchart_id')
+
+        queryset = self.filter_queryset(self.get_queryset())
         if flowchart_id:
-            return Comment.objects.filter(block__is_active=True, block__flowchart_id=flowchart_id).order_by('-updated_date')
-        return Comment.objects.filter(block__is_active=True).order_by('-updated_date')
+            queryset = queryset.filter(block__is_active=True, block__flowchart_id=flowchart_id)
+        else:
+            queryset = queryset.filter(block__is_active=True)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 @api_view(['Post'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
