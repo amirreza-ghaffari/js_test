@@ -3,8 +3,8 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a class="brand-link">
-        <img src="{% static 'img/digikala-logo-01.png' %}" alt="AdminLTE Logo" class="brand-image ">
-        <span class="brand-text font-weight-light"> BCM</span>
+        <img src="{% static 'img/Badge.png' %}" alt="AdminLTE Logo" class="brand-image ">
+        <span class="brand-text font-weight-light"> BCM Management</span>
     </a>
 
     <!-- Sidebar -->
@@ -26,17 +26,17 @@
         </div>
 
         <!-- SidebarSearch Form -->
-{#        <div class="form-inline">#}
-{#            <div class="input-group" data-widget="sidebar-search">#}
-{#                <input class="form-control form-control-sidebar" type="search" placeholder="Search"#}
-{#                       aria-label="Search" id="searchbar2">#}
-{#                <div class="input-group-append">#}
-{#                    <button class="btn btn-sidebar">#}
-{#                        <i class="fas fa-search fa-fw"></i>#}
-{#                    </button>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
+        <div class="form-inline">
+            <div class="input-group" data-widget="sidebar-search">
+                <input class="form-control form-control-sidebar" type="search" placeholder="Search"
+                       aria-label="Search" id="searchbar2">
+                <div class="input-group-append">
+                    <button class="btn btn-sidebar">
+                        <i class="fas fa-search fa-fw"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                 data-accordion="false">
@@ -68,7 +68,7 @@
                                 <p>Staff Strike</p>
                             </a>
                         </li>
-                         <li class="nav-item">
+                        <li class="nav-item">
                             <a onclick="openNewFlowchart()" class="nav-link">
                                 <i class="fas fa-user-friends nav-icon"></i>
                                 <p>test</p>
@@ -88,136 +88,133 @@
         </nav>
 
 
+        <div class="form-popup" id="myForm">
+            <form action="/action_page.php" class="form-container">
+                <h3>New Flowchart</h3>
+                <label for="Incident_name">Incident Name</label>
+                <input type="text" id="Incident_name" placeholder="Please write incident name">
+                <label for="incidentLocation">Choose Location</label>
+                <select class="incidentLocation" id="incidentLocation">
+                    <option value="0">--Select Location--</option>
+                    <option value="Danesh">Danesh</option>
+                </select>
+                <button class="btn">Create</button>
+                <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+            </form>
+        </div>
 
 
-    <div class="form-popup" id="myForm">
-        <form action="/action_page.php" class="form-container">
-            <h3>New Flowchart</h3>
-            <label for="Incident_name">Incident Name</label>
-            <input type="text" id="Incident_name" placeholder="Please write incident name">
-            <label for="incidentLocation">Choose Location</label>
-            <select class="incidentLocation" id="incidentLocation">
-                <option value="0">--Select Location--</option>
-                <option value="Danesh">Danesh</option>
-            </select>
-            <button class="btn">Create</button>
-            <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-        </form>
-    </div>
+        <script>
 
-
-
-
-<script>
-
-    function openForm() {
-      document.getElementById("myForm").style.display = "block";
-    }
-
-    function closeForm() {
-      document.getElementById("myForm").style.display = "none";
-    }
-
-
-    function openNewFlowchart(){
-        console.log('hi')
-    }
-
-    function createElement(data){
-        for (let i = 0; i < data.length; i++) {
-
-            var flowchart = document.getElementById("flowchart-list")
-            var li = document.createElement("li")
-            li.classList.add('nav-item')
-
-            var a = document.createElement('a')
-            a.classList.add('nav-link')
-            a.href = data[i].get_absolute_url
-
-            var i_= document.createElement('i')
-            i_.classList.add("fas")
-            i_.classList.add("fa-fire")
-            i_.classList.add("nav-icon")
-
-            var p = document.createElement('p')
-            p.innerHTML = data[i].name
-
-            a.appendChild(i_)
-            a.appendChild(p)
-
-            li.appendChild(a)
-
-            flowchart.appendChild(li)
-        }
-}
-
-
-    function get_flowcharts() {
-        $.ajax({
-            type: 'GET',
-            dataType: "json",
-            url: "/flowchart/api/v1/flowcharts/",
-            success: function (data, status, xhr) {
-                createElement(data)
+            function openForm() {
+                document.getElementById("myForm").style.display = "block";
             }
-        });
-    }
-    get_flowcharts()
 
-</script>
-<style>
+            function closeForm() {
+                document.getElementById("myForm").style.display = "none";
+            }
 
-/* The popup form - hidden by default */
-.form-popup {
-  display: none;
-  position: fixed;
-  bottom: 0;
-  right: 15px;
-  border: 5px solid black;
-  z-index: 9;
-}
 
-/* Add styles to the form container */
-.form-container {
-  max-width: 300px;
-  padding: 10px;
-  background-color: white;
-}
+            function openNewFlowchart() {
+                console.log('hi')
+            }
 
-/* Full-width input fields */
-.form-container input[type=text], .form-container input[type=password] {
-  width: 100%;
-  padding: 15px;
-  margin: 5px 0 22px 0;
-  border: none;
-  background: #f1f1f1;
-}
+            function createElement(data) {
+                for (let i = 0; i < data.length; i++) {
 
-/* When the inputs get focus, do something */
-.form-container input[type=text]:focus, .form-container input[type=password]:focus {
-  background-color: #ddd;
-  outline: none;
-}
+                    var flowchart = document.getElementById("flowchart-list")
+                    var li = document.createElement("li")
+                    li.classList.add('nav-item')
 
-/* Set a style for the submit/login button */
-.form-container .btn {
-  background-color: #04AA6D;
-  color: white;
-  padding: 16px 20px;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  margin-bottom:10px;
-  opacity: 0.8;
-}
+                    var a = document.createElement('a')
+                    a.classList.add('nav-link')
+                    a.href = data[i].get_absolute_url
 
-/* Add a red background color to the cancel button */
-.form-container .cancel {
-  background-color: red;
-}
+                    var i_ = document.createElement('i')
+                    i_.classList.add("fas")
+                    i_.classList.add("fa-fire")
+                    i_.classList.add("nav-icon")
 
-/* Add some hover effects to buttons */
-.form-container .btn:hover, .open-button:hover {
-  opacity: 1;
-}
-</style>
+                    var p = document.createElement('p')
+                    p.innerHTML = data[i].name
+
+                    a.appendChild(i_)
+                    a.appendChild(p)
+
+                    li.appendChild(a)
+
+                    flowchart.appendChild(li)
+                }
+            }
+
+
+            function get_flowcharts() {
+                $.ajax({
+                    type: 'GET',
+                    dataType: "json",
+                    url: "/flowchart/api/v1/flowcharts/",
+                    success: function (data, status, xhr) {
+                        createElement(data)
+                    }
+                });
+            }
+
+            get_flowcharts()
+
+        </script>
+        <style>
+
+            /* The popup form - hidden by default */
+            .form-popup {
+                display: none;
+                position: fixed;
+                bottom: 0;
+                right: 15px;
+                border: 5px solid black;
+                z-index: 9;
+            }
+
+            /* Add styles to the form container */
+            .form-container {
+                max-width: 300px;
+                padding: 10px;
+                background-color: white;
+            }
+
+            /* Full-width input fields */
+            .form-container input[type=text], .form-container input[type=password] {
+                width: 100%;
+                padding: 15px;
+                margin: 5px 0 22px 0;
+                border: none;
+                background: #f1f1f1;
+            }
+
+            /* When the inputs get focus, do something */
+            .form-container input[type=text]:focus, .form-container input[type=password]:focus {
+                background-color: #ddd;
+                outline: none;
+            }
+
+            /* Set a style for the submit/login button */
+            .form-container .btn {
+                background-color: #04AA6D;
+                color: white;
+                padding: 16px 20px;
+                border: none;
+                cursor: pointer;
+                width: 100%;
+                margin-bottom: 10px;
+                opacity: 0.8;
+            }
+
+            /* Add a red background color to the cancel button */
+            .form-container .cancel {
+                background-color: red;
+            }
+
+            /* Add some hover effects to buttons */
+            .form-container .btn:hover, .open-button:hover {
+                opacity: 1;
+            }
+        </style>
