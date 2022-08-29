@@ -4,4 +4,4 @@ from django.shortcuts import render
 
 def index_view(request):
 
-    return render(request, 'base/base.html')
+    return render(request, 'index/dashboard.html')
