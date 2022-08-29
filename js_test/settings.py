@@ -59,6 +59,8 @@ INSTALLED_APPS = [
     # built_in packages #
     'django.contrib.humanize',
 
+    'index',
+
 ]
 
 
