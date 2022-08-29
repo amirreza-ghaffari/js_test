@@ -12,6 +12,7 @@
         var linkDataArray = {};
         var fullDataArray = {};
         var totalObjects = null;
+        var commentId = null
 
 
         function init() {
@@ -577,6 +578,12 @@
                     myDiagram.model = go.Model.fromJson(fullDataArray);
                 }
             });
+            var comment = document.getElementById("text-comment");
+            comment.value = ""
+
+            var labelInput = document.getElementById("label-input")
+            labelInput.value = ""
+
         }
 
         window.addEventListener('DOMContentLoaded', init);
@@ -595,6 +602,7 @@
 
                     getActivBlock()
                     getActiveTransitions()
+                    getComments()
                     load()
 
                 }
@@ -620,14 +628,15 @@
         }
 
         function actionTableElement(data) {
-            console.log(data)
             document.getElementById('action-table-body').innerHTML = '';
             var table = document.getElementById("action-table-body");
             var tableCard = document.getElementById('action-table-card')
+            var selectBody = document.getElementById("select-body")
+            selectBody.innerHTML = ""
             if (data.length === 0) {
                 tableCard.style.display = "none";
-            }
-            else{
+            } else {
+
                 tableCard.style.display = ""
                 for (let i = 0; i < data.length; i++) {
                     var owners = ""
@@ -660,6 +669,13 @@
                     tr.appendChild(td3)
 
                     table.appendChild(tr)
+
+                    var option = document.createElement('option')
+                    option.value = data[i].key
+                    option.innerHTML = data[i].text
+
+                    selectBody.appendChild(option)
+
                 }
             }
         }
@@ -668,8 +684,7 @@
             var tableCard = document.getElementById('transient-table-card')
             if (data.length === 0) {
                 tableCard.style.display = "none";
-            }
-            else {
+            } else {
                 tableCard.style.display = "";
                 document.getElementById('transient-table-body').innerHTML = '';
 
@@ -705,46 +720,57 @@
 
         function commentTableElement(data) {
             document.getElementById("comment-table-body").innerHTML = '';
-            for (let i = 0; i < data.length; i++) {
-                var id = data[i].key
-                var table = document.getElementById("comment-table-body")
-                var tr = document.createElement('tr')
-                var td1 = document.createElement('td')
-                td1.innerHTML = data[i].label
+            var tableBody = document.getElementById("comment-table")
 
-                var td2 = document.createElement('td')
-                td2.innerHTML = data[i].text
+            if (data.length === 0) {
 
-                var td3 = document.createElement('td')
+                tableBody.style.display = "none";
+            } else {
+                tableBody.style.display = "";
+                for (let i = 0; i < data.length; i++) {
+                    var id = data[i].key
+                    var table = document.getElementById("comment-table-body")
+                    var tr = document.createElement('tr')
+                    var td1 = document.createElement('td')
+                    td1.innerHTML = data[i].label
 
-                var td4 = document.createElement('td')
-                td4.innerHTML = data[i].last_modified
+                    var td2 = document.createElement('td')
+                    td2.innerHTML = data[i].text
 
-                var td5 = document.createElement('td')
-                td5.innerHTML = data[i].author.full_name
+                    var td3 = document.createElement('td')
 
-                var user_email = "{{ request.user.email }}"
-                console.log(user_email)
-                var butt = document.createElement('button')
-                if (user_email === data[i].author.email) {
-                    butt.classList = "btn Normal"
-                    butt.style.color = 'green'
-                    butt.innerHTML = "Edit"
-                } else {
-                    butt = document.createElement("p")
-                    butt.innerHTML = "-"
+                    var td4 = document.createElement('td')
+                    td4.innerHTML = data[i].last_modified
+
+                    var td5 = document.createElement('td')
+                    td5.innerHTML = data[i].author.full_name
+
+                    var user_email = "{{ request.user.email }}"
+
+                    var butt = document.createElement('button')
+                    if (user_email === data[i].author.email) {
+                        butt.classList = "btn Normal"
+                        butt.style.color = 'green'
+                        butt.innerHTML = "Edit"
+                        butt.onclick = function () {
+                            editComment(data[i].id, data[i].text, data[i].label)
+                        }
+                    } else {
+                        butt = document.createElement("p")
+                        butt.innerHTML = "-"
+                    }
+
+
+                    td3.appendChild(butt)
+
+                    tr.appendChild(td1)
+                    tr.appendChild(td2)
+                    tr.appendChild(td3)
+                    tr.appendChild(td4)
+                    tr.appendChild(td5)
+
+                    table.appendChild(tr)
                 }
-
-
-                td3.appendChild(butt)
-
-                tr.appendChild(td1)
-                tr.appendChild(td2)
-                tr.appendChild(td3)
-                tr.appendChild(td4)
-                tr.appendChild(td5)
-
-                table.appendChild(tr)
             }
         }
 
@@ -778,13 +804,74 @@
                 url: "/diagram/api/v1/comments/?flowchart_id={{ flowchart_id }}",
                 success: function (data, status, xhr) {
                     commentTableElement(data)
+                    var comment = document.getElementById("text-comment");
+                    var labelInput = document.getElementById("label-input");
+                    comment.value = ""
+                    labelInput.readOnly = false;
+                    labelInput.value = ""
+                    var commentBtn = document.getElementById("btn_comment");
+                    commentBtn.innerHTML = "submit New Comment";
+
+
                 }
             });
         }
 
+
         getActivBlock()
         getActiveTransitions()
         getComments()
+
+        function editComment(id, commentText, commentLabel) {
+            var comment = document.getElementById("text-comment");
+            comment.value = commentText
+
+            var commentBtn = document.getElementById("btn_comment");
+            commentBtn.innerHTML = "Edit Comment";
+
+            var labelInput = document.getElementById("label-input")
+            labelInput.value = commentLabel
+            labelInput.readOnly = true
+
+            commentId = id
+        }
+
+        function submitComment() {
+            var comment = document.getElementById("text-comment");
+            var labelInput = document.getElementById("label-input");
+            if (commentId != null) {
+                $.ajax({
+                    type: 'PATCH',
+                    dataType: "json",
+                    url: "/diagram/api/v1/comments/" + commentId + "/",
+                    headers: {
+                        "X-CSRFToken": '{{ csrf_token }}'
+                    },
+
+                    data: {'text': comment.value},
+                    success: function (data, status, xhr) {
+                        getComments()
+                    }
+                });
+
+            } else {
+                var selectBody = document.getElementById("select-body")
+                $.ajax({
+                    type: 'POST',
+                    dataType: "json",
+                    url: "/diagram/api/v1/comments/",
+                    headers: {
+                        "X-CSRFToken": '{{ csrf_token }}'
+                    },
+                    data: {'text': comment.value, 'label': labelInput.value, 'block': selectBody.value},
+                    success: function (data, status, xhr) {
+                        getComments()
+                    }
+                });
+            }
+
+            commentId = null;
+        }
     </script>
 
 {% endblock %}
@@ -798,119 +885,129 @@
     </form>
 
     <div id="sample">
-    <div id="myDiagramDiv"
-         style="border: 1px solid black; background-color: rgb(255, 255, 255); width: 100%; height: 800px; position: relative; cursor: auto;">
-        <canvas tabindex="0"
-                style="position: absolute; top: 10px; left: 0px;  z-index: 2; user-select: none; touch-action: none; width: 1054px; height: 598px; cursor: auto;"
-                width="1054" height="598">This text is displayed if your browser does not support the Canvas HTML
-            element.
-        </canvas>
-        <div style="position: absolute; overflow: auto; width: 1054px; height: 598px; z-index: 1;">
-            <div style="position: absolute; width: 1px; height: 1px;"></div>
-        </div>
-    </div>
-
-    <button class="button" id="loadModel" onclick="load()">Load</button>
-    {#        <button id="saveModel" onclick="save()">Save</button>#}
-
-    <!-- Actions Card --->
-    <div class="card" id="action-table-card">
-        <div style="background-color: #BD1E51; text-align: center" class="card-header">
-            <h4 style="color: white">Active Actions</h4>
+        <div id="myDiagramDiv"
+             style="border: 1px solid black; background-color: rgb(255, 255, 255); width: 100%; height: 800px; position: relative; cursor: auto;">
+            <canvas tabindex="0"
+                    style="position: absolute; top: 10px; left: 0px;  z-index: 2; user-select: none; touch-action: none; width: 1054px; height: 598px; cursor: auto;"
+                    width="1054" height="598">This text is displayed if your browser does not support the Canvas HTML
+                element.
+            </canvas>
+            <div style="position: absolute; overflow: auto; width: 1054px; height: 598px; z-index: 1;">
+                <div style="position: absolute; width: 1px; height: 1px;"></div>
+            </div>
         </div>
 
-        <div class="card-body">
-            <table id="action-table" class="table table-bordered table-striped" style="text-align: center">
-                <thead>
-                <tr>
-                    <th>Incident Name</th>
-                    <th>Owners</th>
-                    <th>Action</th>
-                </tr>
-                </thead>
-                <tbody id="action-table-body">
-                <tr>
-                    <td>Trident</td>
-                    <td>Win 95+</td>
-                    <td>
-                        <button class="btn Normal" style="background-color: greenyellow"> Approve</button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+        <button class="button" id="loadModel" onclick="load()">Load</button>
+        {#        <button id="saveModel" onclick="save()">Save</button>#}
 
+        <!-- Actions Card --->
+        <div class="card" id="action-table-card">
+            <div style="background-color: #BD1E51; text-align: center" class="card-header">
+                <h4 style="color: white">Active Actions</h4>
+            </div>
 
-
-    <!-- Transitions Card --->
-    <div class="card" id="transient-table-card">
-        <div style="background-color: #BD1E51; text-align: center" class="card-header">
-            <h4 style="color: white">Choose Path</h4>
-        </div>
-
-        <div class="card-body">
-            <table id="transient-table" class="table table-bordered table-striped" style="text-align: center">
-                <thead>
-                <tr>
-                    <th>PATH 1</th>
-                    <th>PATH 2</th>
-                </tr>
-                </thead>
-                <tbody id="transient-table-body">
-
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-
-    <!-- comment Card --->
-    <div class="card">
-        <div style="background-color: #BD1E51;text-align: center" class="card-header">
-            <h4 style="color: white">Comments</h4>
+            <div class="card-body">
+                <table id="action-table" class="table table-bordered table-striped" style="text-align: center">
+                    <thead>
+                    <tr>
+                        <th>Incident Name</th>
+                        <th>Owners</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody id="action-table-body">
+                    <tr>
+                        <td>Trident</td>
+                        <td>Win 95+</td>
+                        <td>
+                            <button class="btn Normal" style="background-color: greenyellow"> Approve</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="card-body">
-            <table id="comment-table" class="table table-bordered table-striped" style="text-align: center">
-                <thead>
-                <tr>
-                    <th>Label</th>
-                    <th>Description</th>
-                    <th>Action</th>
-                    <th>Updated Date</th>
-                    <th>User</th>
-                </tr>
-                </thead>
-                <tbody id="comment-table-body">
 
-                </tbody>
-            </table>
+        <!-- Transitions Card --->
+        <div class="card" id="transient-table-card">
+            <div style="background-color: #BD1E51; text-align: center" class="card-header">
+                <h4 style="color: white">Choose Path</h4>
+            </div>
+
+            <div class="card-body">
+                <table id="transient-table" class="table table-bordered table-striped" style="text-align: center">
+                    <thead>
+                    <tr>
+                        <th>PATH 1</th>
+                        <th>PATH 2</th>
+                    </tr>
+                    </thead>
+                    <tbody id="transient-table-body">
+
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <form method="POST">
-            {% csrf_token %}
+
+
+        <!-- comment Card --->
+        <div class="card">
+            <div style="background-color: #BD1E51;text-align: center" class="card-header">
+                <h4 style="color: white">Comments</h4>
+            </div>
+
+            <div class="card-body">
+                <table id="comment-table" class="table table-bordered table-striped" style="text-align: center">
+                    <thead>
+                    <tr>
+                        <th>Label</th>
+                        <th>Description</th>
+                        <th>Action</th>
+                        <th>Updated Date</th>
+                        <th>User</th>
+                    </tr>
+                    </thead>
+                    <tbody id="comment-table-body">
+
+                    </tbody>
+                </table>
+            </div>
             <div class="card-body">
                 <div class="col">
 
-                    <label for="text">Add your comment:</label>
-                    <textarea class="form-control bg-white" type="text" name="text" id="text"
-                              rows="5"></textarea>
 
-                    <button class="btn btn-info" id="btn_comment" name="btn_comment"
-                            type="submit">Submit
+                    <div class="form-group">
+                        <label>Label: </label>
+                        <input type="text" class="form-control" id="label-input" placeholder="Enter label">
+                    </div>
+
+
+                    <div class="col-md-6" data-select2-id="29">
+                        <div class="form-group">
+                            <label>Choose Incident: </label>
+                            <select class="form-control select2 select2-hidden-accessible" style="width: 100%;"
+                                    data-select2-id="1" tabindex="-1" aria-hidden="true" id="select-body">
+                            </select>
+                        </div>
+                        <!-- /.form-group -->
+                    </div>
+                    <textarea class="form-control bg-white" type="text" name="text" id="text-comment"
+                              placeholder="Enter Your Comment ..."
+                              rows="5">Type your comment...</textarea>
+                    <br>
+                    <button class="btn btn-info" id="btn_comment" name="btn_comment" onclick="submitComment()"
+                            type="submit">Submit new Comment
                     </button>
                 </div>
             </div>
-        </form>
-    </div>
+        </div>
 
 
-
-    {#      <textarea id="mySavedModel" style="width:100%;height:300px">#}
-    {#          {{ a }}#}
-    {#      </textarea>#}
+        {#      <textarea id="mySavedModel" style="width:100%;height:300px">#}
+        {#          {{ a }}#}
+        {#      </textarea>#}
 
 
 
 {% endblock %}
-
