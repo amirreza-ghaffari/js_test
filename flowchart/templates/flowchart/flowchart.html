@@ -778,7 +778,7 @@
             $.ajax({
                 type: 'GET',
                 dataType: "json",
-                url: "/diagram/api/v1/active_transitions/",
+                url: "/diagram/api/v1/active_transitions/{{ flowchart_id }}",
                 success: function (data, status, xhr) {
                     transientTableElement(data)
                 }
@@ -790,7 +790,7 @@
             $.ajax({
                 type: 'GET',
                 dataType: "json",
-                url: "/diagram/api/v1/active_blocks/",
+                url: "/diagram/api/v1/active_blocks/{{ flowchart_id }}",
                 success: function (data, status, xhr) {
                     actionTableElement(data)
                 }

@@ -83,16 +83,16 @@ class HistoryChangeView(ViewSet):
 @api_view(['GET'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def active_blocks(request):
-    blocks = Block.objects.filter(is_active=True)
+def active_blocks(request, flowchart_id):
+    blocks = Block.objects.filter(is_active=True, flowchart_id=flowchart_id)
     serializer = BlockSerializer(blocks, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def active_transitions(request):
-    transient = Transition.objects.filter(is_active=True)
+def active_transitions(request, flowchart_id):
+    transient = Transition.objects.filter(is_active=True, flowchart_id=flowchart_id)
     serializer = TransitionSerializer(transient, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 

@@ -12,8 +12,8 @@ urlpatterns = [
     path('transitions/', views.TransitionViewSet.as_view({'get': 'list', 'post': 'create'}), name='transition-list'),
     path('transitions/<str:pk>/', views.TransitionViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update'}), name='transition-detail'),
 
-    path('active_blocks/', views.active_blocks, name='active-blocks'),
-    path('active_transitions/', views.active_transitions, name='active-transients'),
+    path('active_blocks/<str:flowchart_id>/', views.active_blocks, name='active-blocks'),
+    path('active_transitions/<str:flowchart_id>/', views.active_transitions, name='active-transients'),
 
 
 
