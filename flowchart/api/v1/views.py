@@ -1,9 +1,9 @@
-from django.db.models import Count
+from django.db.models import Count, Q, Sum
 from django.db.models.functions import Coalesce
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
-from flowchart.models import Flowchart
+from flowchart.models import Flowchart, Location
 from diagram.models import Block, Transition
 from rest_framework import permissions, generics, viewsets
 from rest_framework import status
@@ -24,14 +24,19 @@ class FlowchartViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
 
-
 @api_view(['Get'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def flowchart_group_locations(request):
-    flowcharts = Flowchart.objects.exclude(location=None).values('location').annotate(total=Coalesce(Count('location'), 0))
-    return Response(list(flowcharts))
+def incident_per_location(request):
+    active_incidents = Location.objects.values('name').annotate(total=Count('flowchart')).order_by('name')
 
+    closed_incident = Location.objects.values('name', 'incident_number').order_by('name')
+
+    data = {}
+    for obj1, obj2 in zip(closed_incident, active_incidents):
+        data[obj1['name']] = {'closed': obj1['incident_number'], 'active': obj2['total']}
+
+    return Response(data)
 
 
 def new_flowchart(request, old_flowchart_name, new_flowchart_name):
