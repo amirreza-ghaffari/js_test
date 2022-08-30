@@ -1,3 +1,8 @@
+from django.db.models import Count
+from django.db.models.functions import Coalesce
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.permissions import IsAuthenticated
+
 from flowchart.models import Flowchart
 from diagram.models import Block, Transition
 from rest_framework import permissions, generics, viewsets
@@ -17,6 +22,16 @@ class FlowchartViewSet(viewsets.ViewSet):
         queryset = Flowchart.objects.all()
         serializer = FlowchartSerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+
+@api_view(['Get'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def flowchart_group_locations(request):
+    flowcharts = Flowchart.objects.exclude(location=None).values('location').annotate(total=Coalesce(Count('location'), 0))
+    return Response(list(flowcharts))
+
 
 
 def new_flowchart(request, old_flowchart_name, new_flowchart_name):
