@@ -15,6 +15,9 @@ class Flowchart(models.Model):
     name = models.CharField(max_length=256, unique=True)
     location = models.CharField(max_length=256, choices=location_choices, default=None, blank=True, null=True)
 
+    class Meta:
+        unique_together = ('name', 'location')
+
     @property
     def get_absolute_url(self):
         return reverse('flowchart:flowchart_view', kwargs={'name': self.name})
