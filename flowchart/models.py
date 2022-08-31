@@ -32,9 +32,12 @@ class Flowchart(models.Model):
     def clean(self):
         if self.location and self.primary:
             raise ValidationError('Primary Flowchart can not have a location')
+        if self.primary and self.is_active:
+            raise ValidationError('Primary Flowchart can not activated')
 
     def __str__(self):
         if self.primary:
             return self.name + 'primary'
-        return self.name
+        return self.name + str(self.location)
+
 
