@@ -1,12 +1,7 @@
-from django.shortcuts import render
-
-# Create your views here.
-
-from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render
-from .forms import LoginForm, SignUpForm
+from .forms import LoginForm
 
 
 def login_view(request):
@@ -16,39 +11,17 @@ def login_view(request):
     if request.method == "POST":
 
         if form.is_valid():
+            print(form.cleaned_data)
             email = form.cleaned_data.get("email")
             password = form.cleaned_data.get("password")
             user = authenticate(username=email, password=password)
-            if user is not None:
+            if user:
                 login(request, user)
-                return redirect('profile')
+                return redirect('index:dashboard')
             else:
-                msg = 'Invalid credentials'
-        else:
-            msg = 'Error validating the form'
+                form.add_error('email', 'Email or Password is not correct')
 
-    return render(request, "registration/login.html", {"form": form, "msg": msg})
-
-
-def profile_view(request):
-    return render(request, "registration/profile.html")
-
-
-def create_user_view(request):
-    # if not request.user.is_superuser:
-    #     return redirect('profile')
-
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('profile')
-
-    else:
-        form = SignUpForm()
-
-    return render(request, 'registration/add_user.html', {'form': form})
-
+    return render(request, "user/login.html", {"form": form})
 
 
 
