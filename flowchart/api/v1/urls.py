@@ -8,9 +8,9 @@ urlpatterns = [
 
     path('incident_per_location/', views.incident_per_location, name='incident_per_location'),
 
-
+    path('reset-flowchart/', views.reset_flowchart, name='reset-flowchart'),
 
 
     # ----------New Flowchart -------
-    # path('new_flowchart/<str:old_flowchart_name>/<str:new_flowchart_name>/', views.new_flowchart, name='new_flowchart'),
+    path('new-flowchart/<str:primary_name>/<str:location_name>/', views.new_flowchart, name='new-flowchart'),
 ]

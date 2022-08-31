@@ -34,6 +34,5 @@ urlpatterns = [
     path('comments/<str:pk>/', views.CommentViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update',
                                                              'delete': 'destroy'}), name='comment-detail'),
 
-    path('reset-flowchart/', views.reset_flowchart, name='reset-flowchart'),
 
     ]
