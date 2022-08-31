@@ -5,6 +5,8 @@ from .forms import LoginForm
 
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('index:dashboard')
     form = LoginForm(request.POST or None)
 
     msg = None

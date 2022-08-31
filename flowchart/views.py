@@ -3,8 +3,10 @@ from diagram.models import Block, Transition
 from diagram.models import Flowchart
 from django.shortcuts import render
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 
 
+@login_required(login_url='users:login')
 def flowchart_view(request, name):
     context = {}
 
