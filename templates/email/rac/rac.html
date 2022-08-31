@@ -406,12 +406,10 @@
                                                                     </tr>
                                                                     <tr>
                                                                         <td style="border: 1px solid #dddddd;  text-align:center ;  padding: 8px;word-wrap: break-word">
-                                                                            {% ifchanged current %}
-                                                                                {{ current.0 }} {% endifchanged %}
+                                                                            {{ current_action }}
                                                                         </td>
                                                                         <td style="border: 1px solid #dddddd;  text-align: center;  padding: 8px;word-wrap: break-word">
-                                                                            {% for x in destination %} {{ x }}
-                                                                                 {% endfor %}
+                                                                            {{ next_action }}
 
                                                                         </td>
 

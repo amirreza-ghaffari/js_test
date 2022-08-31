@@ -1,16 +1,10 @@
 from django.db.models.signals import post_save
 from .models import Transition, Block
-from .utils import custom_send_email
+from .utils import custom_send_email, find_next_action
+from django.core.mail import EmailMessage
+from django.core.mail import send_mail
+from django.conf import settings
 
-
-# def notif_staff_signal(sender, instance, **kwargs):
-#     end_block = instance.end_block
-#     if not end_block.is_conditional:
-#         groups = end_block.user_groups.all()
-#         print(f'Email sent to groups named {}')
-#
-#
-# post_save.connect(notif_staff_signal, sender=Transition)
 
 
 def active_transition_on_block_approve(sender, instance, **kwargs):
@@ -42,5 +36,11 @@ def active_block_on_transient_approve(sender, instance, **kwargs):
         end_block.is_active = True
         end_block.save()
 
+        if not end_block.is_conditional:
+            for group in end_block.user_groups.all():
+                next_action = find_next_action(end_block, group)
+                print('send to block  ' + end_block.label + 'owners:', group)
+                print(end_block.label , next_action)
+                custom_send_email('salam', end_block.label, next_action, ['amirreza.ghaffari.d@gmail.com'])
 
 post_save.connect(active_block_on_transient_approve, sender=Transition)
