@@ -148,33 +148,7 @@ class CommentViewSet(ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-@api_view(['Post'])
-@authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
-def reset_flowchart(request):
-    flowchart_name = request.data.get('flowchart_name')
-    print(flowchart_name)
-    if not flowchart_name:
-        return Response({'message': 'flowchart_name must be included', 'error': True},
-                        status=status.HTTP_400_BAD_REQUEST)
 
-    if not Flowchart.objects.filter(name=flowchart_name).exists():
-        return Response({'message': 'flowchart does not exists', 'error': True},
-                        status=status.HTTP_400_BAD_REQUEST)
-    blocks = Block.objects.filter(flowchart__name=flowchart_name)
-    for block in blocks:
-        block.is_active = False
-        block.is_approved = False
-        block.save()
-    b = Block.objects.get(label='شروع', flowchart__name=flowchart_name)
-    b.is_active = True
-    b.save()
-    transitions = Transition.objects.filter(flowchart__name=flowchart_name)
-    for tr in transitions:
-        tr.is_approved = False
-        tr.is_active = False
-        tr.save()
-    return Response({'message': 'Flowchart rested successfully', 'error': False}, status=status.HTTP_200_OK)
 
 
 
