@@ -52,6 +52,7 @@ class Block(models.Model):
     is_approved = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_conditional = models.BooleanField(default=False)
+    rand_text = models.CharField(max_length=16, default=None, blank=False, null=True)
     history = HistoricalRecords()
 
     class Meta:
