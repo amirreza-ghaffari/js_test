@@ -1,13 +1,10 @@
 from django.db.models.signals import post_save
 from .models import Transition, Block
 from .utils import custom_send_email, find_next_action
-from django.core.mail import EmailMessage
-from django.core.mail import send_mail
-from django.conf import settings
+from django.utils.crypto import get_random_string
 
 
-
-def active_transition_on_block_approve(sender, instance, **kwargs):
+def active_transition_on_block_approve(sender, instance, created, **kwargs):
     start_block = instance
     if start_block.is_approved:
 
@@ -18,6 +15,11 @@ def active_transition_on_block_approve(sender, instance, **kwargs):
             else:
                 obj.is_active = True
             obj.save()
+        return None
+    if created:
+        instance.rand_text = get_random_string(length=16)
+        instance.save()
+
 
 post_save.connect(active_transition_on_block_approve, sender=Block)
 
@@ -38,9 +40,13 @@ def active_block_on_transient_approve(sender, instance, **kwargs):
 
         if not end_block.is_conditional:
             for group in end_block.user_groups.all():
-                next_action = find_next_action(end_block, group)
-                print('send to block  ' + end_block.label + 'owners:', group)
-                print(end_block.label , next_action)
-                custom_send_email('salam', end_block.label, next_action, ['amirreza.ghaffari.d@gmail.com'])
+                # next_action = find_next_action(end_block, group)
+                next_action = None
+                for user in group.user_set.all():
+                    random_text = user.rand_text + '_' + str(end_block.id)
+                    print('user:', user, 'block:', end_block.label)
+                    # custom_send_email('salam', end_block.label, next_action, ['amirreza.ghaffari.d@gmail.com'],
+                    #                   random_text)
+
 
 post_save.connect(active_block_on_transient_approve, sender=Transition)
