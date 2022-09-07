@@ -1,0 +1,216 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Email Response</title>
+    <link rel="icon" href="{% static 'img/favicon.png' %}">
+    <link rel="stylesheet" href="{% static 'node_modules/bootstrap/dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'font awesome/fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+    <style>
+
+
+        .new-message-box {
+            margin: 250px auto !important;
+            padding-left: 20px;
+            margin-bottom: 25px !important;
+        }
+
+        .new-message-box p {
+            font-size: 1.15em;
+            font-weight: 600;
+        }
+
+        .row {
+            justify-content: center;
+        }
+
+        .info-tab {
+            width: 40px;
+            height: 40px;
+            display: inline-block;
+            position: relative;
+            top: 8px;
+        }
+
+        .info-tab {
+            float: left;
+            margin-left: -23px;
+        }
+
+        .info-tab i::before {
+            width: 24px;
+            height: 24px;
+            box-shadow: inset 12px 0 13px rgba(0, 0, 0, 0.5);
+        }
+
+        .info-tab i::after {
+            width: 0;
+            height: 0;
+            border: 12px solid transparent;
+            border-bottom-color: #fff;
+            border-left-color: #fff;
+            bottom: -18px;
+        }
+
+        .info-tab i::before, .info-tab i::after {
+            content: "";
+            display: inline-block;
+            position: absolute;
+            left: 0;
+            bottom: -17px;
+            transform: rotateX(60deg);
+        }
+
+        .note-box, .warning-box, .tip-box-success, .tip-box-danger, .tip-box-warning, .tip-box-info, .tip-box-alert {
+            padding: 12px 8px 3px 26px;
+        }
+
+
+        /***Success****/
+
+        .new-message-box-success {
+            background: #eeeeee;
+            padding: 3px;
+            margin: 10px 0;
+        }
+
+        .tip-icon-success {
+            background: #376900;
+        }
+
+        .tip-box-success {
+            color: #33691E;
+            background: #b9e5b5;
+        }
+
+        .tip-icon-success::before {
+            font-size: 25px;
+            content: "\f00c";
+            top: 3px;
+            left: 8px;
+            font-family: FontAwesome;
+            position: absolute;
+            color: white;
+        }
+
+        .tip-icon-success i::before {
+            background: #8BC34A;
+        }
+
+
+        /*******Danger*******/
+        .new-message-box-danger {
+            background: #eeeeee;
+            padding: 3px;
+            margin: 10px 0;
+        }
+
+        .tip-icon-danger {
+            background: #f44336;
+        / / 500
+        }
+
+        .tip-box-danger {
+            color: #cb0707;
+            background: #FFCCBC;
+        }
+
+        .tip-icon-danger::before {
+            font-size: 25px;
+            content: "\f00d";
+            top: 3px;
+            left: 8px;
+            font-family: FontAwesome;
+            position: absolute;
+            color: white;
+        }
+
+        .tip-icon-danger i::before {
+            background: #f44336;
+        / / 500
+        }
+
+        /*******warning*******/
+        .new-message-box-warning {
+            background: red;
+            padding: 3px;
+            margin: 10px 0;
+        }
+
+        .tip-icon-warning {
+            background: #FFEB3B;
+        / / 500
+        }
+
+        .tip-box-warning {
+            color: #212121;
+        / / 900 background: #FFF9C4;
+        / / 100
+        }
+
+        .tip-icon-warning::before {
+            font-size: 25px;
+            content: "\f071";
+            top: 8px;
+            left: 11px;
+            position: absolute;
+            color: #212121;
+        }
+
+        .tip-icon-warning i::before {
+            background: #FFEB3B;
+        / / 500
+        }
+
+
+        /*************************/
+
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid text-center">
+    {% if state  %}
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+                <div class="new-message-box">
+                    <div class="new-message-box-success">
+                        <div class="info-tab tip-icon-success" title="success"><i></i></div>
+                        <div class="tip-box-success">
+                            <p>Your response submitted successfully</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-sm-offset-3 ">
+                <div class="new-message-box">
+                    <div class="new-message-box-danger">
+                        <div class="info-tab tip-icon-danger" title="error"><i></i></div>
+                        <div class="tip-box-danger">
+                            <!--<p><strong>Tip:</strong> If you want to enable the fading transition effect while closing the alert boxes, apply the classes <code>.fade</code> and <code>.in</code> to them along with the contextual class.</p>-->
+                            <p>Invalid Link!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+
+</div>
+
+
+<script src="{% static 'node_modules/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
+
