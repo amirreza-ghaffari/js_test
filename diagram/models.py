@@ -135,7 +135,7 @@ class Transition(models.Model):
 
 
 class Comment(models.Model):
-    label = models.CharField(max_length=256)
+    label = models.CharField(max_length=256, null=True, blank=True)
     text = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author')
     block = models.ForeignKey(Block, on_delete=models.CASCADE, related_name='block')
