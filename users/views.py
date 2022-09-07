@@ -2,6 +2,8 @@ from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render
 from .forms import LoginForm
+from .models import CustomUser
+from django.views.generic.list import ListView
 
 
 def login_view(request):
@@ -26,6 +28,13 @@ def login_view(request):
     return render(request, "user/login.html", {"form": form})
 
 
+class ContactListView(ListView):
 
+    model = CustomUser
+    paginate_by = 9  # if pagination is desired
+    template_name = 'user/contacts.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
