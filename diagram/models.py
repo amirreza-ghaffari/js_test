@@ -45,8 +45,6 @@ class Block(models.Model):
     figure = models.CharField(max_length=256, choices=fig_choices, default=None, blank=True, null=True)
     description = models.TextField(null=True, blank=True)
     color = models.CharField(max_length=256, choices=color_choices, default='black')
-    thickness = models.IntegerField(default=4,  blank=True, null=True)
-    fill = models.CharField(default=None, max_length=256, blank=True, null=True)
     loc_height = models.IntegerField(null=True, blank=True)
     loc_length = models.IntegerField(null=True, blank=True)
     is_approved = models.BooleanField(default=False)

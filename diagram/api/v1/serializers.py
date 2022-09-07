@@ -6,7 +6,6 @@ from django.contrib.auth.models import Group
 User = get_user_model()
 
 
-
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """
     A ModelSerializer that takes an additional `fields` argument that
@@ -33,11 +32,13 @@ class GroupSerializer(serializers.ModelSerializer):
         model = Group
         fields = ('name',)
 
+
 class BlockSerializer(serializers.ModelSerializer):
-    user_groups =GroupSerializer(many=True)
+    user_groups = GroupSerializer(many=True)
+
     class Meta:
         model = Block
-        fields = ['label', 'figure', 'color', 'loc', 'thickness', 'fill', 'is_approved', 'loc_height', 'loc_length',
+        fields = ['label', 'figure', 'color', 'loc', 'is_approved', 'loc_height', 'loc_length',
                   'flowchart', 'user_groups']
         read_only_fields = ('loc',)
 
@@ -61,10 +62,14 @@ class BlockSerializer(serializers.ModelSerializer):
         representation.pop('label')
         if instance.is_conditional:
             representation['size'] = "600 350"
-
         else:
             representation['size'] = "450 150"
+
+        if instance.is_active:
+            representation['figure'] = "CreateRequest"
+
         representation['fill'] = "beige"
+        representation['thickness'] = 4
         representation.pop('flowchart')
         return representation
 
@@ -132,6 +137,7 @@ class Custom2(serializers.Serializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = UserSerializer(many=False, read_only=True)
+
     class Meta:
         model = Comment
         fields = ['id', 'label', 'text', 'last_modified','block', 'author']
