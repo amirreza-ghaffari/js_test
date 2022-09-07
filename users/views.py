@@ -67,7 +67,7 @@ def mail_response_view(request, random_text):
     try:
         comment = Comment.objects.get(author=user, block=block, text='Email received')
     except Comment.DoesNotExist:
-        comment = Comment(author=user, block=block, text='Email received')
+        comment = Comment(author=user, block=block, text='Email received', label='Email Notif')
         comment.save()
     context['state'] = True
     return render(request, 'users/email_response.html', context)
