@@ -27,6 +27,12 @@ department_choice = (
     )
 
 
+def get_profile_image_filepath(self, filename):
+    return 'profile_images/' + str(self.pk) + '/profile_image.png'
+
+
+def get_default_profile_image():
+    return "default_images/user-profile-default.png"
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
@@ -36,8 +42,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
-
+    rand_text = models.CharField(max_length=16, default=None, blank=False, null=True)
     department = models.CharField(max_length=256, choices=department_choice, null=True)
+    profile_image = models.ImageField(max_length=255, upload_to=get_profile_image_filepath, null=True, blank=True,
+                                      default=get_default_profile_image)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
