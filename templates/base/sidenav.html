@@ -16,8 +16,8 @@
             </div>
             -->
             <span class="avatar rounded-circle">
-                  <img alt="Avatar" src="{% static 'img/tes.jpg' %}"
-                       style="width:60px; border-radius: 100%">
+                  <img alt="Avatar" src="{{ request.user.profile_image.url }}"
+                       style="border-radius: 50%!important; width: 100px; height: 100px; object-fit: fill">
                 </span>
             <div style="align-content: center" class="info d-flex justify-content-center">
                 <a style="align-self: center; align-content: center" href="#"
@@ -46,8 +46,14 @@
                 <a href="{% url 'index:dashboard' %}" class="nav-link">
                     <i class="nav-icon fas fa-tachometer-alt "></i>
                     <p class="nav-item">
-                         Dashboard
+                        Dashboard
 
+                    </p>
+                </a>
+                <a href="{% url 'users:contacts' %}" class="nav-link">
+                    <i class="nav-icon fas fa-phone "></i>
+                    <p class="nav-item">
+                        Contacts
                     </p>
                 </a>
 
@@ -68,14 +74,6 @@
                                 <p>Staff Strike</p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a onclick="openNewFlowchart()" class="nav-link">
-                                <i class="fas fa-user-friends nav-icon"></i>
-                                <p>test</p>
-                            </a>
-                        </li>
-
-
                     </ul>
                 </li>
                 <a href="" class="nav-link">
@@ -86,22 +84,6 @@
                 </a>
             </ul>
         </nav>
-
-
-        <div class="form-popup" id="myForm">
-            <form action="/action_page.php" class="form-container">
-                <h3>New Flowchart</h3>
-                <label for="Incident_name">Incident Name</label>
-                <input type="text" id="Incident_name" placeholder="Please write incident name">
-                <label for="incidentLocation">Choose Location</label>
-                <select class="incidentLocation" id="incidentLocation">
-                    <option value="0">--Select Location--</option>
-                    <option value="Danesh">Danesh</option>
-                </select>
-                <button class="btn">Create</button>
-                <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-            </form>
-        </div>
 
 
         <script>
