@@ -603,7 +603,6 @@
                     getActivBlock()
                     getActiveTransitions()
                     getComments()
-                    getReceivedEmail()
                     load()
 
                 }
@@ -622,7 +621,6 @@
                 success: function (data, status, xhr) {
                     getActivBlock()
                     getActiveTransitions()
-                    getReceivedEmail()
                     load()
 
                 }
@@ -750,7 +748,7 @@
                     var user_email = "{{ request.user.email }}"
 
                     var butt = document.createElement('button')
-                    if (user_email === data[i].author.email) {
+                    if (user_email === data[i].author.email && data[i].label !== 'Email Notif' ) {
                         butt.classList = "btn Normal"
                         butt.style.color = 'green'
                         butt.innerHTML = "Edit"
@@ -848,23 +846,11 @@
             }
         }
 
-        function getReceivedEmail() {
-            $.ajax({
-                type: 'GET',
-                dataType: "json",
-                url: "http://127.0.0.1:8000/response/api/v1/responses/",
-                success: function (data, status, xhr) {
-                    console.log(data)
-                    receivedTableElement(data)
-                }
-            });
-        }
 
 
         getActivBlock()
         getActiveTransitions()
         getComments()
-        getReceivedEmail()
 
         function editComment(id, commentText, commentLabel) {
             var comment = document.getElementById("text-comment");
@@ -972,32 +958,6 @@
             </div>
         </div>
 
-        <!-- Received Card --->
-        <div class="card" id="received-table-card">
-            <div style="background-color: #BD1E51; text-align: center" class="card-header">
-                <h4 style="color: white">Received Email</h4>
-            </div>
-
-            <div class="card-body">
-                <table id="received-table" class="table table-bordered table-striped" style="text-align: center">
-                    <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Department</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody id="received-table-body">
-                    <tr>
-                        <td>Trident</td>
-                        <td>Win 95+</td>
-                        <td>Win 95+</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
 
         <!-- Transitions Card --->
         <div class="card" id="transient-table-card">
@@ -1024,7 +984,7 @@
         <!-- comment Card --->
         <div class="card">
             <div style="background-color: #BD1E51;text-align: center" class="card-header">
-                <h4 style="color: white">Comments</h4>
+                <h4 style="color: white">Comments and Messages</h4>
             </div>
 
             <div class="card-body">
