@@ -61,8 +61,6 @@ INSTALLED_APPS = [
 
     'index',
 
-    'response'
-
 ]
 
 
