@@ -6,7 +6,7 @@ from .models import Block, Transition, BlockGroup, Comment
 
 class BlockAdmin(admin.ModelAdmin):
     fields = ('label', 'is_approved', 'is_active', 'color', 'group', 'flowchart', 'figure', 'description',
-              'thickness', 'fill', 'loc_height', 'loc_length', 'user_groups', 'is_conditional')
+              'loc_height', 'loc_length', 'user_groups', 'is_conditional')
     list_display = ('id', 'label', 'is_approved', 'is_active', 'last_modified',)
     list_filter = ('is_approved', 'is_active', 'flowchart')
 
