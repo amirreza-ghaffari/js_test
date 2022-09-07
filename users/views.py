@@ -1,9 +1,12 @@
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login
-from django.shortcuts import render
 from .forms import LoginForm
-from .models import CustomUser
 from django.views.generic.list import ListView
+from django.shortcuts import render
+from users.models import CustomUser
+from diagram.models import Block
+from django.shortcuts import get_object_or_404
+from diagram.models import Comment
 
 
 def login_view(request):
@@ -25,16 +28,46 @@ def login_view(request):
             else:
                 form.add_error('email', 'Email or Password is not correct')
 
-    return render(request, "user/login.html", {"form": form})
+    return render(request, "users/login.html", {"form": form})
 
 
 class ContactListView(ListView):
 
     model = CustomUser
     paginate_by = 9  # if pagination is desired
-    template_name = 'user/contacts.html'
+    template_name = 'users/contacts.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
 
+
+def mail_response_view(request, random_text):
+
+    context = {'state': False}
+    try:
+        random_text = random_text.split('_')
+        user_url, block_id = random_text[0:2]
+        user = CustomUser.objects.get(rand_text=user_url)
+        block = Block.objects.get(id=block_id, is_active=True)
+    except:
+        return render(request, 'users/email_response.html', context)
+
+    for group in block.user_groups.all():
+        for sub_users in group.user_set.all():
+            if user == sub_users:
+                context['state'] = True
+                break
+        if context['state']:
+            break
+
+    if not context['state']:
+        return render(request, 'users/email_response.html', context)
+
+    try:
+        comment = Comment.objects.get(author=user, block=block, text='Email received')
+    except Comment.DoesNotExist:
+        comment = Comment(author=user, block=block, text='Email received')
+        comment.save()
+    context['state'] = True
+    return render(request, 'users/email_response.html', context)
