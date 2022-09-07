@@ -141,7 +141,7 @@ class Comment(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        return self.label
+        return (self.label or '') + self.author.full_name
 
     @property
     def last_modified(self):
