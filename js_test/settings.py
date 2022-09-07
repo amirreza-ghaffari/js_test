@@ -61,6 +61,8 @@ INSTALLED_APPS = [
 
     'index',
 
+    'response'
+
 ]
 
 
@@ -159,9 +161,9 @@ STATICFILES_DIRS = (
 )
 
 STATIC_ROOT = '/static/'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
@@ -178,3 +180,11 @@ EMAIL_HOST_USER = "dovominmail@gmail.com"
 EMAIL_HOST_PASSWORD = 'yndsxanmvigmgkae'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+
+ORG_EMAIL = "@gmail.com"
+FROM_EMAIL = "dovominmail" + ORG_EMAIL
+FROM_PWD = 'yndsxanmvigmgkae'
+SMTP_SERVER = "imap.gmail.com"
+SMTP_PORT = 993
+
