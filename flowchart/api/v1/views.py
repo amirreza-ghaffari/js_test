@@ -1,27 +1,24 @@
 from django.db.models import Count, Q, Sum
-from django.db.models.functions import Coalesce
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
-
 from flowchart.models import Flowchart, Location
 from diagram.models import Block, Transition
-from rest_framework import permissions, generics, viewsets
-from rest_framework import status
-from rest_framework.viewsets import ViewSet, ModelViewSet
+from rest_framework import viewsets, status
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
 from .serializers import FlowchartSerializer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from django_filters.rest_framework import DjangoFilterBackend
 
 
-class FlowchartViewSet(viewsets.ViewSet):
+class FlowchartViewSet(viewsets.ModelViewSet):
     """
     A simple ViewSet for listing or retrieving users.
     """
-    def list(self, request):
-        queryset = Flowchart.objects.all()
-        serializer = FlowchartSerializer(queryset, many=True)
-        return Response(serializer.data)
+    permission_classes = [IsAuthenticated]
+    serializer_class = FlowchartSerializer
+    queryset = Flowchart.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['primary', 'is_active']
 
 
 @api_view(['Get'])
@@ -37,6 +34,7 @@ def incident_per_location(request):
         data[obj1['name']] = {'closed': obj1['incident_number'], 'active': obj2['total']}
 
     return Response(data)
+
 
 @api_view(['Post'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
