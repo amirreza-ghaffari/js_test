@@ -65,7 +65,7 @@ class BlockSerializer(serializers.ModelSerializer):
         else:
             representation['size'] = "450 150"
 
-        if instance.is_active:
+        if instance.is_active and not instance.is_conditional:
             representation['figure'] = "CreateRequest"
 
         representation['fill'] = "beige"
