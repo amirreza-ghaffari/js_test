@@ -75,8 +75,6 @@ class Block(models.Model):
             self.color = 'green'
         elif self.is_active:
             self.color = 'red'
-        elif self.is_conditional:
-            self.color = 'blue'
         else:
             self.color = 'black'
 
