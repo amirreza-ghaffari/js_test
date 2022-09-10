@@ -2,9 +2,9 @@ from flowchart.models import Flowchart
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django.db.models import Q
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.humanize.templatetags.humanize import naturaltime
-from rest_framework import permissions, generics
+from rest_framework import permissions
 from ...models import Block, Transition, Comment
 from .serializers import BlockSerializer, TransitionSerializer, HistorySerializer, CustomerHistorySerializer, Custom2, CommentSerializer
 from rest_framework import status
@@ -37,11 +37,18 @@ class BlockViewSet(ModelViewSet):
 
 class TransitionViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['flowchart', 'is_approved', 'is_active']
+    filterset_fields = ['is_approved', 'is_active']
 
     permission_classes = [IsAuthenticated]
     serializer_class = TransitionSerializer
-    queryset = Transition.objects.all()
+
+    def get_queryset(self):
+        flowchart_id = self.request.query_params.get('flowchart_id')
+        if flowchart_id:
+            blocks = Block.objects.filter(flowchart_id=flowchart_id).values('id')
+            id_list = [block['id'] for block in blocks]
+            return Transition.objects.filter(id__in=id_list)
+        return Transition.objects.all()
 
 
 @api_view(['GET'])
