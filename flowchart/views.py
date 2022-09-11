@@ -11,7 +11,7 @@ def flowchart_view(request, name):
     context = {}
 
     try:
-        flowchart = Flowchart.objects.get(name=name)
+        flowchart = Flowchart.objects.get(name=name, primary=True)
         context['flowchart_id'] = flowchart.id
         temp = flowchart.name
         context['flowchart_name'] = temp.replace('_', ' ').title()
