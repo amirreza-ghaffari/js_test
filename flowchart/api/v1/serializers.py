@@ -7,7 +7,7 @@ User = get_user_model()
 class FlowchartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Flowchart
-        fields = ['name', 'get_absolute_url']
+        fields = ['id', 'name', 'get_absolute_url']
 
 
 
