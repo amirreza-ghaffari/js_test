@@ -12,5 +12,5 @@ urlpatterns = [
 
 
     # ----------New Flowchart -------
-    path('new-flowchart/<str:primary_name>/<str:location_name>/', views.new_flowchart, name='new-flowchart'),
+    path('new-flowchart/', views.new_flowchart, name='new-flowchart'),
 ]
