@@ -1,7 +1,8 @@
 from django.db.models.signals import post_save
 from .models import Transition, Block
-from .utils import custom_send_email, find_next_action
+from .utils import custom_send_email, next_action
 from django.utils.crypto import get_random_string
+from users.models import CustomUser
 
 
 def active_transition_on_block_approve(sender, instance, created, **kwargs):
@@ -39,14 +40,14 @@ def active_block_on_transient_approve(sender, instance, **kwargs):
         end_block.save()
 
         if not end_block.is_conditional:
-            for group in end_block.user_groups.all():
-                # next_action = find_next_action(end_block, group)
-                next_action = None
-                for user in group.user_set.all():
-                    random_text = user.rand_text + '_' + str(end_block.id)
-                    print('user:', user, 'block:', end_block.label)
-                    # custom_send_email('salam', end_block.label, next_action, ['amirreza.ghaffari.d@gmail.com'],
-                    #                   random_text)
+            for user_id in end_block.user_groups.all().values_list('id', flat=True):
+                user = CustomUser.objects.get(id=user_id)
+                next_action_block = next_action(end_block, user)
+                random_text = user.rand_text + '_' + str(end_block.id)
+                print('user:', user, 'block:', end_block.label, 'next_action: ', next_action_block)
+
+                # custom_send_email('salam', end_block.label, next_action, ['amirreza.ghaffari.d@gmail.com'],
+                #                   random_text)
 
 
 post_save.connect(active_block_on_transient_approve, sender=Transition)
