@@ -17,7 +17,7 @@ class Location(models.Model):
 
 
 class Flowchart(models.Model):
-    name = models.CharField(max_length=256, unique=True)
+    name = models.CharField(max_length=256)
     location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True, blank=True)
     primary = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
