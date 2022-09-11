@@ -1,6 +1,6 @@
 from django.db.models import Count, Q, Sum
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from flowchart.models import Flowchart, Location
 from diagram.models import Block, Transition
 from rest_framework import viewsets, status
@@ -38,8 +38,10 @@ def incident_per_location(request):
 
 @api_view(['Post'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
-def new_flowchart(request, primary_name, location_name):
+@permission_classes([IsAuthenticated, IsAdminUser])
+def new_flowchart(request):
+    primary_name = request.data.get('primary_name')
+    location_name = request.data.get('location_name')
 
     try:
         primary_flowchart = Flowchart.objects.get(name=primary_name, primary=True)
@@ -47,7 +49,7 @@ def new_flowchart(request, primary_name, location_name):
         return Response({'message': 'Primary Flowchart Does not Exists', 'error': True},
                         status=status.HTTP_404_NOT_FOUND)
     try:
-        location_obj = Location.objects.get(name=location_name)
+        location_obj = Location.objects.get(name__iexact=location_name)
     except Location.DoesNotExist:
         return Response({'message': 'Location Does not Exists', 'error': True},
                         status=status.HTTP_404_NOT_FOUND)
@@ -68,9 +70,7 @@ def new_flowchart(request, primary_name, location_name):
         block.flowchart = new_flowchart
         block.save()
         data[block.label] = block.id
-    block = Block.objects.get(label='شروع', flowchart_id=new_flowchart.id)
-    block.is_active = True
-    block.save()
+
 
     for transition in transitions:
         transition.pk = None
@@ -82,6 +82,9 @@ def new_flowchart(request, primary_name, location_name):
         transition.end_block_id = data[end_block_name]
         transition.flowchart = new_flowchart
         transition.save()
+    block = Block.objects.get(input_transition=None, flowchart_id=new_flowchart.id)
+    block.is_active = True
+    block.save()
 
     return Response({'message': 'new objects created', 'new_flowchart_id': new_flowchart.id},
                     status=status.HTTP_201_CREATED)
@@ -104,7 +107,7 @@ def reset_flowchart(request):
         block.is_active = False
         block.is_approved = False
         block.save()
-    b = Block.objects.get(label='شروع', flowchart__name=flowchart_name)
+    b = Block.objects.get(flowchart__name=flowchart_name, input_transition=None)
     b.is_active = True
     b.save()
     transitions = Transition.objects.filter(flowchart__name=flowchart_name)
