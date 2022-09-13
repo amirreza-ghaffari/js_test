@@ -7,11 +7,11 @@ from django.contrib.auth.decorators import login_required
 
 
 @login_required(login_url='users:login')
-def flowchart_view(request, name):
+def flowchart_view(request, pk):
     context = {}
 
     try:
-        flowchart = Flowchart.objects.get(name=name, primary=True)
+        flowchart = Flowchart.objects.get(pk=pk)
         context['flowchart_id'] = flowchart.id
         temp = flowchart.name
         context['flowchart_name'] = temp.replace('_', ' ').title()
