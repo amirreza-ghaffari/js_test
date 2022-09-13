@@ -5,9 +5,10 @@ from flowchart.models import Flowchart, Location
 from diagram.models import Block, Transition
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .serializers import FlowchartSerializer
+from .serializers import FlowchartSerializer, LocationSerializer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
+from django.urls import reverse
 
 
 class FlowchartViewSet(viewsets.ModelViewSet):
@@ -19,6 +20,15 @@ class FlowchartViewSet(viewsets.ModelViewSet):
     queryset = Flowchart.objects.all()
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['primary', 'is_active']
+
+
+class LocationViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for listing or retrieving users.
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = LocationSerializer
+    queryset = Location.objects.all()
 
 
 @api_view(['Get'])
@@ -40,16 +50,16 @@ def incident_per_location(request):
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated, IsAdminUser])
 def new_flowchart(request):
-    primary_name = request.data.get('primary_name')
-    location_name = request.data.get('location_name')
+    primary_flowchart_id = request.data.get('primary_id')
+    location_id = request.data.get('location_id')
 
     try:
-        primary_flowchart = Flowchart.objects.get(name=primary_name, primary=True)
+        primary_flowchart = Flowchart.objects.get(id=primary_flowchart_id, primary=True)
     except Flowchart.DoesNotExist:
         return Response({'message': 'Primary Flowchart Does not Exists', 'error': True},
                         status=status.HTTP_404_NOT_FOUND)
     try:
-        location_obj = Location.objects.get(name__iexact=location_name)
+        location_obj = Location.objects.get(id=location_id)
     except Location.DoesNotExist:
         return Response({'message': 'Location Does not Exists', 'error': True},
                         status=status.HTTP_404_NOT_FOUND)
@@ -71,7 +81,6 @@ def new_flowchart(request):
         block.save()
         data[block.label] = block.id
 
-
     for transition in transitions:
         transition.pk = None
         transition.is_active = False
@@ -86,7 +95,7 @@ def new_flowchart(request):
     block.is_active = True
     block.save()
 
-    return Response({'message': 'new objects created', 'new_flowchart_id': new_flowchart.id},
+    return Response({'message': 'new objects created', 'new_flowchart_id': new_flowchart.id, 'url': reverse('flowchart:flowchart_view', kwargs={'pk': new_flowchart.id})},
                     status=status.HTTP_201_CREATED)
 
 
@@ -94,23 +103,23 @@ def new_flowchart(request):
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def reset_flowchart(request):
-    flowchart_name = request.data.get('flowchart_name')
-    if not flowchart_name:
+    flowchart_id = request.data.get('flowchart_id')
+    if not flowchart_id:
         return Response({'message': 'flowchart_name must be included', 'error': True},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    if not Flowchart.objects.filter(name=flowchart_name).exists():
+    if not Flowchart.objects.filter(id=flowchart_id).exists():
         return Response({'message': 'flowchart does not exists', 'error': True},
                         status=status.HTTP_400_BAD_REQUEST)
-    blocks = Block.objects.filter(flowchart__name=flowchart_name)
+    blocks = Block.objects.filter(flowchart__id=flowchart_id)
     for block in blocks:
         block.is_active = False
         block.is_approved = False
         block.save()
-    b = Block.objects.get(flowchart__name=flowchart_name, input_transition=None)
+    b = Block.objects.get(flowchart__id=flowchart_id, input_transition=None)
     b.is_active = True
     b.save()
-    transitions = Transition.objects.filter(flowchart__name=flowchart_name)
+    transitions = Transition.objects.filter(flowchart__id=flowchart_id)
     for tr in transitions:
         tr.is_approved = False
         tr.is_active = False
