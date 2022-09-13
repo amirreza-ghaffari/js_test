@@ -27,7 +27,7 @@ class Flowchart(models.Model):
 
     @property
     def get_absolute_url(self):
-        return reverse('flowchart:flowchart_view', kwargs={'name': self.name})
+        return reverse('flowchart:flowchart_view', kwargs={'pk': self.id})
 
     def clean(self):
         if self.location and self.primary:
