@@ -40,7 +40,7 @@ def active_block_on_transient_approve(sender, instance, **kwargs):
         end_block.save()
 
         if not end_block.is_conditional:
-            for user_id in end_block.user_groups.all().values_list('id', flat=True):
+            for user_id in end_block.user_groups.all().values_list('user__id', flat=True):
                 user = CustomUser.objects.get(id=user_id)
                 next_action_block = next_action(end_block, user)
                 random_text = user.rand_text + '_' + str(end_block.id)
