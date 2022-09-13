@@ -67,12 +67,12 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview" id="flowchart-list">
-                        <li class="nav-item">
-                            <a href="" class="nav-link">
-                                <i class="fas fa-user-friends nav-icon"></i>
-                                <p>Staff Strike</p>
-                            </a>
-                        </li>
+                        {#                        <li class="nav-item">#}
+                        {#                            <a href="" class="nav-link">#}
+                        {#                                <i class="fas fa-user-friends nav-icon"></i>#}
+                        {#                                <p>Staff Strike</p>#}
+                        {#                            </a>#}
+                        {#                        </li>#}
                     </ul>
                 </li>
 
@@ -95,12 +95,12 @@
                     </ul>
 
                     <ul class="nav nav-treeview" id="incident-list">
-                        <li class="nav-item">
-                            <a href="" class="nav-link">
-                                <i class="fas fa-user-friends nav-icon"></i>
-                                <p>Staff Strike - Gandhi</p>
-                            </a>
-                        </li>
+                        {#                        <li class="nav-item">#}
+                        {#                            <a href="" class="nav-link">#}
+                        {#                                <i class="fas fa-user-friends nav-icon"></i>#}
+                        {#                                <p>Staff Strike - Gandhi</p>#}
+                        {#                            </a>#}
+                        {#                        </li>#}
                     </ul>
                 </li>
 
@@ -120,25 +120,11 @@
                 <h3>Add New Incident</h3>
                 <label for="incidentLocation">Choose Location</label>
                 <select class="incidentLocation" id="incidentLocation">
-                    <option value="0">--Select Location--</option>
-                    <option value="Danesh">Danesh</option>
-                    <option value="Gandi">Gandi</option>
-                    <option value="Plaza">Plaza</option>
-                    <option value="Shad Abad">Shad Abad</option>
-                    <option value="Badamak">Badamak</option>
                 </select>
                 <label for="contingency_plan">Choose Contingency Plan</label>
                 <select class="incident" id="contingency_plan">
-                    <option value="0">--Select Contingency Plan--</option>
-                    <option value="1">People Protests</option>
-                    <option value="2">Cyber Security</option>
-                    <option value="3">Drivers & Staff Strike</option>
-                    <option value="4">Earthquake & Fire</option>
-                    <option value="5">Seller Strike</option>
-                    <option value="6">Server & Platforms Failure</option>
-                    <option value="7">Staff Strike</option>
                 </select>
-                <button class="submit">
+                <button class="submit" onclick="create()">
                     <div class="svg-wrapper-1">
                         <div class="svg-wrapper">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
@@ -148,7 +134,7 @@
                             </svg>
                         </div>
                     </div>
-                    <span>Submit</span>
+                    <span>Create</span>
                 </button>
             </form>
         </section>
@@ -256,8 +242,66 @@
                 });
             }
 
+            function createIncident() {
+                <!-- Add Plans -->
+                $.ajax({
+                    type: 'GET',
+                    dataType: "json",
+                    url: "/flowchart/api/v1/flowcharts/?primary=true",
+                    success: function (data, status, xhr) {
+                        incidentLocation = document.getElementById('contingency_plan')
+                        for (let i = 0; i < data.length; i++) {
+                            var option = document.createElement('option')
+                            option.innerHTML = data[i].name
+                            option.value = data[i].id
+                            incidentLocation.appendChild(option)
+                        }
+                    }
+                });
+                <!-- Add Locations -->
+                $.ajax({
+                    type: 'GET',
+                    dataType: "json",
+                    url: "/flowchart/api/v1/locations",
+                    success: function (data, status, xhr) {
+                        incidentLocation = document.getElementById('incidentLocation')
+                        for (let i = 0; i < data.length; i++) {
+                            var option = document.createElement('option')
+                            option.innerHTML = data[i].name
+                            option.value = data[i].id
+                            incidentLocation.appendChild(option)
+                        }
+                    }
+                });
+
+            }
+
+            function create() {
+                var location = document.getElementById('incidentLocation').value
+                var contingencyPlan = document.getElementById('contingency_plan').value
+                $.ajax({
+                    type: 'POST',
+                    dataType: "json",
+                    headers: {
+                        "X-CSRFToken": '{{ csrf_token }}'
+                    },
+                    data: {
+                        "primary_id": contingencyPlan,
+                        "location_id": location
+                    },
+                    url: "/flowchart/api/v1/new-flowchart/",
+                    success: function (data, status, xhr) {
+                        console.log(data)
+                        window.location.replace(data.url)
+
+                    }
+                });
+            }
+
             getPrimaryFlowcharts()
             getIncidentFlowcharts()
+            createIncident()
+
 
         </script>
 
