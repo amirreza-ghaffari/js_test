@@ -13,8 +13,7 @@ def flowchart_view(request, pk):
     try:
         flowchart = Flowchart.objects.get(pk=pk)
         context['flowchart_id'] = flowchart.id
-        temp = flowchart.name
-        context['flowchart_name'] = temp.replace('_', ' ').title()
+        context['flowchart_name'] = flowchart.__str__().title()
         blocks = Block.objects.filter(Q(is_approved=True) | Q(is_active=True)).order_by('-updated_date')
         blocks = blocks.filter(flowchart_id=flowchart.id)
         context['blocks'] = blocks
