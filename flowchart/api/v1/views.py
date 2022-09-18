@@ -53,6 +53,10 @@ def new_flowchart(request):
     primary_flowchart_id = request.data.get('primary_id')
     location_id = request.data.get('location_id')
 
+    if primary_flowchart_id == "0" or location_id == "0":
+        return Response({'message': 'please select a location and a plan', 'error': True},
+                        status=status.HTTP_400_BAD_REQUEST)
+
     try:
         primary_flowchart = Flowchart.objects.get(id=primary_flowchart_id, primary=True)
     except Flowchart.DoesNotExist:
@@ -63,7 +67,7 @@ def new_flowchart(request):
     except Location.DoesNotExist:
         return Response({'message': 'Location Does not Exists', 'error': True},
                         status=status.HTTP_404_NOT_FOUND)
-    if Flowchart.objects.filter(name=primary_flowchart.name, location=location_obj):
+    if Flowchart.objects.filter(name=primary_flowchart.name, location=location_obj).exists():
         return Response({'message': 'This Flowchart Already Exists', 'error': True},
                         status=status.HTTP_400_BAD_REQUEST)
 
