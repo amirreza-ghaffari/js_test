@@ -67,6 +67,8 @@ class BlockSerializer(serializers.ModelSerializer):
 
         if instance.is_active and not instance.is_conditional:
             representation['figure'] = "CreateRequest"
+        if len(instance.out_transition.all()) == 0:
+            representation['figure'] = "Ellipse"
 
         representation['fill'] = "beige"
         representation['thickness'] = 4
