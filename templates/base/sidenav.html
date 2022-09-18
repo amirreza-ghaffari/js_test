@@ -62,7 +62,7 @@
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-project-diagram"></i>
                         <p>
-                            Work Flows
+                            Contingency Plans
                             <i class="fas fa-angle-left right"></i>
                         </p>
                     </a>
@@ -120,9 +120,12 @@
                 <h3>Add New Incident</h3>
                 <label for="incidentLocation">Choose Location</label>
                 <select class="incidentLocation" id="incidentLocation">
+                    <option value="0">--Select Location--</option>
                 </select>
+
                 <label for="contingency_plan">Choose Contingency Plan</label>
                 <select class="incident" id="contingency_plan">
+                    <option value="0">--Select Contingency Plan--</option>
                 </select>
                 <button class="submit" onclick="create()">
                     <div class="svg-wrapper-1">
@@ -136,6 +139,10 @@
                     </div>
                     <span>Create</span>
                 </button>
+                <div id="incident-error" style="display:none;">
+                    <h1 style="text-align: center;color: crimson;font-size: 34px;font-weight: bold">Error:</h1>
+                    <p id="error-msg" style="text-align: center;color: white;background-color: crimson;font-size: 24px;border-radius: 15px">This contingency already exist !</p>
+                </div>
             </form>
         </section>
 
@@ -277,6 +284,8 @@
             }
 
             function create() {
+                var el = document.getElementById("incident-error")
+                el.style.display = "none"
                 var location = document.getElementById('incidentLocation').value
                 var contingencyPlan = document.getElementById('contingency_plan').value
                 $.ajax({
@@ -293,6 +302,14 @@
                     success: function (data, status, xhr) {
                         console.log(data)
                         window.location.replace(data.url)
+
+                    },
+                    error: function (xhr, status, error) {
+                        var obj = JSON.parse(xhr.responseText);
+                        var msgEl = document.getElementById("error-msg")
+                        msgEl.innerHTML = obj.message
+
+                        el.style.display = "block"
 
                     }
                 });
@@ -316,6 +333,7 @@
 
             section.incidentPage {
                 display: none;
+                border-radius: 15px;
                 width: 500px;
                 background-color: white;
                 z-index: 111;
