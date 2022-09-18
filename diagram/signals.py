@@ -40,14 +40,15 @@ def active_block_on_transient_approve(sender, instance, **kwargs):
         end_block.save()
 
         if not end_block.is_conditional:
-            for user_id in end_block.user_groups.all().values_list('user__id', flat=True):
-                user = CustomUser.objects.get(id=user_id)
-                next_action_block = next_action(end_block, user)
-                random_text = user.rand_text + '_' + str(end_block.id)
-                print('user:', user, 'block:', end_block.label, 'next_action: ', next_action_block)
+            for user_id in end_block.user_groups.all().values_list('user__id', flat=True).distinct():
+                if user_id:
+                    user = CustomUser.objects.get(id=user_id)
+                    next_action_block = next_action(end_block, user)
+                    random_text = user.rand_text + '_' + str(end_block.id)
+                    print('user:', user, 'block:', end_block, 'next_action: ', next_action_block)
 
-                # custom_send_email('salam', end_block.label, next_action, ['amirreza.ghaffari.d@gmail.com'],
-                #                   random_text)
+            #         custom_send_email('salam', end_block.label, next_action, ['h.pourhaji@digikala.com'],
+            #                           random_text)
 
 
 post_save.connect(active_block_on_transient_approve, sender=Transition)
