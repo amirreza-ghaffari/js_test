@@ -7,6 +7,239 @@
     <script src="{% static 'js/DrawCommandHandler.js' %}"></script>
     <script src="{% static 'js/figures.js' %}"></script>
 
+    <style>
+        section.edit-owner > i {
+            font-size: 30px;
+            color: red;
+            position: absolute;
+            right: 5px;
+            cursor: pointer;
+        }
+
+        section.edit-owner {
+            display: none;
+            border-radius: 15px;
+            width: 500px;
+            background-color: white;
+            z-index: 111;
+            position: fixed;
+            margin: 0 auto;
+            left: calc(50% - 250px);
+            top: 200px;
+            border: 1px solid black;
+            /*transition-duration: 0.5s;*/
+
+        }
+
+        form {
+            /*width: 80%;*/
+            /*background-color: wheat;*/
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        form > label {
+            display: block;
+            /*color: red;*/
+        {#font-family: Calibri;#} font-size: 18px;
+            margin-top: 30px;
+        }
+
+        select.groups {
+            display: block;
+            margin: 0 auto !important;
+            width: 400px;
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid black;
+            outline: none;
+        }
+
+        input[type='text'] {
+            display: block;
+            width: 400px;
+            margin: 0px auto;
+            padding: 5px;
+            box-sizing: border-box;
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid black;
+            outline: none;
+        }
+
+        /* From uiverse.io by @adamgiebl */
+        button.submit {
+            /*width: 150px;*/
+            height: 40px;
+            font-family: inherit;
+            font-size: 15px;
+            /*background: royalblue;*/
+            color: white;
+            padding: 0.7em 1em;
+            padding-left: 0.9em;
+            display: flex;
+            align-items: center;
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.2s;
+            background-color: green;
+            /*margin-top: 20px;*/
+            margin: 20px auto;
+
+        }
+
+        button.submit span {
+            display: block;
+            margin-left: 0.3em;
+            transition: all 0.3s ease-in-out;
+        }
+
+        button.submit svg {
+            display: block;
+            transform-origin: center center;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        button.submit:hover .svg-wrapper {
+            animation: fly-1 0.6s ease-in-out infinite alternate;
+        }
+
+        button.submit:hover svg {
+            transform: translateX(1.2em) rotate(45deg) scale(1.1);
+        }
+
+        button.submit:hover span {
+            transform: translateX(5em);
+            overflow-x: hidden;
+        }
+
+        button.submit:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes fly-1 {
+            from {
+                transform: translateY(0.1em);
+            }
+
+            to {
+                transform: translateY(-0.1em);
+            }
+        }
+
+        @media only screen and (max-width: 1000px) {
+            form {
+                /*width: 80%;*/
+                /*background-color: wheat;*/
+                margin: 0 auto;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+
+            form > label {
+                display: block;
+                /*color: red;*/
+            {#font-family: Calibri;#} font-size: 18px;
+                margin-top: 30px;
+            }
+
+            select.incident {
+                display: block;
+                margin: 0 auto !important;
+                width: 200px;
+                background-color: transparent;
+                border: none;
+                border-bottom: 1px solid black;
+                outline: none;
+            }
+
+            select.groups {
+                display: block;
+                margin: 0 auto !important;
+                width: 200px;
+                background-color: transparent;
+                border: none;
+                border-bottom: 1px solid black;
+                outline: none;
+            }
+
+            input[type='text'] {
+                display: block;
+                width: 200px;
+                margin: 0px auto;
+                padding: 5px;
+                box-sizing: border-box;
+                background-color: transparent;
+                border: none;
+                border-bottom: 1px solid black;
+                outline: none;
+            }
+
+            /* From uiverse.io by @adamgiebl */
+            button.submit {
+                /*width: 150px;*/
+                height: 40px;
+                font-family: inherit;
+                font-size: 15px;
+                /*background: royalblue;*/
+                color: white;
+                padding: 0.7em 1em;
+                padding-left: 0.9em;
+                display: flex;
+                align-items: center;
+                border: none;
+                border-radius: 16px;
+                overflow: hidden;
+                transition: all 0.2s;
+                background-color: green;
+                /*margin-top: 20px;*/
+                margin: 20px auto;
+
+            }
+
+            button.submit span {
+                display: block;
+                margin-left: 0.3em;
+                transition: all 0.3s ease-in-out;
+            }
+
+            button.submit svg {
+                display: block;
+                transform-origin: center center;
+                transition: transform 0.3s ease-in-out;
+            }
+
+            button.submit:hover .svg-wrapper {
+                animation: fly-1 0.6s ease-in-out infinite alternate;
+            }
+
+            button.submit:hover svg {
+                transform: translateX(1.2em) rotate(45deg) scale(1.1);
+            }
+
+            button.submit:hover span {
+                transform: translateX(5em);
+                overflow-x: hidden;
+            }
+
+            button.submit:active {
+                transform: scale(0.95);
+            }
+
+            @keyframes fly-1 {
+                from {
+                    transform: translateY(0.1em);
+                }
+
+                to {
+                    transform: translateY(-0.1em);
+                }
+            }
+        }
+    </style>
+
     <script id="code">
         var nodeDataArray = {};
         var linkDataArray = {};
@@ -662,6 +895,14 @@
                         approveBlock(data[i].key)
                     }
 
+                    var butt2 = document.createElement('button')
+                    butt2.classList = "btn Normal"
+                    butt2.classList.add("edit-owner-butt")
+                    butt2.style.color = 'green'
+                    butt2.innerHTML = "Edit"
+
+                    td2.appendChild(butt2)
+
                     td3.appendChild(butt)
 
                     tr.appendChild(td1)
@@ -858,7 +1099,6 @@
             }
         }
 
-
         getActivBlock()
         getActiveTransitions()
         getComments()
@@ -929,7 +1169,15 @@
 
             commentId = null;
         }
+
+        function editOwners() {
+            var ownerDiv = document.getElementById("edit-owner")
+            ownerDiv.style.display = "block"
+        }
+
+
     </script>
+
 
 {% endblock %}
 
@@ -942,132 +1190,164 @@
     </form>
 
     <div id="sample">
-        <div id="myDiagramDiv"
-             style="border: 1px solid black; background-color: rgb(255, 255, 255); width: 100%; height: 800px; position: relative; cursor: auto;">
-            <canvas tabindex="0"
-                    style="position: absolute; top: 10px; left: 0px;  z-index: 2; user-select: none; touch-action: none; width: 1054px; height: 598px; cursor: auto;"
-                    width="1054" height="598">This text is displayed if your browser does not support the Canvas HTML
-                element.
-            </canvas>
-            <div style="position: absolute; overflow: auto; width: 1054px; height: 598px; z-index: 1;">
-                <div style="position: absolute; width: 1px; height: 1px;"></div>
-            </div>
+    <div id="myDiagramDiv"
+         style="border: 1px solid black; background-color: rgb(255, 255, 255); width: 100%; height: 800px; position: relative; cursor: auto;">
+        <canvas tabindex="0"
+                style="position: absolute; top: 10px; left: 0px;  z-index: 2; user-select: none; touch-action: none; width: 1054px; height: 598px; cursor: auto;"
+                width="1054" height="598">This text is displayed if your browser does not support the Canvas HTML
+            element.
+        </canvas>
+        <div style="position: absolute; overflow: auto; width: 1054px; height: 598px; z-index: 1;">
+            <div style="position: absolute; width: 1px; height: 1px;"></div>
+        </div>
+    </div>
+
+    <button class="button" id="loadModel" onclick="load()">Load</button>
+    {#        <button id="saveModel" onclick="save()">Save</button>#}
+
+    <!-- Actions Card --->
+    <div class="card" id="action-table-card">
+        <div style="background-color: #BD1E51; text-align: center" class="card-header">
+            <h4 style="color: white">Active Actions</h4>
         </div>
 
-        <button class="button" id="loadModel" onclick="load()">Load</button>
-        {#        <button id="saveModel" onclick="save()">Save</button>#}
+        <div class="card-body">
+            <table id="action-table" class="table table-bordered table-striped" style="text-align: center">
+                <thead>
+                <tr>
+                    <th>Incident Name</th>
+                    <th>Owners</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody id="action-table-body">
+                <tr>
+                    <td>Trident</td>
+                    <td>Win 95+</td>
+                    <td>
+                        <button class="btn Normal" style="background-color: greenyellow"> Approve</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-        <!-- Actions Card --->
-        <div class="card" id="action-table-card">
-            <div style="background-color: #BD1E51; text-align: center" class="card-header">
-                <h4 style="color: white">Active Actions</h4>
-            </div>
 
-            <div class="card-body">
-                <table id="action-table" class="table table-bordered table-striped" style="text-align: center">
-                    <thead>
-                    <tr>
-                        <th>Incident Name</th>
-                        <th>Owners</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody id="action-table-body">
-                    <tr>
-                        <td>Trident</td>
-                        <td>Win 95+</td>
-                        <td>
-                            <button class="btn Normal" style="background-color: greenyellow"> Approve</button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+    <!-- Transitions Card --->
+    <div class="card" id="transient-table-card">
+        <div style="background-color: #BD1E51; text-align: center" class="card-header">
+            <h4 style="color: white">Choose Path</h4>
         </div>
 
+        <div class="card-body">
+            <table id="transient-table" class="table table-bordered table-striped" style="text-align: center">
+                <thead>
+                <tr>
+                    <th>PATH 1</th>
+                    <th>PATH 2</th>
+                </tr>
+                </thead>
+                <tbody id="transient-table-body">
 
-        <!-- Transitions Card --->
-        <div class="card" id="transient-table-card">
-            <div style="background-color: #BD1E51; text-align: center" class="card-header">
-                <h4 style="color: white">Choose Path</h4>
-            </div>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-            <div class="card-body">
-                <table id="transient-table" class="table table-bordered table-striped" style="text-align: center">
-                    <thead>
-                    <tr>
-                        <th>PATH 1</th>
-                        <th>PATH 2</th>
-                    </tr>
-                    </thead>
-                    <tbody id="transient-table-body">
 
-                    </tbody>
-                </table>
-            </div>
+    <!-- comment Card --->
+    <div class="card">
+        <div style="background-color: #BD1E51;text-align: center" class="card-header">
+            <h4 style="color: white">Comments and Messages</h4>
         </div>
 
+        <div class="card-body">
+            <table id="comment-table" class="table table-bordered table-striped" style="text-align: center">
+                <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                    <th>Updated Date</th>
+                    <th>User</th>
+                </tr>
+                </thead>
+                <tbody id="comment-table-body">
 
-        <!-- comment Card --->
-        <div class="card">
-            <div style="background-color: #BD1E51;text-align: center" class="card-header">
-                <h4 style="color: white">Comments and Messages</h4>
-            </div>
-
-            <div class="card-body">
-                <table id="comment-table" class="table table-bordered table-striped" style="text-align: center">
-                    <thead>
-                    <tr>
-                        <th>Subject</th>
-                        <th>Description</th>
-                        <th>Action</th>
-                        <th>Updated Date</th>
-                        <th>User</th>
-                    </tr>
-                    </thead>
-                    <tbody id="comment-table-body">
-
-                    </tbody>
-                </table>
-            </div>
-            <div class="card-body">
-                <div class="col">
+                </tbody>
+            </table>
+        </div>
+        <div class="card-body">
+            <div class="col">
 
 
-                    <div class="form-group">
-                        <label>Subject: </label>
-                        <input type="text" class="form-control" id="label-input" placeholder="Enter subject"
-                               style="margin: 0!important;border: 1px solid black!important;">
-                    </div>
-
-
-                    <div class="col-md-6" data-select2-id="29">
-                        <div class="form-group">
-                            <label>Choose Action: </label>
-                            <select class="form-control select2 select2-hidden-accessible"
-                                    style="width: 100%; border: 1px solid black!important"
-                                    data-select2-id="1" tabindex="-1" aria-hidden="true" id="select-body">
-                            </select>
-                        </div>
-                        <!-- /.form-group -->
-                    </div>
-                    <textarea class="form-control bg-white" type="text" name="text" id="text-comment"
-                              style="border: 1px solid black!important; resize: none"
-                              placeholder="Enter Your Comment ..."
-                              rows="5">Type your comment...</textarea>
-                    <br>
-                    <button class="btn btn-info" id="btn_comment" name="btn_comment" onclick="submitComment()"
-                            type="submit">Submit new Comment
-                    </button>
+                <div class="form-group">
+                    <label>Subject: </label>
+                    <input type="text" class="form-control" id="label-input" placeholder="Enter subject"
+                           style="margin: 0!important;border: 1px solid black!important;">
                 </div>
+
+
+                <div class="col-md-6" data-select2-id="29">
+                    <div class="form-group">
+                        <label>Choose Action: </label>
+                        <select class="form-control select2 select2-hidden-accessible"
+                                style="width: 100%; border: 1px solid black!important"
+                                data-select2-id="1" tabindex="-1" aria-hidden="true" id="select-body">
+                        </select>
+                    </div>
+                    <!-- /.form-group -->
+                </div>
+                <textarea class="form-control bg-white" type="text" name="text" id="text-comment"
+                          style="border: 1px solid black!important; resize: none"
+                          placeholder="Enter Your Comment ..."
+                          rows="5">Type your comment...</textarea>
+                <br>
+                <button class="btn btn-info" id="btn_comment" name="btn_comment" onclick="submitComment()"
+                        type="submit">Submit new Comment
+                </button>
             </div>
         </div>
+    </div>
 
 
-        {#      <textarea id="mySavedModel" style="width:100%;height:300px">#}
-        {#          {{ a }}#}
-        {#      </textarea>#}
+    {#      <textarea id="mySavedModel" style="width:100%;height:300px">#}
+    {#          {{ a }}#}
+    {#      </textarea>#}
 
+    <section class="edit-owner">
+        <i class="fa fa-times" aria-hidden="true"></i>
+        <form action="#" enctype="multipart/form-data">
+            <h3>Edit Groups</h3>
+            <label for="groups">Choose Location</label>
+            <select class="groups" id="groups" multiple>
+                <option value="0">Select Location</option>
+                <option value="0">CEO</option>
+                <option value="0">ADMINS</option>
+            </select>
+
+            <button class="submit">
+                <div class="svg-wrapper-1">
+                    <div class="svg-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                            <path fill="none" d="M0 0h24v24H0z"></path>
+                            <path fill="currentColor"
+                                  d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <span>Edit</span>
+            </button>
+        </form>
+    </section>
 
 
 {% endblock %}
+
+
+
+
+
+
+
