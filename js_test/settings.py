@@ -186,3 +186,5 @@ FROM_PWD = 'yndsxanmvigmgkae'
 SMTP_SERVER = "imap.gmail.com"
 SMTP_PORT = 993
 
+
+SMS_PANEL_PASSWORD = 'Basic ZGlnaV9IUi9kaWdpa2FsYTpIR1BEU0lOTmxwQXRjeVlL'

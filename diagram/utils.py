@@ -1,3 +1,5 @@
+import requests
+import json
 from .models import Block
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
@@ -33,6 +35,28 @@ def next_action(block, user):
     return None
 
 
+def send_sms(phone_number, message):
+    url = "https://sms.magfa.com/api/http/sms/v2/send"
+
+    payload = json.dumps({
+        "senders": [
+            "98300061930014"
+        ],
+        "recipients": [
+            phone_number
+        ],
+        "messages": [
+            message
+        ]
+    })
+    headers = {
+        'Authorization': settings.SMS_PANEL_PASSWORD,
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    return response.text
 
 
 
