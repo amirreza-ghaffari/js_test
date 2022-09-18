@@ -37,7 +37,7 @@ class Flowchart(models.Model):
 
     def __str__(self):
         if self.primary:
-            return self.name + ' - primary'
-        return self.name + ' - ' + str(self.location)
+            return self.name.replace('_', ' ') + ' - primary'
+        return self.name.replace('_', ' ') + ' - ' + str(self.location)
 
 

@@ -7,7 +7,13 @@ User = get_user_model()
 class FlowchartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Flowchart
-        fields = ['id', 'name', 'get_absolute_url']
+        fields = ['id', 'get_absolute_url', '__str__']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['name'] = representation['__str__']
+        representation.pop('__str__')
+        return representation
 
 
 class LocationSerializer(serializers.ModelSerializer):
