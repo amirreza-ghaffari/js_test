@@ -943,6 +943,22 @@
             ownerDiv.style.display = "block"
         }
 
+        function resetFlowchart() {
+            $.ajax({
+                type: 'POST',
+                dataType: "json",
+                url: "/flowchart/api/v1/reset-flowchart/",
+                headers: {
+                    "X-CSRFToken": '{{ csrf_token }}'
+                },
+
+                data: {'flowchart_id': {{flowchart_id}}},
+                success: function (data, status, xhr) {
+                    load();
+                }
+            });
+        }
+
 
     </script>
 
@@ -972,6 +988,11 @@
 
     <button class="button" id="loadModel" onclick="load()">Load</button>
     {#        <button id="saveModel" onclick="save()">Save</button>#}
+
+    <div style="text-align: center; height: 50px">
+        <button type="button" class="btn btn-primary" onclick="resetFlowchart()">Reset Flowchart</button>
+    </div>
+
 
     <!-- Actions Card --->
     <div class="card" id="action-table-card">
@@ -1070,7 +1091,7 @@
                 <textarea class="form-control bg-white" type="text" name="text" id="text-comment"
                           style="border: 1px solid black!important; resize: none"
                           placeholder="Enter Your Comment ..."
-                          rows="5">Type your comment...</textarea>
+                          rows="5"></textarea>
                 <br>
                 <button class="btn btn-info" id="btn_comment" name="btn_comment" onclick="submitComment()"
                         type="submit">Submit new Comment
