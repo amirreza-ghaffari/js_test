@@ -7,27 +7,95 @@
 
 {% block  content %}
 
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li style="text-align: center;color: red;width: 500px;font-weight: bold" {% if message.tags %}
+                    class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="col">
+        <div class="card">
+            <div style="background-color: #6fc7c3" class="card-header ">
+                <h1 class="card-title primary">Create Member</h1>
+                <p class="card-category"></p>
+            </div>
+
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div style="alignment: center" class="form-group row">
+                        <div class="col-sm-4">
+                            <label for="first-name">First Name</label>
+                            <input type="text" name="first_name" id="first-name" class="form-control"
+                                   value="{% if form.first_name.value %} {{ form.first_name.value }} {% endif %}">
+                            <span class="help-block">{{ form.errors.first_name }}</span>
+                            <br>
+                            <label for="last-name">First Name</label>
+                            <input type="text" name="last_name" id="last-name" class="form-control"
+                                   value="{% if form.last_name.value %} {{ form.last_name.value }} {% endif %}">
+                            <span class="help-block">{{ form.errors.last_name }}</span>
+                            <br>
+                            <label for="myfile">Profile Image</label>
+                            <input type="file" name="profile_image" id="myfile" class="form-control"
+                                   value="{% if form.profile_image.value %} {{ form.profile_image.value }} {% endif %}">
+                            <span class="help-block">{{ form.errors.profile_image }}</span>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="email">Email</label>
+                            <input type="email" name="email" id="email" class="form-control"
+                                   value="{% if form.email.value %} {{ form.email.value }} {% endif %}">
+                            <span class="help-block">{{ form.errors.email }}</span>
+                            <br>
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" name="mobile_number" id="phone" class="form-control"
+                                   value="{% if form.mobile_number.value %} {{ form.mobile_number.value }} {% endif %}">
+                            <span class="help-block">{{ form.errors.mobile_number }}</span>
+
+                            <span class="help-block"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="row col-12">
+                        <button type="submit" class="btn btn-primary">Add Contact</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
     <!-- Default box -->
     <div class="card card-solid">
         <div class="card-body pb-0">
             <div class="row">
-                {% for user in object_list %}
+                {% for member in object_list %}
                     <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
                         <div class="card bg-light d-flex flex-fill">
                             <div class="card-header text-muted border-bottom-0">
-                                {{ user.department }}
+                                {{ member.department }}
                             </div>
                             <div class="card-body pt-0">
                                 <div class="row">
                                     <div class="col-7">
-                                        <h2 class="lead"><b>{{ user.full_name }}</b></h2>
-                                        <p class="text-muted text-sm"><b>Email: </b> {{ user.email }}</p>
-                                        <p class="text-muted text-sm"><b>Phone Number: </b> {{ user.mobile_number }}</p>
+                                        <h2 class="lead"><b>{{ member.full_name }}</b></h2>
+                                        <p class="text-muted text-sm"><b>Email: </b> {{ member.email }}</p>
+                                        <p class="text-muted text-sm"><b>Phone Number: </b> {{ member.mobile_number }}</p>
                                     </div>
                                     <div class="col-5 text-center">
-                                        <img src="{{ user.profile_image.url }}" alt="user-avatar"
-                                             class="img-circle img-fluid" style="border-radius: 50%!important; width: 150px; height: 150px; object-fit: fill">
+                                        <img src="{{ member.profile_image.url }}" alt="user-avatar"
+                                             class="img-circle img-fluid"
+                                             style="border-radius: 50%!important; width: 150px; height: 150px; object-fit: fill">
                                     </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="text-right">
+                                    <a href="{% url 'users:save_member_session' member.id %}" class="btn btn-sm bg-teal">
+                                        <i class="fas fa-comments"> Send SMS</i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
