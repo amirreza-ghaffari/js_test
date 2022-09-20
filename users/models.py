@@ -34,9 +34,14 @@ def get_profile_image_filepath(self, filename):
 def get_default_profile_image():
     return "default_images/user-profile-default.png"
 
+
+def get_member_profile_image_filepath(self, filename):
+    return 'member_profile_images'
+
+
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
-    mobile_number = models.CharField(max_length=11, null=True, blank=False, validators=[validate_phone_number])
+    mobile_number = models.CharField(max_length=11, null=True, blank=False, validators=[validate_phone_number], unique=True)
     first_name = models.CharField(max_length=256, null=True, blank=False)
     last_name = models.CharField(max_length=256, null=True, blank=False)
     is_staff = models.BooleanField(default=False)
@@ -68,3 +73,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         # Add verbose name
         verbose_name = 'User'
 
+
+class Member(models.Model):
+    email = models.EmailField(_('email address'), unique=True)
+    mobile_number = models.CharField(max_length=11, null=True, blank=False, validators=[validate_phone_number])
+    first_name = models.CharField(max_length=256, null=True, blank=False)
+    last_name = models.CharField(max_length=256, null=True, blank=False)
+    profile_image = models.ImageField(upload_to='member_profile_images/', null=False, blank=False,
+                                      default=get_default_profile_image)
+
+    def __str__(self):
+        return self.last_name + ' - ' + self.first_name
