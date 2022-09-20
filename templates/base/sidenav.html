@@ -47,9 +47,15 @@
                     <i class="nav-icon fas fa-tachometer-alt "></i>
                     <p class="nav-item">
                         Dashboard
-
                     </p>
                 </a>
+                <a href="{% url 'users:sms-panel' %}" class="nav-link">
+                    <i class="nav-icon fas fa-send"></i>
+                    <p class="nav-item">
+                        Send Email/SMS
+                    </p>
+                </a>
+
                 <a href="{% url 'users:contacts' %}" class="nav-link">
                     <i class="nav-icon fas fa-phone "></i>
                     <p class="nav-item">
@@ -141,7 +147,9 @@
                 </button>
                 <div id="incident-error" style="display:none;">
                     <h1 style="text-align: center;color: crimson;font-size: 34px;font-weight: bold">Error:</h1>
-                    <p id="error-msg" style="text-align: center;color: white;background-color: crimson;font-size: 24px;border-radius: 15px">This contingency already exist !</p>
+                    <p id="error-msg"
+                       style="text-align: center;color: white;background-color: crimson;font-size: 24px;border-radius: 15px">
+                        This contingency already exist !</p>
                 </div>
             </form>
         </section>
