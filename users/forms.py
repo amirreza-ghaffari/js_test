@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import get_user_model
+from .models import Member
 
 user = get_user_model()
 
@@ -40,3 +41,12 @@ class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = user
         fields = ('email',)
+
+class MemberForm(forms.ModelForm):
+    class Meta:
+        model = Member
+        fields = '__all__'
+        # widgets = {
+        #     'first_name': forms.TextInput(attrs={'class': 'form-control', 'border': '1px solid black !important'}),
+        #     'email': forms.TextInput(attrs={'class': 'form-control', 'border': '1px solid black'}),
+        # }
