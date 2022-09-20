@@ -1,14 +1,17 @@
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login
-from .forms import LoginForm
+from .forms import LoginForm, MemberForm
 from django.views.generic.list import ListView
 from django.shortcuts import render
-from users.models import CustomUser
+from users.models import CustomUser, Member
 from diagram.models import Block
 from django.shortcuts import get_object_or_404
 from diagram.models import Comment
+from django.core.paginator import Paginator, EmptyPage
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
-
+@login_required(login_url='users:login')
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('index:dashboard')
@@ -33,15 +36,25 @@ def login_view(request):
 
 class ContactListView(ListView):
 
-    model = CustomUser
+    model = Member
     paginate_by = 9  # if pagination is desired
     template_name = 'users/contacts.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['form'] = MemberForm()
         return context
 
+    def post(self, request):
+        form = MemberForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect(request.META['HTTP_REFERER'])
+        else:
+            messages.error(request,  'The Email field or Phone number field is not correct' )
+            return redirect(request.META['HTTP_REFERER'])
 
+@login_required(login_url='users:login')
 def mail_response_view(request, random_text):
 
     context = {'state': False}
@@ -71,3 +84,23 @@ def mail_response_view(request, random_text):
         comment.save()
     context['state'] = True
     return render(request, 'users/email_response.html', context)
+
+
+@login_required(login_url='users:login')
+def sms_panel_view(request):
+    context = {}
+    saved_member_id = request.session.get("member_id")
+    if saved_member_id:
+        context['saved_member'] = Member.objects.filter(id=saved_member_id)
+        context['saved_member_id'] = saved_member_id
+    print(context)
+    members = Member.objects.all()
+    context['members'] = members
+
+    return render(request, 'users/send_sms.html', context)
+
+
+@login_required(login_url='users:login')
+def save_member_session(request, member_id):
+    request.session["member_id"] = member_id
+    return redirect('users:sms-panel')
