@@ -92,7 +92,7 @@ def sms_panel_view(request):
     saved_member_id = request.session.get("member_id")
     if saved_member_id:
         context['saved_member'] = Member.objects.filter(id=saved_member_id)
-        context['saved_member_id'] = saved_member_id
+        context['saved_member_id'] = int(saved_member_id)
     print(context)
     members = Member.objects.all()
     context['members'] = members

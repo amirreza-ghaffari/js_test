@@ -6,11 +6,10 @@ from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 
 
-def custom_send_email(message, current_action, next_action, to_email_list, random_text, subject='BCM Management'):
+def custom_send_email(context, to_email_list, subject='BCM Management', template_address='email/rac/rac.html'):
 
-    context = {'current_action': current_action, 'next_action': next_action, 'random_text': random_text}
-    message = render_to_string('email/rac/rac.html', context=context)
-    email = EmailMultiAlternatives(subject, message, settings.EMAIL_HOST_USER, to_email_list)
+    template = render_to_string(template_address, context=context)
+    email = EmailMultiAlternatives(subject, template, settings.EMAIL_HOST_USER, to_email_list)
     email.content_subtype = 'html'  # this is required because there is no plain text email version
     email.send(fail_silently=False)
 

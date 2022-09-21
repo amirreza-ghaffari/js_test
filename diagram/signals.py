@@ -46,9 +46,8 @@ def active_block_on_transient_approve(sender, instance, **kwargs):
                     next_action_block = next_action(end_block, user)
                     random_text = user.rand_text + '_' + str(end_block.id)
                     print('user:', user, 'block:', end_block, 'next_action: ', next_action_block)
-
-            #         custom_send_email('salam', end_block.label, next_action, ['h.pourhaji@digikala.com'],
-            #                           random_text)
+                    context = {'current_action': end_block.label, 'next_action': next_action, 'random_text': random_text}
+                    # custom_send_email(context, ['h.pourhaji@digikala.com'])
 
 
 post_save.connect(active_block_on_transient_approve, sender=Transition)

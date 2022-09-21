@@ -3,7 +3,7 @@
 
 
 {% block dashboard %}
-Send Message
+    Send Message
 {% endblock %}
 
 
@@ -16,13 +16,16 @@ Send Message
         <div class="row">
             <!-- /.col -->
             <div class="col-md-6">
+
                 <div class="form-group">
                     <select class="select2 select2-hidden-accessible" multiple="" data-placeholder="Select a Member"
                             style="width: 100%;" data-select2-id="7" tabindex="-1" aria-hidden="true"
                             id="select-members">
                         {% for member in members %}
-                            <option value="{{ member.id }}">{{ member.last_name }}</option>
+                            <option value="{{ member.id }}"
+                                    {% if saved_member_id == member.id %}selected{% endif %}>{{ member.last_name }}</option>
                         {% endfor %}
+
                     </select>
                 </div>
                 <!-- /.form-group -->
@@ -35,7 +38,8 @@ Send Message
                   rows="5"></textarea>
         <br>
         <button class="btn btn-outline-primary" type="submit" onclick="sendSMS()">Send SMS</button>
-        <button class="btn btn-outline-secondary" type="submit">Send Email</button>
+        <button class="btn btn-outline-secondary" type="submit" onclick="sendEmail()" >Send Email</button>
+        </form>
         <!-- /.row -->
 
     </div>
@@ -51,6 +55,29 @@ Send Message
                 type: 'POST',
                 dataType: "json",
                 url: "/users/api/v1/send-custom-sms/",
+                headers: {
+                    "X-CSRFToken": '{{ csrf_token }}'
+                },
+
+                data: {
+                    'members': JSON.stringify(selectedMembers),
+                    'message': message.value,
+                },
+                success: function (data, status, xhr) {
+                    console.log('send')
+                },
+            });
+        }
+
+        function sendEmail() {
+            var selectedMembers = [];
+            var message = document.getElementById("text-message");
+            selectedMembers = $('#select-members').val();
+            console.log(selectedMembers)
+            $.ajax({
+                type: 'POST',
+                dataType: "json",
+                url: "/users/api/v1/send-custom-email/",
                 headers: {
                     "X-CSRFToken": '{{ csrf_token }}'
                 },
