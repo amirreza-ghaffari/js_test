@@ -1,6 +1,6 @@
 {% extends 'base/base.html' %}
 {% load static %}
-{% block title %} Flowchart {% endblock %}
+{% block title %} {{ flowchart_name }} {% endblock %}
 
 {% block head %}
     <script src="{% static 'js/go.js' %}"></script>
@@ -967,7 +967,11 @@
 
 {% endblock %}
 
-{% block dashboard %} {{ flowchart_name }} {% endblock %}
+{% block dashboard %}
+    {{ flowchart_name }}
+    <h5>Created at: {{ last_modified }}</h5>
+
+{% endblock %}
 
 {% block content %}
     <!-- for CSRF Token -->

@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.urls import reverse
 
 
@@ -21,6 +22,7 @@ class Flowchart(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True, blank=True)
     primary = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
+    updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ('name', 'location')
@@ -39,5 +41,11 @@ class Flowchart(models.Model):
         if self.primary:
             return self.name.replace('_', ' ') + ' - primary'
         return self.name.replace('_', ' ') + ' - ' + str(self.location)
+
+    @property
+    def last_modified(self):
+        if self.updated_date:
+            return naturaltime(self.updated_date)
+        return None
 
 
