@@ -955,6 +955,8 @@
                 data: {'flowchart_id': {{flowchart_id}}},
                 success: function (data, status, xhr) {
                     load();
+                    getActivBlock()
+                    getActiveTransitions()
                 }
             });
         }
