@@ -35,16 +35,15 @@ def next_action(block, user):
     return None
 
 
-def send_sms(phone_number, message):
+def send_sms(phone_number_lst, message):
     url = "https://sms.magfa.com/api/http/sms/v2/send"
 
     payload = json.dumps({
         "senders": [
             "98300061930014"
         ],
-        "recipients": [
-            phone_number
-        ],
+        "recipients":
+            phone_number_lst,
         "messages": [
             message
         ]

@@ -25,11 +25,8 @@ def sens_sms_view(request):
     members_id = [int(x) for x in members_id]
 
     message = request.data.get('message')
-    members = Member.objects.filter(id__in=members_id)
-    for member in members:
-        print('send', member.mobile_number)
-        x = send_sms(phone_number=member.mobile_number, message=message)
-        print(x)
+    members_mobile_lst = list(Member.objects.filter(id__in=members_id).values_list('mobile_number', flat=True))
+    x = send_sms(phone_number_lst=members_mobile_lst, message=message)
     return Response({'message': 'send'}, status=status.HTTP_200_OK)
 
 
