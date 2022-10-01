@@ -10,6 +10,12 @@
 
 {% block content %}
 
+    <div id="message-result" style="display:none; width: 30%">
+        <p id="text-result"
+           style="text-align: center;color: white;background-color: crimson;font-size: 24px;border-radius: 5px;">
+            This contingency already exist !</p>
+    </div>
+
 
 
     <div class="card-body">
@@ -38,7 +44,7 @@
                   rows="5"></textarea>
         <br>
         <button class="btn btn-outline-primary" type="submit" onclick="sendSMS()">Send SMS</button>
-        <button class="btn btn-outline-secondary" type="submit" onclick="sendEmail()" >Send Email</button>
+        <button class="btn btn-outline-secondary" type="submit" onclick="sendEmail()">Send Email</button>
         </form>
         <!-- /.row -->
 
@@ -46,10 +52,12 @@
 
 
     <script>
+        var resultMsg = document.getElementById("message-result");
+        var msg = document.getElementById("text-result")
+
         function sendSMS() {
-            var selectedMembers = [];
             var message = document.getElementById("text-message");
-            selectedMembers = $('#select-members').val();
+            var selectedMembers = $('#select-members').val();
             console.log(selectedMembers)
             $.ajax({
                 type: 'POST',
@@ -64,16 +72,22 @@
                     'message': message.value,
                 },
                 success: function (data, status, xhr) {
-                    console.log('send')
+                    msg.style.backgroundColor = 'green'
+                    msg.innerHTML = data.message
+                    resultMsg.style.display = "block"
                 },
+                error: function (xhr, status, error) {
+                    msg.style.backgroundColor = 'red'
+                    msg.innerHTML = data.message
+                    resultMsg.style.display = "block"
+                }
             });
         }
 
         function sendEmail() {
-            var selectedMembers = [];
+
             var message = document.getElementById("text-message");
-            selectedMembers = $('#select-members').val();
-            console.log(selectedMembers)
+            var selectedMembers = $('#select-members').val();
             $.ajax({
                 type: 'POST',
                 dataType: "json",
@@ -87,8 +101,15 @@
                     'message': message.value,
                 },
                 success: function (data, status, xhr) {
-                    console.log('send')
+                    msg.style.backgroundColor = 'green'
+                    msg.innerHTML = data.message
+                    resultMsg.style.display = "block"
                 },
+                error: function (xhr, status, error) {
+                    msg.style.backgroundColor = 'red'
+                    msg.innerHTML = data.message
+                    resultMsg.style.display = "block"
+                }
             });
         }
 
