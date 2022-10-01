@@ -18,15 +18,10 @@ urlpatterns = [
 
 
     # ----------- History ----------
-
-    path('history/', views.history_api, name='history'),
-    path('his/', views.his, name='history'),
+    path('block-history/<str:pk>/', views.BlockHistory.as_view({'get': 'retrieve'})),
 
     path('history_diff/<str:pk>/', views.HistoryChangeView.as_view({'get': 'retrieve'}), name='his_diff'),
-
-
-
-    path('test/', views.test, name='test'),
+    path('comment-history/<str:pk>/', views.CommentHistory.as_view({'get': 'retrieve'})),
 
 
     # ---------- Comment -----------

@@ -51,21 +51,6 @@ class TransitionViewSet(ModelViewSet):
         return Transition.objects.all()
 
 
-@api_view(['GET'])
-def history_api(request):
-
-    blocks = Block.objects.all()
-    serializer = HistorySerializer(blocks, many=True)
-
-    return Response(serializer.data)
-
-
-@api_view(['GET'])
-def his(request):
-    serializer = CustomerHistorySerializer(Block.history.all().order_by('-history_date').filter(Q(is_approved=True) | Q(is_active=True)), many=True, read_only=True)
-    return Response(serializer.data)
-
-
 class HistoryChangeView(ViewSet):
 
     permission_classes = [IsAuthenticated]
@@ -85,7 +70,72 @@ class HistoryChangeView(ViewSet):
             z = {'changes': data, 'user': user, 'change_date': naturaltime(change_date)}
             return Response(z, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'this object has no history change'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'this object has no history_change change'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class BlockHistory(ViewSet):
+
+    # permission_classes = [IsAuthenticated]
+    serializer_class = Custom2
+    queryset = Flowchart.objects.all()
+
+    def retrieve(self, request, pk=None):
+        t = {}
+        flowchart = get_object_or_404(self.queryset, pk=pk)
+        blocks = Block.objects.filter(flowchart=flowchart).order_by('-updated_date')
+        print(blocks)
+        for block in blocks:
+            histories = block.history.all()
+            if len(histories) > 1:
+                new_record, old_record = block.history.all()[0:2]
+                delta = new_record.diff_against(old_record, included_fields=['is_approved', 'is_active', 'label'])
+                if len(delta.changes) > 1:
+                    serializer = self.serializer_class(delta.changes, many=True)
+                    data = serializer.data
+                    user = new_record.history_user.email
+                    change_date = new_record.history_date
+                    z = {'changes': data, 'user': user, 'change_date': change_date}
+                    t[block.label] = z
+        if len(t) > 0:
+            return Response(t, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'this object has no history_change change'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class CommentHistory(ViewSet):
+
+    # permission_classes = [IsAuthenticated]
+    serializer_class = Custom2
+    queryset = Flowchart.objects.all()
+
+    def retrieve(self, request, pk=None):
+        t = {}
+        flowchart = get_object_or_404(self.queryset, pk=pk)
+        blocks = Block.objects.filter(flowchart=flowchart)
+        comments = Comment.objects.filter(block__in=blocks)
+        for comment in comments:
+            z = {'block': comment.block.label, 'label': comment.label, 'text': comment.text, 'author': comment.author.full_name, 'date': comment.updated_date}
+            if len(comment.history.all()) > 1:
+                new_record, old_record = comment.history.all()[0:2]
+                delta = new_record.diff_against(old_record, included_fields=['text'])
+                if len(delta.changes) > 1:
+                    serializer = self.serializer_class(delta.changes, many=True)
+                    data = serializer.data
+                    user = new_record.history_user.full_name
+                    change_date = new_record.history_date
+                    z['changes'] = {'changes': data, 'user': user, 'change_date': change_date}
+            t[comment.id] = z
+        if len(t) > 0:
+            return Response(t, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'this object has no history_change change'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+
+
+
+
 
 @api_view(['GET'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
@@ -102,20 +152,6 @@ def active_transitions(request, flowchart_id):
     transient = Transition.objects.filter(is_active=True, flowchart_id=flowchart_id)
     serializer = TransitionSerializer(transient, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-
-# @api_view(['GET'])
-# @authentication_classes([SessionAuthentication, BasicAuthentication])
-# @permission_classes([IsAuthenticated])
-# def active_transition(request):
-#     transition = Transition.objects.get(is_active=True)
-#     return Response({'data': {'height': block.loc_height, 'length': block.loc_length}}, status=status.HTTP_200_OK)
-
-
-@api_view(['GET'])
-def test(request):
-     return Response({'x': [10,11,2,7], 'y': [20,4,7,10], 'z': [4,1,8,12]})
 
 
 class CommentViewSet(ModelViewSet):
