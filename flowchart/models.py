@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.urls import reverse
+from jsonfield import JSONField
 
 
 class Location(models.Model):
@@ -47,5 +48,15 @@ class Flowchart(models.Model):
         if self.updated_date:
             return naturaltime(self.updated_date)
         return None
+
+
+class HistoryChange(models.Model):
+        flowchart = models.ForeignKey(Flowchart, on_delete=models.CASCADE)
+        comment_history = JSONField(default=dict)
+        block_history = JSONField(default=dict)
+        initial_date = models.DateTimeField(auto_now=True)
+
+        def __str__(self):
+            return self.flowchart.name + str(self.initial_date)
 
 
