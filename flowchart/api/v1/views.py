@@ -1,7 +1,7 @@
 from django.db.models import Count, Q, Sum
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from flowchart.models import Flowchart, Location
+from flowchart.models import Flowchart, Location, HistoryChange
 from diagram.models import Block, Transition
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -9,6 +9,8 @@ from .serializers import FlowchartSerializer, LocationSerializer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
 from django.urls import reverse
+import requests
+import json
 
 
 class FlowchartViewSet(viewsets.ModelViewSet):
@@ -104,8 +106,8 @@ def new_flowchart(request):
 
 
 @api_view(['Post'])
-@authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
+# @authentication_classes([SessionAuthentication, BasicAuthentication])
+# @permission_classes([IsAuthenticated])
 def reset_flowchart(request):
     flowchart_id = request.data.get('flowchart_id')
     if not flowchart_id:
@@ -130,4 +132,39 @@ def reset_flowchart(request):
         tr.save()
     return Response({'message': 'Flowchart rested successfully', 'error': False}, status=status.HTTP_200_OK)
 
+@api_view(['Post'])
+def end_incident(request):
 
+    flowchart_id = request.data.get('flowchart_id')
+    if not flowchart_id:
+        return Response({'message': 'flowchart_id must be included', 'error': True},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        flowchart = Flowchart.objects.get(id=flowchart_id)
+    except Flowchart.DoesNotExist:
+        return Response({'message': 'flowchart does not exists', 'error': True},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    url = "http://127.0.0.1:8000/diagram/api/v1/block-history/1/"
+    response = requests.request("GET", url)
+    block_history = json.loads(response.text)
+
+    url = "http://127.0.0.1:8000/diagram/api/v1/comment-history/1/"
+    response = requests.request("GET", url)
+    comment_history = json.loads(response.text)
+
+    url = "http://127.0.0.1:8000/flowchart/api/v1/reset-flowchart/"
+    payload = json.dumps({
+        "flowchart_id": 1
+    })
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+
+    h = HistoryChange(flowchart=flowchart, comment_history=comment_history, block_history=block_history, initial_date=flowchart.updated_date)
+    h.save()
+
+    return Response({"message": "ok"}, status=status.HTTP_200_OK)

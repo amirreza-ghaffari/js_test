@@ -14,4 +14,8 @@ urlpatterns = [
 
     # ----------New Flowchart -------
     path('new-flowchart/', views.new_flowchart, name='new-flowchart'),
+
+    # ----------End Flowchart --------
+    path('EndIncident/', views.end_incident, name='End-Incident'),
+
 ]
