@@ -14,16 +14,15 @@ import ast
 def send_sms_api(request):
     members_id = request.data.get('members')
     members_id = ast.literal_eval(members_id)
-    print(members_id)
     members_id = [int(x) for x in members_id]
 
     message = request.data.get('message')
     members_mobile_lst = list(Member.objects.filter(id__in=members_id).values_list('mobile_number', flat=True))
     try:
         x = send_sms(phone_number_lst=members_mobile_lst, message=message)
-        return Response({'message': 'send'}, status=status.HTTP_200_OK)
+        return Response({'message': 'message sent'}, status=status.HTTP_200_OK)
     except:
-        return Response({'message': 'send'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({'message': 'could not send message'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])
@@ -37,19 +36,7 @@ def send_email_api(request):
 
         message = request.data.get('message')
         members_email_lst = list(Member.objects.filter(id__in=members_id).values_list('email', flat=True))
-        print('inja')
         custom_send_email({'message': message}, members_email_lst, template_address='email/mail2.html')
-        print('unja')
-        return Response({'message': 'send'}, status=status.HTTP_200_OK)
+        return Response({'message': 'message sent'}, status=status.HTTP_200_OK)
     except:
-        return Response({'message': 'send'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-
-
-
-
-
-
-
+        return Response({'message': 'could not send message'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

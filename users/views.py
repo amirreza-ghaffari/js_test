@@ -97,7 +97,7 @@ def sms_panel_view(request):
     members = Member.objects.all()
     context['members'] = members
 
-    return render(request, 'users/send_sms.html', context)
+    return render(request, 'users/send_message.html', context)
 
 
 @login_required(login_url='users:login')
