@@ -954,9 +954,10 @@
 
                 data: {'flowchart_id': {{flowchart_id}}},
                 success: function (data, status, xhr) {
-                    load();
+                    load()
                     getActivBlock()
                     getActiveTransitions()
+                    getComments()
                 }
             });
         }
@@ -997,7 +998,9 @@
 
     <div style="text-align: center; height: 50px">
         <button type="button" class="btn btn-primary" onclick="resetFlowchart()">Reset Flowchart</button>
+        <button type="button" class="btn btn-secondary">End Incident</button>
     </div>
+
 
 
     <!-- Actions Card --->
