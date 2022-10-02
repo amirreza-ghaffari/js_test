@@ -121,7 +121,9 @@ def reset_flowchart(request):
     for block in blocks:
         block.is_active = False
         block.is_approved = False
+        block.block_comment.all().delete()
         block.save()
+
     b = Block.objects.get(flowchart__id=flowchart_id, input_transition=None)
     b.is_active = True
     b.save()
@@ -133,6 +135,8 @@ def reset_flowchart(request):
     return Response({'message': 'Flowchart rested successfully', 'error': False}, status=status.HTTP_200_OK)
 
 @api_view(['Post'])
+# @authentication_classes([SessionAuthentication, BasicAuthentication])
+# @permission_classes([IsAuthenticated])
 def end_incident(request):
 
     flowchart_id = request.data.get('flowchart_id')
@@ -146,25 +150,33 @@ def end_incident(request):
         return Response({'message': 'flowchart does not exists', 'error': True},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    url = "http://127.0.0.1:8000/diagram/api/v1/block-history/1/"
+    url = "http://127.0.0.1:8000/diagram/api/v1/block-history/" + str(flowchart_id) + "/"
     response = requests.request("GET", url)
-    block_history = json.loads(response.text)
+    print(response.text)
+    if response.status_code == 200:
+        block_history = json.loads(response.text)
+    else:
+        block_history = {}
 
-    url = "http://127.0.0.1:8000/diagram/api/v1/comment-history/1/"
+    url = "http://127.0.0.1:8000/diagram/api/v1/comment-history/" + str(flowchart_id) + "/"
     response = requests.request("GET", url)
-    comment_history = json.loads(response.text)
+    print(response.text)
+    if response.status_code == 200:
+        comment_history = json.loads(response.text)
+    else:
+        comment_history = {}
 
     url = "http://127.0.0.1:8000/flowchart/api/v1/reset-flowchart/"
     payload = json.dumps({
-        "flowchart_id": 1
+        "flowchart_id": flowchart_id
     })
     headers = {
         'Content-Type': 'application/json'
     }
     response = requests.request("POST", url, headers=headers, data=payload)
 
-
-    h = HistoryChange(flowchart=flowchart, comment_history=comment_history, block_history=block_history, initial_date=flowchart.updated_date)
+    h = HistoryChange(flowchart=flowchart, comment_history=comment_history, block_history=block_history,
+                      initial_date=flowchart.updated_date)
     h.save()
 
     return Response({"message": "ok"}, status=status.HTTP_200_OK)
