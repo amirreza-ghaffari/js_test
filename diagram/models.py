@@ -133,8 +133,8 @@ class Transition(models.Model):
 class Comment(models.Model):
     label = models.CharField(max_length=256, null=True, blank=True)
     text = models.TextField()
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author')
-    block = models.ForeignKey(Block, on_delete=models.CASCADE, related_name='block')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author_comment')
+    block = models.ForeignKey(Block, on_delete=models.CASCADE, related_name='block_comment')
     updated_date = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
