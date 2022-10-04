@@ -9,6 +9,11 @@ def active_transition_on_block_approve(sender, instance, created, **kwargs):
     start_block = instance
     if start_block.is_approved:
 
+        if len(start_block.input_transition.all()) == 0:
+            flowchart = start_block.flowchart
+            flowchart.is_active = True
+            flowchart.save()
+
         transients = Transition.objects.filter(start_block=start_block)
         for obj in transients:
             if not start_block.is_conditional:
