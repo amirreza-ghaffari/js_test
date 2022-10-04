@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'simple_history',
     'drf_yasg',
     'crispy_forms',
+    'jdatetime',
 
 
     # users Module #
