@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from flowchart.models import Flowchart, Location
+from flowchart.models import Flowchart, Location, HistoryChange
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -21,3 +21,8 @@ class LocationSerializer(serializers.ModelSerializer):
         model = Location
         fields = ['id', 'name', 'incident_number']
 
+
+class HistoryChangeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HistoryChange
+        fields = ['id', 'comment_history', 'block_history']
