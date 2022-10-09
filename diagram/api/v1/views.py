@@ -1,12 +1,12 @@
+import jdatetime
 from flowchart.models import Flowchart
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
-from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from rest_framework import permissions
 from ...models import Block, Transition, Comment
-from .serializers import BlockSerializer, TransitionSerializer, HistorySerializer, CustomerHistorySerializer, Custom2, CommentSerializer
+from .serializers import BlockSerializer, TransitionSerializer, Custom2, CommentSerializer
 from rest_framework import status
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from rest_framework.response import Response
@@ -82,24 +82,31 @@ class BlockHistory(ViewSet):
     def retrieve(self, request, pk=None):
         t = {}
         flowchart = get_object_or_404(self.queryset, pk=pk)
-        blocks = Block.objects.filter(flowchart=flowchart).order_by('-updated_date')
-        print(blocks)
+        blocks = Block.objects.filter(flowchart=flowchart, flowchart__is_active=True).order_by('-updated_date', '-id')
         for block in blocks:
             histories = block.history.all()
             if len(histories) > 1:
                 new_record, old_record = block.history.all()[0:2]
-                delta = new_record.diff_against(old_record, included_fields=['is_approved', 'is_active', 'label'])
-                if len(delta.changes) > 1:
+                delta = new_record.diff_against(old_record, included_fields=['is_approved'])
+                if len(delta.changes) > 0:
                     serializer = self.serializer_class(delta.changes, many=True)
                     data = serializer.data
-                    user = new_record.history_user.email
-                    change_date = new_record.history_date
-                    z = {'changes': data, 'user': user, 'change_date': change_date}
-                    t[block.label] = z
+                    try:
+                        user = new_record.history_user.full_name
+                        change_date = new_record.history_date
+                        z = {'label': block.label, 'changes': data, 'user': user,
+                             'change_date':
+                                 str(jdatetime.datetime.fromgregorian(day=change_date.day, month=change_date.month,
+                                                                      year=change_date.year, hour=change_date.hour,
+                                                                      minute=change_date.minute))}
+                        t[block.id] = z
+                    except:
+                        pass
         if len(t) > 0:
             return Response(t, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'this object has no history_change change'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'this object has no history_change change or is not active yet'},
+                            status=status.HTTP_404_NOT_FOUND)
 
 
 class CommentHistory(ViewSet):
@@ -111,30 +118,30 @@ class CommentHistory(ViewSet):
     def retrieve(self, request, pk=None):
         t = {}
         flowchart = get_object_or_404(self.queryset, pk=pk)
-        blocks = Block.objects.filter(flowchart=flowchart)
-        comments = Comment.objects.filter(block__in=blocks)
+        blocks = Block.objects.filter(flowchart=flowchart, flowchart__is_active=True)
+        comments = Comment.objects.filter(block__in=blocks).order_by('id')
         for comment in comments:
-            z = {'block': comment.block.label, 'label': comment.label, 'text': comment.text, 'author': comment.author.full_name, 'date': comment.updated_date}
+            updated_date = comment.updated_date
+            z = {'block': comment.block.label,'block_id': comment.block.id, 'label': comment.label, 'text': comment.text, 'author': comment.author.full_name, 'date': str(jdatetime.datetime.fromgregorian(
+                        day=updated_date.day, month=updated_date.month, year=updated_date.year, hour=updated_date.hour,
+                        minute=updated_date.minute))}
             if len(comment.history.all()) > 1:
                 new_record, old_record = comment.history.all()[0:2]
                 delta = new_record.diff_against(old_record, included_fields=['text'])
-                if len(delta.changes) > 1:
+                if len(delta.changes) > 0:
                     serializer = self.serializer_class(delta.changes, many=True)
                     data = serializer.data
                     user = new_record.history_user.full_name
                     change_date = new_record.history_date
-                    z['changes'] = {'changes': data, 'user': user, 'change_date': change_date}
+                    z['changes'] = {'changes': data, 'user': user, 'change_date': str(jdatetime.datetime.fromgregorian(
+                        day=change_date.day, month=change_date.month, year=change_date.year, hour=change_date.hour,
+                        minute=change_date.minute))}
             t[comment.id] = z
         if len(t) > 0:
             return Response(t, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'this object has no history_change change'}, status=status.HTTP_404_NOT_FOUND)
-
-
-
-
-
-
+            return Response({'error': 'this object has no history_change change or is not active yet'},
+                            status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -144,6 +151,7 @@ def active_blocks(request, flowchart_id):
     blocks = Block.objects.filter(is_active=True, flowchart_id=flowchart_id)
     serializer = BlockSerializer(blocks, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 @api_view(['GET'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
