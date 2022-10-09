@@ -1,14 +1,15 @@
-from django.db.models import Count, Q, Sum
+from django.db.models import Count
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from flowchart.models import Flowchart, Location, HistoryChange
 from diagram.models import Block, Transition
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .serializers import FlowchartSerializer, LocationSerializer
+from .serializers import FlowchartSerializer, LocationSerializer, HistoryChangeSerializer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
 from django.urls import reverse
+from django.db.models import Q
 import requests
 import json
 
@@ -74,8 +75,8 @@ def new_flowchart(request):
                         status=status.HTTP_400_BAD_REQUEST)
 
     new_flowchart = Flowchart.objects.create(name=primary_flowchart.name, location=location_obj)
-    blocks = Block.objects.filter(flowchart=primary_flowchart)
-    transitions = Transition.objects.filter(flowchart=primary_flowchart)
+    blocks = Block.objects.filter(flowchart=primary_flowchart).order_by('id')
+    transitions = Transition.objects.filter((Q(start_block__in=blocks) | Q(end_block__in=blocks)))
 
     data = {}
 
@@ -114,7 +115,9 @@ def reset_flowchart(request):
         return Response({'message': 'flowchart_name must be included', 'error': True},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    if not Flowchart.objects.filter(id=flowchart_id).exists():
+    try:
+        flowchart = Flowchart.objects.get(id=flowchart_id)
+    except Flowchart.DoesNotExist:
         return Response({'message': 'flowchart does not exists', 'error': True},
                         status=status.HTTP_400_BAD_REQUEST)
     blocks = Block.objects.filter(flowchart__id=flowchart_id)
@@ -132,6 +135,8 @@ def reset_flowchart(request):
         tr.is_approved = False
         tr.is_active = False
         tr.save()
+    flowchart.is_active = False
+    flowchart.save()
     return Response({'message': 'Flowchart rested successfully', 'error': False}, status=status.HTTP_200_OK)
 
 @api_view(['Post'])
@@ -152,7 +157,6 @@ def end_incident(request):
 
     url = "http://127.0.0.1:8000/diagram/api/v1/block-history/" + str(flowchart_id) + "/"
     response = requests.request("GET", url)
-    print(response.text)
     if response.status_code == 200:
         block_history = json.loads(response.text)
     else:
@@ -160,7 +164,6 @@ def end_incident(request):
 
     url = "http://127.0.0.1:8000/diagram/api/v1/comment-history/" + str(flowchart_id) + "/"
     response = requests.request("GET", url)
-    print(response.text)
     if response.status_code == 200:
         comment_history = json.loads(response.text)
     else:
@@ -175,8 +178,17 @@ def end_incident(request):
     }
     response = requests.request("POST", url, headers=headers, data=payload)
 
-    h = HistoryChange(flowchart=flowchart, comment_history=comment_history, block_history=block_history,
-                      initial_date=flowchart.updated_date)
-    h.save()
+    if len(comment_history) > 0 or len(block_history) > 0:
+        h = HistoryChange(flowchart=flowchart, comment_history=comment_history, block_history=block_history,
+                          initial_date=flowchart.updated_date)
+        h.save()
+
+    flowchart.is_active = False
+    flowchart.save()
 
     return Response({"message": "ok"}, status=status.HTTP_200_OK)
+
+
+class HistoryChangeViewSet(viewsets.ModelViewSet):
+    serializer_class = HistoryChangeSerializer
+    queryset = HistoryChange.objects.all()
