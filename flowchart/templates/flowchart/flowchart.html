@@ -962,6 +962,25 @@
             });
         }
 
+        function endIncident() {
+            $.ajax({
+                type: 'POST',
+                dataType: "json",
+                url: "/flowchart/api/v1/end-incident/",
+                headers: {
+                    "X-CSRFToken": '{{ csrf_token }}'
+                },
+
+                data: {'flowchart_id': {{flowchart_id}}},
+                success: function (data, status, xhr) {
+                    load()
+                    getActivBlock()
+                    getActiveTransitions()
+                    getComments()
+                }
+            });
+        }
+
 
     </script>
 
@@ -994,11 +1013,14 @@
     </div>
 
     <button class="button" id="loadModel" onclick="load()">Load</button>
-    {#        <button id="saveModel" onclick="save()">Save</button>#}
+{#            <button id="saveModel" onclick="save()">Save</button>#}
 
     <div style="text-align: center; height: 50px">
         <button type="button" class="btn btn-primary" onclick="resetFlowchart()">Reset Flowchart</button>
-        <button type="button" class="btn btn-secondary">End Incident</button>
+        <button type="button" class="btn btn-secondary" onclick="endIncident()">End Incident</button>
+    </div>
+    <div style="text-align: center; height: 50px">
+        <button type="button" class="btn btn-outline-info">History</button>
     </div>
 
 
@@ -1110,9 +1132,9 @@
     </div>
 
 
-    {#      <textarea id="mySavedModel" style="width:100%;height:300px">#}
-    {#          {{ a }}#}
-    {#      </textarea>#}
+{#          <textarea id="mySavedModel" style="width:100%;height:300px">#}
+{#              {{ a }}#}
+{#          </textarea>#}
 
 
 
