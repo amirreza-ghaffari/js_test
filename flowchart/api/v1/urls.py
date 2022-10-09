@@ -18,4 +18,6 @@ urlpatterns = [
     # ----------End Flowchart --------
     path('end-incident/', views.end_incident, name='End-Incident'),
 
+    path('HistoryChange/<str:pk>/', views.HistoryChangeViewSet.as_view({'get': 'retrieve'}), name='history-change-detail'),
+
 ]
