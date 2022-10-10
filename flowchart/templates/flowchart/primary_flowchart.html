@@ -549,8 +549,24 @@
 
         // Show the diagram's model in JSON format
         function save() {
-            document.getElementById("mySavedModel").value = myDiagram.model.toJson()
-
+            var j = myDiagram.model.toJson()
+            document.getElementById("mySavedModel").value = j
+            var nodes = JSON.parse(j).nodeDataArray
+            for (let i = 0; i < nodes.length; i++) {
+                console.log(nodes)
+                $.ajax({
+                    type: 'PATCH',
+                    dataType: "json",
+                    url: "/diagram/api/v1/blocks/" + nodes[i].key + "/",
+                    headers: {
+                        "X-CSRFToken": '{{ csrf_token }}'
+                    },
+                    data: {'loc': nodes[i].loc},
+                    success: function (data, status, xhr) {
+                    }
+                });
+            }
+            load()
 
             myDiagram.isModified = false;
         }
@@ -579,16 +595,10 @@
                     myDiagram.model = go.Model.fromJson(fullDataArray);
                 }
             });
-            var comment = document.getElementById("text-comment");
-            comment.value = ""
-
-            var labelInput = document.getElementById("label-input")
-            labelInput.value = ""
 
         }
 
         window.addEventListener('DOMContentLoaded', init);
-
 
 
     </script>
@@ -609,26 +619,33 @@
     </form>
 
     <div id="sample">
-    <div id="myDiagramDiv"
-         style="border: 1px solid black; background-color: rgb(255, 255, 255); width: 100%; height: 800px; position: relative; cursor: auto;">
-        <canvas tabindex="0"
-                style="position: absolute; top: 10px; left: 0px;  z-index: 2; user-select: none; touch-action: none; width: 1054px; height: 598px; cursor: auto;"
-                width="1054" height="598">This text is displayed if your browser does not support the Canvas HTML
-            element.
-        </canvas>
-        <div style="position: absolute; overflow: auto; width: 1054px; height: 598px; z-index: 1">
-            <div style="position: absolute; width: 1px; height: 1px;"></div>
+        <div id="myDiagramDiv"
+             style="border: 1px solid black; background-color: rgb(255, 255, 255); width: 100%; height: 800px; position: relative; cursor: auto;">
+            <canvas tabindex="0"
+                    style="position: absolute; top: 10px; left: 0px;  z-index: 2; user-select: none; touch-action: none; width: 1054px; height: 598px; cursor: auto;"
+                    width="1054" height="598">This text is displayed if your browser does not support the Canvas HTML
+                element.
+            </canvas>
+            <div style="position: absolute; overflow: auto; width: 1054px; height: 598px; z-index: 1">
+                <div style="position: absolute; width: 1px; height: 1px;"></div>
+            </div>
         </div>
     </div>
     <br>
-    <button class="button" id="loadModel" onclick="load()">Load</button>
-    {#            <button id="saveModel" onclick="save()">Save</button>#}
 
 
 
-    {#          <textarea id="mySavedModel" style="width:100%;height:300px">#}
-    {#              {{ a }}#}
-    {#          </textarea>#}
+    <div style="text-align: center; height: 50px">
+        <button class="btn btn-primary" id="loadModel" onclick="load()">Load</button>
+        <button class="btn btn-secondary" id="saveModel" onclick="save()">Save Location</button>
+    </div>
+
+
+
+
+    <textarea id="mySavedModel" style="width:100%;height:300px;display: none">
+                  {{ a }}
+    </textarea>
 
 
 
