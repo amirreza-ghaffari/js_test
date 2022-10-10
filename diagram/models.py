@@ -25,6 +25,7 @@ color_choices = (
     ('black', 'black'),
     ('blue', 'blue'),
     ('red', 'red'),
+    ('magenta', 'magenta'),
 )
 
 
