@@ -1,5 +1,7 @@
 {% extends 'base/base.html' %}
+{% load replace %}
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,8 +34,8 @@
             {% for history in histories %}
                 <tr class="text-center">
 
-                    <td class="text-center"> {{ history.flowchart.location.name }}</td>
-                    <td class="text-center"> {{ history.flowchart.name }}</td>
+                    <td class="text-center"> {{ history.flowchart.location.name}}</td>
+                    <td class="text-center"> {{ history.flowchart.name|upper_case|capfirst }}</td>
                     <td class="text-center"> {{ history.jalali }}</td>
 
                     <td class="text-center">

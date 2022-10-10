@@ -36,7 +36,7 @@
                         <td class="text-center"> {{ v.label }}</td>
                         <td class="text-center"> {{ v.user }}</td>
                         <td class="text-center"> {{ v.change_date }}</td>
-                        <td class="text-center"> {{ v.changes.0.field|replace }}</td>
+                        <td class="text-center"> {{ v.changes.0.field|replace_active }}</td>
                         <td class="text-center">
                             <button class="btn btn-outline-info" type="submit" onclick="getCommentHistory({{ k }})">Show
                                 Comments
