@@ -35,14 +35,15 @@ class GroupSerializer(serializers.ModelSerializer):
 
 class BlockSerializer(serializers.ModelSerializer):
     user_groups = GroupSerializer(many=True)
+    loc = serializers.CharField(max_length=256)
 
     class Meta:
         model = Block
-        fields = ['label', 'figure', 'color', 'loc', 'is_approved', 'loc_height', 'loc_length',
-                  'flowchart', 'user_groups']
-        read_only_fields = ('loc',)
+        fields = ['label', 'figure', 'color', 'is_approved', 'loc_height', 'loc_length',
+                  'flowchart', 'user_groups', 'loc']
 
     def validate(self, data):
+        loc = data.pop('loc', None)
         orig_instance = self.instance
         new_instance = Block(**data)
         if new_instance.is_approved and orig_instance.is_active is False:
@@ -50,6 +51,10 @@ class BlockSerializer(serializers.ModelSerializer):
         if new_instance.is_approved:
             orig_instance.is_active = False
             data['is_active'] = False
+
+        if loc:
+            data['loc_height'], data['loc_length'] = loc.split(' ')
+
         return data
 
     def to_representation(self, instance):
