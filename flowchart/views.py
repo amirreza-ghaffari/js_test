@@ -24,6 +24,9 @@ def flowchart_view(request, pk):
     except Flowchart.DoesNotExist:
         return JsonResponse({'error': f'flowchart does not exists'})
 
+    if flowchart.primary:
+        return render(request, 'flowchart/primary_flowchart.html', context)
+
     return render(request, 'flowchart/flowchart.html', context)
 
 
