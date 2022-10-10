@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import CustomUser, Member
+from .models import CustomUser, Member, MembersGroup
 from django import forms
 from django.contrib import admin
 from django.contrib.auth import get_user_model
@@ -85,3 +85,4 @@ class GroupAdmin(admin.ModelAdmin):
 # Register the new Group ModelAdmin.
 admin.site.register(Group, GroupAdmin)
 admin.site.register(Member)
+admin.site.register(MembersGroup)

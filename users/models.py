@@ -58,7 +58,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.email + '-' + self.full_name
+        return self.full_name
 
     @property
     def full_name(self):
@@ -84,3 +84,8 @@ class Member(models.Model):
 
     def __str__(self):
         return self.last_name + ' - ' + self.first_name
+
+
+class MembersGroup(models.Model):
+    name = models.CharField(max_length=256, unique=True)
+    user = models.ManyToManyField(Member)
