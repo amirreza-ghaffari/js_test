@@ -548,28 +548,7 @@
         }
 
         // Show the diagram's model in JSON format
-        function save() {
-            var j = myDiagram.model.toJson()
-            document.getElementById("mySavedModel").value = j
-            var nodes = JSON.parse(j).nodeDataArray
-            for (let i = 0; i < nodes.length; i++) {
-                console.log(nodes)
-                $.ajax({
-                    type: 'PATCH',
-                    dataType: "json",
-                    url: "/diagram/api/v1/blocks/" + nodes[i].key + "/",
-                    headers: {
-                        "X-CSRFToken": '{{ csrf_token }}'
-                    },
-                    data: {'loc': nodes[i].loc},
-                    success: function (data, status, xhr) {
-                    }
-                });
-            }
-            load()
-
-            myDiagram.isModified = false;
-        }
+        window.addEventListener('DOMContentLoaded', init);
 
         function load() {
             <!-- Get Blocks -->
@@ -598,7 +577,24 @@
 
         }
 
-        window.addEventListener('DOMContentLoaded', init);
+        function save() {
+            var j = myDiagram.model.toJson()
+            var nodes = JSON.parse(j).nodeDataArray
+            for (let i = 0; i < nodes.length; i++) {
+                $.ajax({
+                    type: 'PATCH',
+                    dataType: "json",
+                    url: "/diagram/api/v1/blocks/" + nodes[i].key + "/",
+                    headers: {
+                        "X-CSRFToken": '{{ csrf_token }}'
+                    },
+                    data: {'loc': nodes[i].loc},
+                    success: function (data, status, xhr) {
+
+                    }
+                });
+            }
+        }
 
 
     </script>
