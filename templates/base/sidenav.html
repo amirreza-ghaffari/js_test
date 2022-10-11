@@ -112,7 +112,7 @@
                 <a href="{% url 'flowchart:history-list' %}" class="nav-link">
                     <i class="nav-icon fas fa-history "></i>
                     <p class="nav-item">
-                         &nbsp&nbsp&nbsp History
+                        &nbsp&nbsp&nbsp History
                     </p>
                 </a>
                 <a href="" class="nav-link">
@@ -139,17 +139,9 @@
                 <select class="incident" id="contingency_plan">
                     <option value="0">--Select Contingency Plan--</option>
                 </select>
-                <button class="submit" onclick="create()">
-                    <div class="svg-wrapper-1">
-                        <div class="svg-wrapper">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                                <path fill="none" d="M0 0h24v24H0z"></path>
-                                <path fill="currentColor"
-                                      d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <span>Create</span>
+                <br>
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="create()">
+                    <i class="fas fa-send">&nbsp;Create</i>
                 </button>
                 <div id="incident-error" style="display:none;">
                     <h1 style="text-align: center;color: crimson;font-size: 34px;font-weight: bold">Error:</h1>
@@ -302,6 +294,8 @@
                 el.style.display = "none"
                 var location = document.getElementById('incidentLocation').value
                 var contingencyPlan = document.getElementById('contingency_plan').value
+                console.log(location)
+                console.log(contingencyPlan)
                 $.ajax({
                     type: 'POST',
                     dataType: "json",
@@ -314,7 +308,6 @@
                     },
                     url: "/flowchart/api/v1/new-flowchart/",
                     success: function (data, status, xhr) {
-                        console.log(data)
                         window.location.replace(data.url)
 
                     },
@@ -408,55 +401,62 @@
             }
 
             /* From uiverse.io by @adamgiebl */
-            button.submit {
-                /*width: 150px;*/
-                height: 40px;
-                font-family: inherit;
-                font-size: 15px;
-                /*background: royalblue;*/
-                color: white;
-                padding: 0.7em 1em;
-                padding-left: 0.9em;
-                display: flex;
-                align-items: center;
-                border: none;
-                border-radius: 16px;
-                overflow: hidden;
-                transition: all 0.2s;
-                background-color: green;
-                /*margin-top: 20px;*/
-                margin: 20px auto;
-
-            }
-
-            button.submit span {
-                display: block;
-                margin-left: 0.3em;
-                transition: all 0.3s ease-in-out;
-            }
-
-            button.submit svg {
-                display: block;
-                transform-origin: center center;
-                transition: transform 0.3s ease-in-out;
-            }
-
-            button.submit:hover .svg-wrapper {
-                animation: fly-1 0.6s ease-in-out infinite alternate;
-            }
-
-            button.submit:hover svg {
-                transform: translateX(1.2em) rotate(45deg) scale(1.1);
-            }
-
-            button.submit:hover span {
-                transform: translateX(5em);
-                overflow-x: hidden;
-            }
-
-            button.submit:active {
-                transform: scale(0.95);
-            }
+            {#button.submit {#}
+            {#    /*width: 150px;*/#}
+            {#    height: 40px;#}
+            {#    font-family: inherit;#}
+            {#    font-size: 15px;#}
+            {#    /*background: royalblue;*/#}
+            {#    color: white;#}
+            {#    padding: 0.7em 1em;#}
+            {#    padding-left: 0.9em;#}
+            {#    display: flex;#}
+            {#    align-items: center;#}
+            {#    border: none;#}
+            {#    border-radius: 16px;#}
+            {#    overflow: hidden;#}
+            {#    transition: all 0.2s;#}
+            {#    background-color: green;#}
+            {#    /*margin-top: 20px;*/#}
+            {#    margin: 20px auto;#}
+            {##}
+            {
+            #}#}
+            {##}
+            {#button.submit span {#}
+            {#    display: block;#}
+            {#    margin-left: 0.3em;#}
+            {#    transition: all 0.3s ease-in-out;#}
+            {
+            #}#}
+            {##}
+            {#button.submit svg {#}
+            {#    display: block;#}
+            {#    transform-origin: center center;#}
+            {#    transition: transform 0.3s ease-in-out;#}
+            {
+            #}#}
+            {##}
+            {#button.submit:hover .svg-wrapper {#}
+            {#    animation: fly-1 0.6s ease-in-out infinite alternate;#}
+            {
+            #}#}
+            {##}
+            {#button.submit:hover svg {#}
+            {#    transform: translateX(1.2em) rotate(45deg) scale(1.1);#}
+            {
+            #}#}
+            {##}
+            {#button.submit:hover span {#}
+            {#    transform: translateX(5em);#}
+            {#    overflow-x: hidden;#}
+            {
+            #}#}
+            {##}
+            {#button.submit:active {#}
+            {#    transform: scale(0.95);#}
+            {
+            #}#}
 
             @keyframes fly-1 {
                 from {
