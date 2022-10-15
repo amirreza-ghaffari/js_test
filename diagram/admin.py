@@ -9,6 +9,7 @@ class BlockAdmin(admin.ModelAdmin):
               'loc_height', 'loc_length', 'user_groups', 'is_conditional')
     list_display = ('id', 'label', 'is_approved', 'is_active', 'last_modified',)
     list_filter = ('is_approved', 'is_active', 'flowchart')
+    search_fields = ['label', 'flowchart__name']
 
 
 class TransitionAdmin(admin.ModelAdmin):
@@ -18,6 +19,10 @@ class TransitionAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('label', 'start_block', 'end_block', 'is_active', 'is_approved', 'flowchart')}),
     )
+    search_fields = ['start_block']
+    autocomplete_fields = ['start_block']
+
+
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('label', 'author', 'block')
