@@ -3,6 +3,7 @@ from .models import Transition, Block
 from .utils import custom_send_email, next_action
 from django.utils.crypto import get_random_string
 from users.models import CustomUser
+import datetime
 
 
 def active_transition_on_block_approve(sender, instance, created, **kwargs):
@@ -13,6 +14,7 @@ def active_transition_on_block_approve(sender, instance, created, **kwargs):
             if len(start_block.input_transition.all()) == 0:
                 flowchart = start_block.flowchart
                 flowchart.is_active = True
+                flowchart.triggered_date = datetime.datetime.now()
                 flowchart.save()
 
             transients = Transition.objects.filter(start_block=start_block)
