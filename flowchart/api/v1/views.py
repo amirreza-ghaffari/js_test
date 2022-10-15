@@ -176,17 +176,20 @@ def end_incident(request):
     headers = {
         'Content-Type': 'application/json'
     }
-    response = requests.request("POST", url, headers=headers, data=payload)
+    try:
+        if len(comment_history) > 0 or len(block_history) > 0:
+            h = HistoryChange(flowchart=flowchart, comment_history=comment_history, block_history=block_history,
+                              initial_date=flowchart.triggered_date)
+            h.save()
 
-    if len(comment_history) > 0 or len(block_history) > 0:
-        h = HistoryChange(flowchart=flowchart, comment_history=comment_history, block_history=block_history,
-                          initial_date=flowchart.updated_date)
-        h.save()
+        flowchart.is_active = False
+        flowchart.save()
 
-    flowchart.is_active = False
-    flowchart.save()
+        response = requests.request("POST", url, headers=headers, data=payload)
 
-    return Response({"message": "ok"}, status=status.HTTP_200_OK)
+        return Response({"message": "ok"}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class HistoryChangeViewSet(viewsets.ModelViewSet):
