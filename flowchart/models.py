@@ -23,7 +23,7 @@ class Flowchart(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True, blank=True)
     primary = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
-    updated_date = models.DateTimeField(auto_now=True)
+    triggered_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         unique_together = ('name', 'location')
@@ -43,18 +43,12 @@ class Flowchart(models.Model):
             return self.name.replace('_', ' ') + ' - primary'
         return self.name.replace('_', ' ') + ' - ' + str(self.location)
 
-    @property
-    def last_modified(self):
-        if self.updated_date:
-            return naturaltime(self.updated_date)
-        return None
-
 
 class HistoryChange(models.Model):
         flowchart = models.ForeignKey(Flowchart, on_delete=models.CASCADE)
         comment_history = JSONField(default=dict)
         block_history = JSONField(default=dict)
-        initial_date = models.DateTimeField(auto_now=True)
+        initial_date = models.DateTimeField()
 
         def __str__(self):
             return self.flowchart.name + str(self.initial_date)
