@@ -34,13 +34,13 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class BlockSerializer(serializers.ModelSerializer):
-    user_groups = GroupSerializer(many=True)
+    user_groups = GroupSerializer(many=True, read_only=True)
     loc = serializers.CharField(max_length=256)
 
     class Meta:
         model = Block
         fields = ['label', 'figure', 'color', 'is_approved', 'loc_height', 'loc_length',
-                  'flowchart', 'user_groups', 'loc']
+                  'flowchart', 'loc', 'user_groups']
 
     def validate(self, data):
         loc = data.pop('loc', None)
@@ -91,7 +91,8 @@ class UserSerializer(serializers.ModelSerializer):
 class TransitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transition
-        fields = ['start_block', 'end_block', 'is_approved', 'color', 'label', 'id']
+        fields = ['start_block', 'end_block', 'is_approved', 'color', 'label', 'id', 'flowchart']
+        read_only_fields = ('color',)
 
     def validate(self, data):
         orig_instance = self.instance
