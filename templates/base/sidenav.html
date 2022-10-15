@@ -294,8 +294,6 @@
                 el.style.display = "none"
                 var location = document.getElementById('incidentLocation').value
                 var contingencyPlan = document.getElementById('contingency_plan').value
-                console.log(location)
-                console.log(contingencyPlan)
                 $.ajax({
                     type: 'POST',
                     dataType: "json",
