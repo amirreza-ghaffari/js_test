@@ -15,7 +15,10 @@ def flowchart_view(request, pk):
 
     try:
         flowchart = Flowchart.objects.get(pk=pk)
-        context['last_modified'] = flowchart.last_modified
+        t = flowchart.triggered_date
+        if t:
+            j = jdatetime.datetime.fromgregorian(day=t.day, month=t.month, year=t.year, hour=t.hour, minute=t.minute)
+            context['triggered_date'] = j
         context['flowchart_id'] = flowchart.id
         context['flowchart_name'] = flowchart.__str__().title()
         blocks = Block.objects.filter(Q(is_approved=True) | Q(is_active=True)).order_by('-updated_date')
