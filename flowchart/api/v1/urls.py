@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('flowcharts/', views.FlowchartViewSet.as_view({'get': 'list'}), name='flowchart-list'),
+    path('flowcharts/<str:pk>/', views.FlowchartViewSet.as_view({'get': 'retrieve'}), name='flowchart-list'),
     path('locations/', views.LocationViewSet.as_view({'get': 'list'}), name='location-list'),
 
 
@@ -19,5 +20,7 @@ urlpatterns = [
     path('end-incident/', views.end_incident, name='End-Incident'),
 
     path('HistoryChange/<str:pk>/', views.HistoryChangeViewSet.as_view({'get': 'retrieve'}), name='history-change-detail'),
+
+    path('ff/', views.ff , name='ff'),
 
 ]
