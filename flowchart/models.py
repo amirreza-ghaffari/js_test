@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.urls import reverse
 from jsonfield import JSONField
+import jdatetime
 
 
 class Location(models.Model):
@@ -42,6 +43,13 @@ class Flowchart(models.Model):
         if self.primary:
             return self.name.replace('_', ' ') + ' - primary'
         return self.name.replace('_', ' ') + ' - ' + str(self.location)
+
+    def p_triggered_date(self):
+        if self.triggered_date:
+            t = self.triggered_date
+            return str(jdatetime.datetime.fromgregorian(day=t.day, month=t.month, year=t.year,
+                                                    hour=t.hour, minute=t.minute))
+        return None
 
 
 class HistoryChange(models.Model):
