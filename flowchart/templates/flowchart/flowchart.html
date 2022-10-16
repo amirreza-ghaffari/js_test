@@ -549,23 +549,45 @@
 
         // Show the diagram's model in JSON format
         function save() {
-            var j = myDiagram.model.toJson()
+            var res = {};
+            var j = myDiagram.model.toJson();
+            console.log(j)
             document.getElementById("mySavedModel").value = j
             var nodes = JSON.parse(j).nodeDataArray
+            var links = JSON.parse(j).linkDataArray
             for (let i = 0; i < nodes.length; i++) {
-                $.ajax({
-                    type: 'PATCH',
-                    dataType: "json",
-                    url: "/diagram/api/v1/blocks/" + nodes[i].key + "/",
-                    headers: {
-                        "X-CSRFToken": '{{ csrf_token }}'
-                    },
-                    data: {'loc': nodes[i].loc},
-                    success: function (data, status, xhr) {
-                    }
-                });
+                if (nodes[i].key < 0) {
+                    $.ajax({
+                        type: 'POST',
+                        dataType: "json",
+                        url: "/diagram/api/v1/blocks/",
+                        headers: {
+                            "X-CSRFToken": '{{ csrf_token }}'
+                        },
+                        data: {'loc': nodes[i].loc, 'label': nodes[i].text, 'flowchart':{{flowchart_id}}},
+                        success: function (data, status, xhr) {
+                            res[nodes[i].key] = data.key;
+
+                        }
+                    });
+
+                } else {
+                    $.ajax({
+                        type: 'PATCH',
+                        dataType: "json",
+                        url: "/diagram/api/v1/blocks/" + nodes[i].key + "/",
+                        headers: {
+                            "X-CSRFToken": '{{ csrf_token }}'
+                        },
+                        data: {'loc': nodes[i].loc},
+                        success: function (data, status, xhr) {
+
+                        }
+                    });
+                }
             }
 
+            console.log(res)
             myDiagram.isModified = false;
         }
 
@@ -598,13 +620,13 @@
 
             var labelInput = document.getElementById("label-input")
             labelInput.value = ""
+            getTriggeredDate()
 
         }
 
         window.addEventListener('DOMContentLoaded', init);
 
         function approveBlock(block_id) {
-            var token = document.getElementsByName("csrfToken").value;
             $.ajax({
                 type: 'PATCH',
                 dataType: "json",
@@ -698,6 +720,7 @@
                     option.innerHTML = data[i].text
 
                     selectBody.appendChild(option)
+                    console.log(selectBody.outerHTML)
 
                 }
             }
@@ -991,9 +1014,27 @@
             });
         }
 
+        function getTriggeredDate() {
+            $.ajax({
+                type: 'GET',
+                dataType: "json",
+                url: "/flowchart/api/v1/flowcharts/{{ flowchart_id }}/",
+                success: function (data, status, xhr) {
+                    var t = document.getElementById("triggered_date")
+                    if (data.p_triggered_date !== null) {
+                        t.innerHTML = "Triggered at: " + data.p_triggered_date
+                    } else {
+                        t.innerHTML = ""
+                    }
+                }
+            });
+        }
+
+        getTriggeredDate()
         getActivBlock()
         getActiveTransitions()
         getComments()
+
 
     </script>
 
@@ -1003,19 +1044,23 @@
 
 {% block dashboard %}
     {{ flowchart_name }}
-    <h5>Created at: {{ last_modified }}</h5>
+    {% if triggered_date %}
+        <h5 id="triggered_date"></h5>
+    {% endif %}
+    <hr>
+    <div style="text-align: left">
+        <button type="button" class="btn btn-outline-primary" onclick="resetFlowchart()">Reset Flowchart</button>
+        <button type="button" class="btn btn-outline-secondary" onclick="endIncident()">End Incident</button>
+    </div>
+
 
 {% endblock %}
 
 {% block content %}
-    <!-- for CSRF Token -->
-    <form method="post" id="myForm" action="">
-        <input name="csrfToken" value="5965f0d244b7d32b334eff840...etc" type="hidden">
-    </form>
 
     <div id="sample">
     <div id="myDiagramDiv"
-         style="border: 1px solid black; background-color: rgb(255, 255, 255); width: 100%; height: 800px; position: relative; cursor: auto;">
+         style="border: 1px solid black; background-color: rgb(255, 255, 255); width: 100%; height: 800px; position: relative; cursor: auto">
         <canvas tabindex="0"
                 style="position: absolute; top: 10px; left: 0px;  z-index: 2; user-select: none; touch-action: none; width: 1054px; height: 598px; cursor: auto;"
                 width="1054" height="598">This text is displayed if your browser does not support the Canvas HTML
@@ -1025,25 +1070,16 @@
             <div style="position: absolute; width: 1px; height: 1px;"></div>
         </div>
     </div>
-
-    <div style="text-align: center; height: 50px">
+    <div style="text-align: center; height: 60px;padding-top: 10px;padding-bottom: 20px">
         <button class="btn btn-primary" id="loadModel" onclick="load()">Load</button>
         <button class="btn btn-secondary" id="saveModel" onclick="save()">Save Location</button>
-    </div>
-
-    <div style="text-align: center; height: 50px">
-        <button type="button" class="btn btn-primary" onclick="resetFlowchart()">Reset Flowchart</button>
-        <button type="button" class="btn btn-secondary" onclick="endIncident()">End Incident</button>
-    </div>
-    <div style="text-align: center; height: 50px">
-        <button type="button" class="btn btn-outline-info">History</button>
     </div>
 
 
 
     <!-- Actions Card --->
     <div class="card" id="action-table-card">
-        <div style="background-color: #BD1E51; text-align: center" class="card-header">
+        <div style="background-color:rgb(64, 78, 89); text-align: center" class="card-header">
             <h4 style="color: white">Active Actions</h4>
         </div>
 
@@ -1072,7 +1108,7 @@
 
     <!-- Transitions Card --->
     <div class="card" id="transient-table-card">
-        <div style="background-color: #BD1E51; text-align: center" class="card-header">
+        <div style="background-color: rgb(64, 78, 89); text-align: center" class="card-header">
             <h4 style="color: white">Choose Path</h4>
         </div>
 
@@ -1094,7 +1130,7 @@
 
     <!-- comment Card --->
     <div class="card">
-        <div style="background-color: #BD1E51;text-align: center" class="card-header">
+        <div style="background-color: rgb(64, 78, 89);text-align: center" class="card-header">
             <h4 style="color: white">Comments and Messages</h4>
         </div>
 
@@ -1128,7 +1164,7 @@
                 <div class="col-md-6" data-select2-id="29">
                     <div class="form-group">
                         <label>Choose Action: </label>
-                        <select class="form-control select2 select2-hidden-accessible"
+                        <select class="form-control"
                                 style="width: 100%; border: 1px solid black!important"
                                 data-select2-id="1" tabindex="-1" aria-hidden="true" id="select-body">
                         </select>
