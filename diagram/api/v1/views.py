@@ -28,11 +28,10 @@ class CustomPermission(permissions.BasePermission):
 
 class BlockViewSet(ModelViewSet):
 
-    permission_classes = [CustomPermission]
     serializer_class = BlockSerializer
     queryset = Block.objects.all()
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['flowchart', 'is_approved', 'is_active']
+    filterset_fields = ['flowchart', 'is_approved', 'is_active', 'is_pre_approved']
 
 
 class TransitionViewSet(ModelViewSet):
