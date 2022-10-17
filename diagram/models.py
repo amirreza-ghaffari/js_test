@@ -5,6 +5,7 @@ from simple_history.models import HistoricalRecords
 from django.contrib.auth.models import Group
 from flowchart.models import Flowchart
 from django.contrib.auth import get_user_model
+from users.models import Member
 
 User = get_user_model()
 
@@ -38,7 +39,7 @@ class BlockGroup(models.Model):
 
 class Block(models.Model):
     group = models.ForeignKey(BlockGroup, on_delete=models.CASCADE, blank=True, null=True)
-    user_groups = models.ManyToManyField(Group, blank=True, null=True)
+    members = models.ManyToManyField(Member, blank=True, null=True)
     flowchart = models.ForeignKey(Flowchart, on_delete=models.CASCADE, related_name='flowchart')
     updated_date = models.DateTimeField(auto_now=True)
     created_date = models.DateTimeField(auto_now_add=True)
@@ -49,6 +50,7 @@ class Block(models.Model):
     loc_height = models.IntegerField(null=True, blank=True)
     loc_length = models.IntegerField(null=True, blank=True)
     is_approved = models.BooleanField(default=False)
+    is_pre_approved = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_conditional = models.BooleanField(default=False)
     rand_text = models.CharField(max_length=16, default=None, blank=False, null=True)
@@ -75,7 +77,10 @@ class Block(models.Model):
         if self.is_approved:
             self.color = 'green'
         elif self.is_active:
-            self.color = 'red'
+            if self.is_pre_approved:
+                self.color = 'red'
+            else:
+                self.color = 'orange'
         else:
             self.color = 'black'
 
