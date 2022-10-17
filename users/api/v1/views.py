@@ -4,8 +4,15 @@ from ...models import Member
 from rest_framework import status
 from rest_framework.response import Response
 from diagram.utils import send_sms, custom_send_email
+from rest_framework.viewsets import ViewSet, ModelViewSet
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from diagram.api.v1.serializers import MemberSerializer
 import ast
+
+
+class MemberViewSet(ModelViewSet):
+    serializer_class = MemberSerializer
+    queryset = Member.objects.all()
 
 
 @api_view(['POST'])
