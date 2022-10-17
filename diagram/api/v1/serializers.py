@@ -53,8 +53,12 @@ class BlockSerializer(serializers.ModelSerializer):
         loc = data.pop('loc', None)
         orig_instance = self.instance
         new_instance = Block(**data)
-        if new_instance.is_approved and orig_instance.is_active is False:
-            raise serializers.ValidationError('Can not approve a non active Block')
+        if new_instance.is_approved and (orig_instance.is_active is False or orig_instance.is_pre_approved is False):
+            raise serializers.ValidationError('Can not approve a non active or none pre_approved Block')
+
+        if new_instance.is_pre_approved and orig_instance.is_active is False:
+            raise serializers.ValidationError('Can not Pre_approve a non active block')
+
         if new_instance.is_approved:
             orig_instance.is_active = False
             data['is_active'] = False
