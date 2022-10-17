@@ -2,6 +2,7 @@ from rest_framework import serializers
 from diagram.models import Block, Transition, Comment
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from users.models import Member
 
 User = get_user_model()
 
@@ -33,14 +34,20 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = ('name',)
 
 
+class MemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Member
+        fields = ('id',)
+
+
 class BlockSerializer(serializers.ModelSerializer):
-    user_groups = GroupSerializer(many=True, read_only=True)
+    members = MemberSerializer(many=True, read_only=True)
     loc = serializers.CharField(max_length=256)
 
     class Meta:
         model = Block
-        fields = ['label', 'figure', 'color', 'is_approved', 'loc_height', 'loc_length',
-                  'flowchart', 'loc', 'user_groups']
+        fields = ['label', 'figure', 'color', 'is_approved', 'is_pre_approved', 'loc_height', 'loc_length',
+                  'flowchart', 'loc', 'members']
 
     def validate(self, data):
         loc = data.pop('loc', None)
