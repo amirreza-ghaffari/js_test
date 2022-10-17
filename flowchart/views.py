@@ -1,6 +1,7 @@
 import json
 from django.http import JsonResponse
 from diagram.models import Block, Transition
+from users.models import Member
 from .models import Flowchart, HistoryChange
 from django.shortcuts import render
 from django.db.models import Q
@@ -24,6 +25,7 @@ def flowchart_view(request, pk):
         blocks = Block.objects.filter(Q(is_approved=True) | Q(is_active=True)).order_by('-updated_date')
         blocks = blocks.filter(flowchart_id=flowchart.id)
         context['blocks'] = blocks
+        context['members'] = Member.objects.all()
     except Flowchart.DoesNotExist:
         return JsonResponse({'error': f'flowchart does not exists'})
 
