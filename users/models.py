@@ -13,6 +13,7 @@ def validate_phone_number(value):
             params={'value': value},
         )
 
+
 department_choice = (
         ('Legal', 'Legal'),
         ('Risk Audit Compliance', 'RAC'),
@@ -85,6 +86,9 @@ class Member(models.Model):
     def __str__(self):
         return self.last_name + ' - ' + self.first_name
 
+    @property
+    def full_name(self):
+        return self.last_name + ' - ' + self.first_name
 
 class MembersGroup(models.Model):
     name = models.CharField(max_length=256, unique=True)
