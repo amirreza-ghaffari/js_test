@@ -36,7 +36,7 @@ class BlockViewSet(ModelViewSet):
 
 class TransitionViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['is_approved', 'is_active']
+    filterset_fields = ['is_approved', 'is_active', 'flowchart']
 
     permission_classes = [IsAuthenticated]
     serializer_class = TransitionSerializer
