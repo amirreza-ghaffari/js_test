@@ -5,9 +5,7 @@ from django.views.generic.list import ListView
 from django.shortcuts import render
 from users.models import CustomUser, Member
 from diagram.models import Block
-from django.shortcuts import get_object_or_404
 from diagram.models import Comment
-from django.core.paginator import Paginator, EmptyPage
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
@@ -19,9 +17,7 @@ def login_view(request):
 
     msg = None
     if request.method == "POST":
-
         if form.is_valid():
-            print(form.cleaned_data)
             email = form.cleaned_data.get("email")
             password = form.cleaned_data.get("password")
             user = authenticate(username=email, password=password)
@@ -93,7 +89,6 @@ def sms_panel_view(request):
     if saved_member_id:
         context['saved_member'] = Member.objects.filter(id=saved_member_id)
         context['saved_member_id'] = int(saved_member_id)
-    print(context)
     members = Member.objects.all()
     context['members'] = members
 
