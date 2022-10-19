@@ -124,6 +124,7 @@ def reset_flowchart(request):
     for block in blocks:
         block.is_active = False
         block.is_approved = False
+        block.is_pre_approved = False
         block.block_comment.all().delete()
         block.save()
 
