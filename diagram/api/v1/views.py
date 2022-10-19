@@ -1,17 +1,14 @@
 import jdatetime
 from flowchart.models import Flowchart
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.humanize.templatetags.humanize import naturaltime
-from rest_framework import permissions
 from ...models import Block, Transition, Comment
 from .serializers import BlockSerializer, TransitionSerializer, Custom2, CommentSerializer
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 
 class CustomPermission(permissions.BasePermission):
@@ -143,34 +140,11 @@ class CommentHistory(ViewSet):
                             status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['GET'])
-@authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
-def active_blocks(request, flowchart_id):
-    blocks = Block.objects.filter(is_active=True, flowchart_id=flowchart_id)
-    serializer = BlockSerializer(blocks, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-@api_view(['GET'])
-@authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
-def active_transitions(request, flowchart_id):
-    transient = Transition.objects.filter(is_active=True, flowchart_id=flowchart_id)
-    serializer = TransitionSerializer(transient, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-
 class CommentViewSet(ModelViewSet):
 
     permission_classes = [IsAuthenticated]
     serializer_class = CommentSerializer
     queryset = Comment.objects.all().order_by('-updated_date')
-    # def get_queryset(self):
-    #     flowchart_id = self.request.GET.get('flowchart_id')
-    #     if flowchart_id:
-    #         return Comment.objects.filter(block__is_active=True, block__flowchart_id=flowchart_id).order_by('-updated_date')
-    #     return Comment.objects.filter(block__is_active=True).order_by('-updated_date')
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
