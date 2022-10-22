@@ -6,13 +6,6 @@
     <script src="{% static 'js/go.js' %}"></script>
     <script src="{% static 'js/DrawCommandHandler.js' %}"></script>
     <script src="{% static 'js/figures.js' %}"></script>
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
-
-
-
-
-
 
 {% endblock %}
 
@@ -46,20 +39,18 @@
     </div>
     <div style="text-align: center; height: 60px;padding-top: 10px;padding-bottom: 20px">
         <button class="btn btn-primary" id="loadModel" onclick="load()">Load</button>
-        <button class="btn btn-secondary" id="saveModel" onclick="save()">Save Location</button>
+        <button class="btn btn-secondary" id="saveModel">Save Location</button>
     </div>
 
     <!-- Sent Card --->
-    <div class="card card-secondary">
+    <div class="card card-dark">
         <div class="card-header">
             <h3 class="card-title">Approvements</h3>
         </div>
         <div class="card-body" id="send-table">
         </div>
         <div class="card-footer">
-            Visit <a href="https://select2.github.io/">Select2 documentation</a> for more examples and information
-            about
-            the plugin.
+            <a href="">View the history of approved blocks</a>
         </div>
 
     </div>
@@ -67,32 +58,32 @@
 
 
     <!-- Actions Card --->
-    <div class="card" id="action-table-card">
-        <div style="background-color:rgb(64, 78, 89); text-align: center" class="card-header">
-            <h4 style="color: white">Active Actions</h4>
-        </div>
-
-        <div class="card-body">
-            <table id="action-table" class="table table-bordered table-striped" style="text-align: center">
-                <thead>
-                <tr>
-                    <th>Incident Name</th>
-                    <th>Owners</th>
-                    <th>Action</th>
-                </tr>
-                </thead>
-                <tbody id="action-table-body">
-                <tr>
-                    <td>Trident</td>
-                    <td>Win 95+</td>
-                    <td>
-                        <button class="btn Normal" style="background-color: greenyellow"> Approve</button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+{#    <div class="card" id="action-table-card">#}
+{#        <div style="background-color:rgb(64, 78, 89); text-align: center" class="card-header">#}
+{#            <h4 style="color: white">Active Actions</h4>#}
+{#        </div>#}
+{##}
+{#        <div class="card-body">#}
+{#            <table id="action-table" class="table table-bordered table-striped" style="text-align: center">#}
+{#                <thead>#}
+{#                <tr>#}
+{#                    <th>Incident Name</th>#}
+{#                    <th>Owners</th>#}
+{#                    <th>Action</th>#}
+{#                </tr>#}
+{#                </thead>#}
+{#                <tbody id="action-table-body">#}
+{#                <tr>#}
+{#                    <td>Trident</td>#}
+{#                    <td>Win 95+</td>#}
+{#                    <td>#}
+{#                        <button class="btn Normal" style="background-color: greenyellow"> Approve</button>#}
+{#                    </td>#}
+{#                </tr>#}
+{#                </tbody>#}
+{#            </table>#}
+{#        </div>#}
+{#    </div>#}
 
 
     <!-- Transitions Card --->
@@ -772,7 +763,8 @@
             myDiagram.isModified = false;
         }
 
-        function load() {
+        async function load() {
+            await sleep(500);
             <!-- Get Blocks -->
             $.ajax({
                 type: 'GET',
@@ -807,6 +799,10 @@
 
         window.addEventListener('DOMContentLoaded', init);
 
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
         function approveBlock(block_id) {
             $.ajax({
                 type: 'PATCH',
@@ -817,13 +813,11 @@
                 },
                 data: {'is_approved': true},
                 success: function (data, status, xhr) {
-
-                    getActivBlock()
-                    getActiveTransitions()
                     getPreApprovedBlocks()
+                    {#getActivBlock()#}
+                    getActiveTransitions()
                     getComments()
                     load()
-
                 }
             });
         }
@@ -838,9 +832,10 @@
                 },
                 data: {'is_approved': true},
                 success: function (data, status, xhr) {
-                    getActivBlock()
-                    getActiveTransitions()
                     getPreApprovedBlocks()
+                    {#getActivBlock()#}
+                    getActiveTransitions()
+                    getComments()
                     load()
 
                 }
@@ -858,9 +853,10 @@
                 data: {'is_pre_approved': true},
                 success: function (data, status, xhr) {
 
-                    getActivBlock()
-                    getActiveTransitions()
+                    sendMSG(block_id)
                     getPreApprovedBlocks()
+                    {#getActivBlock()#}
+                    getActiveTransitions()
                     getComments()
                     load()
 
@@ -1058,12 +1054,19 @@
             });
         }
 
-        function sendTableElement(data) {
+        async function sendTableElement(data) {
             var sendTable = document.getElementById("send-table")
             sendTable.innerHTML = ""
             var temp = []
 
             for (let i = 0; i < data.length; i++) {
+
+                var textInput = document.createElement("input")
+                textInput.type = "text"
+                textInput.id = "msg-text"
+                textInput.style.border = "1px solid black"
+                textInput.style.width = "100%"
+                textInput.placeholder = data[i].text
 
                 var button1 = document.createElement("button")
                 button1.type = "button"
@@ -1107,7 +1110,7 @@
                     select.setAttribute("multiple", "");
                     select.setAttribute('data-placeholder', "select recipient");
                     select.style = "width: 100%"
-                    select.id = "select-members-" + i.toString()
+                    select.id = "select-members-" + data[i].key.toString()
 
                     for (const key in data[i].members) {
                         if (data[i].members.hasOwnProperty(key)) {
@@ -1135,6 +1138,7 @@
                     button1.classList.add("disabled")
                     button1.setAttribute("disabled", true)
                 }
+                div3.appendChild(textInput)
                 div3.appendChild(button1)
                 div3.appendChild(button2)
 
@@ -1153,7 +1157,7 @@
                     select2.setAttribute("multiple", "");
                     select2.setAttribute('data-placeholder', "Select MSG type");
                     select2.style = "width: 100%"
-                    select2.id = "select-msg-type" + i.toString()
+                    select2.id = "select-msg-type" + data[i].key.toString()
 
                     var op1 = document.createElement("option")
                     op1.value = "sms";
@@ -1317,10 +1321,12 @@
 
                 data: {'flowchart_id': {{flowchart_id}}},
                 success: function (data, status, xhr) {
-                    load()
-                    getActivBlock()
+
+                    {#getActivBlock()#}
+                    getPreApprovedBlocks()
                     getActiveTransitions()
                     getComments()
+                    load()
                 }
             });
         }
@@ -1336,10 +1342,12 @@
 
                 data: {'flowchart_id': {{flowchart_id}}},
                 success: function (data, status, xhr) {
-                    load()
-                    getActivBlock()
+
+                    {#getActivBlock()#}
                     getActiveTransitions()
+                    getPreApprovedBlocks()
                     getComments()
+                    load()
                 }
             });
         }
@@ -1362,10 +1370,35 @@
             });
         }
 
+        function sendMSG(blockId, msg_id, members_id) {
+            var selectedMembers = $('#select-members-' + blockId.toString()).val();
+            var selectedMSG = $('#select-msg-type' + blockId.toString()).val();
+            var msgText = document.getElementById("msg-text").value
+            console.log(msgText)
+
+
+            $.ajax({
+                type: 'POST',
+                dataType: "json",
+                url: "/users/api/v1/send-msg/",
+                headers: {
+                    "X-CSRFToken": '{{ csrf_token }}'
+                },
+                data: {
+                    'block_id': blockId, 'msg_type': JSON.stringify(selectedMSG),
+                    'members': JSON.stringify(selectedMembers),
+                    'text': msgText
+                },
+                success: function (data, status, xhr) {
+                }
+            });
+
+
+        }
 
         getTriggeredDate()
         getPreApprovedBlocks()
-        getActivBlock()
+        {#getActivBlock()#}
         getActiveTransitions()
         getComments()
 
