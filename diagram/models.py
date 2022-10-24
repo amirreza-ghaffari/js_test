@@ -6,6 +6,7 @@ from django.contrib.auth.models import Group
 from flowchart.models import Flowchart
 from django.contrib.auth import get_user_model
 from users.models import Member
+from django.urls import reverse
 
 User = get_user_model()
 
@@ -68,6 +69,10 @@ class Block(models.Model):
         if self.updated_date:
             return naturaltime(self.updated_date)
         return None
+
+    @property
+    def block_info(self):
+        return reverse('diagram:block_info', kwargs={'pk': self.id})
 
     def __str__(self):
         return self.label + " (" + str(self.flowchart) + ")"
