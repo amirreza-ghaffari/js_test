@@ -14,7 +14,7 @@ def custom_send_email(context, to_email_list, subject='BCM Management', template
     email.send(fail_silently=False)
 
 
-def next_action(block, user):
+def next_action(block, member):
     t = {}
     for b in Block.objects.filter(flowchart_id=block.flowchart_id).order_by('id'):
         out_block_ids, input_block_ids = [], []
@@ -26,7 +26,7 @@ def next_action(block, user):
 
         t[b.id] = {'next': out_block_ids, 'previous': input_block_ids}
 
-    candidate_blocks = Block.objects.filter(user_groups__in=user.groups.all(), flowchart_id=block.flowchart_id).values_list('id', flat=True)
+    candidate_blocks = Block.objects.filter(member=member, flowchart_id=block.flowchart_id).values_list('id', flat=True)
     next_blocks = t[block.id]['next']
     if 0 < len(next_blocks) < 2:
         if next_blocks[0] in candidate_blocks:
