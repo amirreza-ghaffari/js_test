@@ -105,7 +105,6 @@ class Transition(models.Model):
     color = models.CharField(max_length=256, choices=color_choices, default='black')
     is_active = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
-    history = HistoricalRecords()
 
     class Meta:
         unique_together = ('start_block', 'end_block', 'flowchart')
@@ -115,6 +114,8 @@ class Transition(models.Model):
             raise ValidationError('Start Block and End Block can not be same!')
         if self.is_active is False and self.is_approved:
             raise ValidationError('Can not approve a non active Transition')
+        if self.start_block.flowchart != self.end_block.flowchart:
+            raise ValidationError('Start Block and End Block must be from same flowchart')
 
     @property
     def flow_path(self):
