@@ -57,24 +57,26 @@ def new_flowchart(request):
     location_id = request.data.get('location_id')
 
     if primary_flowchart_id == "0" or location_id == "0":
-        return Response({'message': 'please select a location and a plan', 'error': True},
+        return Response({'message': 'please select a location and a plan', 'error_code': 0, 'error': True},
                         status=status.HTTP_400_BAD_REQUEST)
 
     try:
         primary_flowchart = Flowchart.objects.get(id=primary_flowchart_id, primary=True)
     except Flowchart.DoesNotExist:
-        return Response({'message': 'Primary Flowchart Does not Exists', 'error': True},
+        return Response({'message': 'Primary Flowchart Does not Exists', 'error_code': 1, 'error': True},
                         status=status.HTTP_404_NOT_FOUND)
     try:
         location_obj = Location.objects.get(id=location_id)
     except Location.DoesNotExist:
-        return Response({'message': 'Location Does not Exists', 'error': True},
+        return Response({'message': 'Location Does not Exists', 'error_code': 2, 'error': True},
                         status=status.HTTP_404_NOT_FOUND)
-    if Flowchart.objects.filter(name=primary_flowchart.name, location=location_obj).exists():
-        return Response({'message': 'This Flowchart Already Exists', 'error': True},
+
+    flowchart, created = Flowchart.objects.get_or_create(name=primary_flowchart.name, location=location_obj)
+    if not created:
+        return Response({'message': 'This Flowchart Already Exists', 'error_code': 3,
+                         'flowchart_id': flowchart.id, 'url': reverse('flowchart:flowchart_view', kwargs={'pk': flowchart.id}), 'error':  True},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    new_flowchart = Flowchart.objects.create(name=primary_flowchart.name, location=location_obj)
     blocks = Block.objects.filter(flowchart=primary_flowchart).order_by('id')
     transitions = Transition.objects.filter((Q(start_block__in=blocks) | Q(end_block__in=blocks)))
 
@@ -84,7 +86,7 @@ def new_flowchart(request):
         block.pk = None
         block.is_approved = False
         block.is_active = False
-        block.flowchart = new_flowchart
+        block.flowchart = flowchart
         block.save()
         data[block.label] = block.id
 
@@ -96,13 +98,13 @@ def new_flowchart(request):
         end_block_name = transition.end_block.label
         transition.start_block_id = data[start_block_name]
         transition.end_block_id = data[end_block_name]
-        transition.flowchart = new_flowchart
+        transition.flowchart = flowchart
         transition.save()
-    block = Block.objects.get(input_transition=None, flowchart_id=new_flowchart.id)
+    block = Block.objects.get(input_transition=None, flowchart_id=flowchart.id)
     block.is_active = True
     block.save()
 
-    return Response({'message': 'new objects created', 'new_flowchart_id': new_flowchart.id, 'url': reverse('flowchart:flowchart_view', kwargs={'pk': new_flowchart.id})},
+    return Response({'message': 'new objects created', 'new_flowchart_id': flowchart.id, 'url': reverse('flowchart:flowchart_view', kwargs={'pk': flowchart.id})},
                     status=status.HTTP_201_CREATED)
 
 
