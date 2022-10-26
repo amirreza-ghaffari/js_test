@@ -19,8 +19,8 @@ class TransitionAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('label', 'start_block', 'end_block', 'is_active', 'is_approved', 'flowchart')}),
     )
-    search_fields = ['start_block']
-    autocomplete_fields = ['start_block']
+    search_fields = ['start_block', 'end_block']
+    autocomplete_fields = ['start_block', 'end_block']
 
 
 
