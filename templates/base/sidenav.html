@@ -73,12 +73,7 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview" id="flowchart-list">
-                        {#                        <li class="nav-item">#}
-                        {#                            <a href="" class="nav-link">#}
-                        {#                                <i class="fas fa-user-friends nav-icon"></i>#}
-                        {#                                <p>Staff Strike</p>#}
-                        {#                            </a>#}
-                        {#                        </li>#}
+
                     </ul>
                 </li>
 
@@ -101,12 +96,7 @@
                     </ul>
 
                     <ul class="nav nav-treeview" id="incident-list">
-                        {#                        <li class="nav-item">#}
-                        {#                            <a href="" class="nav-link">#}
-                        {#                                <i class="fas fa-user-friends nav-icon"></i>#}
-                        {#                                <p>Staff Strike - Gandhi</p>#}
-                        {#                            </a>#}
-                        {#                        </li>#}
+
                     </ul>
                 </li>
                 <a href="{% url 'flowchart:history-list' %}" class="nav-link">
@@ -177,80 +167,44 @@
             })
 
 
-            function createPrimaryElement(data) {
-                for (let i = 0; i < data.length; i++) {
-
+            function createFlowchartElement(data) {
+                if (data.primary) {
                     var flowchart = document.getElementById("flowchart-list")
-                    var li = document.createElement("li")
-                    li.classList.add('nav-item')
-
-                    var a = document.createElement('a')
-                    a.classList.add('nav-link')
-                    a.href = data[i].get_absolute_url
-
-                    var i_ = document.createElement('i')
-                    i_.classList.add("fas")
-                    i_.classList.add("fa-fire")
-                    i_.classList.add("nav-icon")
-
-                    var p = document.createElement('p')
-                    p.innerHTML = data[i].name
-
-                    a.appendChild(i_)
-                    a.appendChild(p)
-
-                    li.appendChild(a)
-
-                    flowchart.appendChild(li)
-                }
-            }
-
-            function createIncidentElement(data) {
-                for (let i = 0; i < data.length; i++) {
-
+                } else {
                     var flowchart = document.getElementById("incident-list")
-                    var li = document.createElement("li")
-                    li.classList.add('nav-item')
-
-                    var a = document.createElement('a')
-                    a.classList.add('nav-link')
-                    a.href = data[i].get_absolute_url
-
-                    var i_ = document.createElement('i')
-                    i_.classList.add("fas")
-                    i_.classList.add("fa-fire")
-                    i_.classList.add("nav-icon")
-
-                    var p = document.createElement('p')
-                    p.innerHTML = data[i].name
-
-                    a.appendChild(i_)
-                    a.appendChild(p)
-
-                    li.appendChild(a)
-
-                    flowchart.appendChild(li)
                 }
+                var li = document.createElement("li")
+                li.classList.add('nav-item')
+
+                var a = document.createElement('a')
+                a.classList.add('nav-link')
+                a.href = data.get_absolute_url
+
+                var i_ = document.createElement('i')
+                i_.classList.add("fas")
+                i_.classList.add("fa-fire")
+                i_.classList.add("nav-icon")
+
+                var p = document.createElement('p')
+                p.innerHTML = data.name
+
+                a.appendChild(i_)
+                a.appendChild(p)
+
+                li.appendChild(a)
+
+                flowchart.appendChild(li)
             }
 
-            function getPrimaryFlowcharts() {
+            function getFlowcharts() {
                 $.ajax({
                     type: 'GET',
                     dataType: "json",
-                    url: "/flowchart/api/v1/flowcharts/?primary=true",
+                    url: "/flowchart/api/v1/flowcharts/",
                     success: function (data, status, xhr) {
-                        createPrimaryElement(data)
-                    }
-                });
-            }
-
-            function getIncidentFlowcharts() {
-                $.ajax({
-                    type: 'GET',
-                    dataType: "json",
-                    url: "/flowchart/api/v1/flowcharts/?primary=false",
-                    success: function (data, status, xhr) {
-                        createIncidentElement(data)
+                        for (let i = 0; i < data.length; i++) {
+                            createFlowchartElement(data[i])
+                        }
                     }
                 });
             }
@@ -307,23 +261,25 @@
                     url: "/flowchart/api/v1/new-flowchart/",
                     success: function (data, status, xhr) {
                         window.location.replace(data.url)
-
                     },
                     error: function (xhr, status, error) {
                         var obj = JSON.parse(xhr.responseText);
                         var msgEl = document.getElementById("error-msg")
-                        msgEl.innerHTML = obj.message
 
-                        el.style.display = "block"
-
+                        var errorCode = obj.error_code
+                        if (errorCode === 3) {
+                            console.log('x')
+                        } else {
+                            msgEl.innerHTML = obj.message
+                            el.style.display = "block"
+                        }
                     }
                 });
             }
 
-            getPrimaryFlowcharts()
-            getIncidentFlowcharts()
-            createIncident()
 
+            getFlowcharts()
+            createIncident()
 
         </script>
 
