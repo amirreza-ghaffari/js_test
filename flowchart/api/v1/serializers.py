@@ -7,7 +7,7 @@ User = get_user_model()
 class FlowchartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Flowchart
-        fields = ['id', 'get_absolute_url', '__str__', 'p_triggered_date', 'primary']
+        fields = ['id', 'get_absolute_url', '__str__', 'p_triggered_date', 'primary', 'is_active']
         read_only_fields = ['p_triggered_date', 'primary']
 
     def to_representation(self, instance):
