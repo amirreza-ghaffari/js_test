@@ -6,14 +6,13 @@
     <script src="{% static 'js/go.js' %}"></script>
     <script src="{% static 'js/DrawCommandHandler.js' %}"></script>
     <script src="{% static 'js/figures.js' %}"></script>
+    <script src="{% static 'js/hyperlink.js' %}"></script>
 
 {% endblock %}
 
 {% block dashboard %}
     {{ flowchart_name }}
-    {% if triggered_date %}
-        <h5 id="triggered_date"></h5>
-    {% endif %}
+    <h5 id="triggered_date" style="display: none"></h5>
     <hr>
     <div style="text-align: left">
         <button type="button" class="btn btn-outline-primary" onclick="resetFlowchart()">Reset Flowchart</button>
@@ -54,36 +53,6 @@
         </div>
 
     </div>
-
-
-
-    <!-- Actions Card --->
-{#    <div class="card" id="action-table-card">#}
-{#        <div style="background-color:rgb(64, 78, 89); text-align: center" class="card-header">#}
-{#            <h4 style="color: white">Active Actions</h4>#}
-{#        </div>#}
-{##}
-{#        <div class="card-body">#}
-{#            <table id="action-table" class="table table-bordered table-striped" style="text-align: center">#}
-{#                <thead>#}
-{#                <tr>#}
-{#                    <th>Incident Name</th>#}
-{#                    <th>Owners</th>#}
-{#                    <th>Action</th>#}
-{#                </tr>#}
-{#                </thead>#}
-{#                <tbody id="action-table-body">#}
-{#                <tr>#}
-{#                    <td>Trident</td>#}
-{#                    <td>Win 95+</td>#}
-{#                    <td>#}
-{#                        <button class="btn Normal" style="background-color: greenyellow"> Approve</button>#}
-{#                    </td>#}
-{#                </tr>#}
-{#                </tbody>#}
-{#            </table>#}
-{#        </div>#}
-{#    </div>#}
 
 
     <!-- Transitions Card --->
@@ -274,7 +243,22 @@
                         },
                         // this Binding is TwoWay due to the user editing the text with the TextEditingTool
                         new go.Binding("text").makeTwoWay(),
-                        new go.Binding("stroke", "color"))
+                        new go.Binding("stroke", "color")),
+                    $("HyperlinkText",
+                        function (node) {
+                            return "http://127.0.0.1:8000" + node.data.block_info;
+                        },
+                        function (node) {
+                            return node.data.text;
+                        },
+                        {
+                            margin: 1,
+                            textAlign: "center",
+                            overflow: go.TextBlock.OverflowEllipsis,
+                            editable: true,
+                            font: "25pt sans-serif"
+                        }
+                    ),
                 );
 
             myDiagram.nodeTemplate.toolTip =
@@ -763,6 +747,26 @@
             myDiagram.isModified = false;
         }
 
+        function getTriggeredDate() {
+
+            $.ajax({
+                    type: 'GET',
+                    dataType: "json",
+                    url: "/flowchart/api/v1/flowcharts/{{ flowchart_id }}/",
+                    success: function (data, status, xhr) {
+                        var t = document.getElementById("triggered_date")
+                        if (data.is_active) {
+                            t.style.display = "block"
+                            t.innerHTML = "Triggered at: " + data.p_triggered_date
+                        } else {
+                            t.style.display = "none"
+                            t.innerHTML = ""
+                        }
+                    }
+                }
+            )
+        }
+
         async function load() {
             await sleep(500);
             <!-- Get Blocks -->
@@ -1054,19 +1058,28 @@
             });
         }
 
-        async function sendTableElement(data) {
+        function sendTableElement(data) {
+
+            var selectBody = document.getElementById("select-body")
+            selectBody.innerHTML = ""
+
             var sendTable = document.getElementById("send-table")
             sendTable.innerHTML = ""
             var temp = []
 
             for (let i = 0; i < data.length; i++) {
 
+                var option = document.createElement('option')
+                option.value = data[i].key
+                option.innerHTML = data[i].text
+                selectBody.appendChild(option)
+
                 var textInput = document.createElement("input")
                 textInput.type = "text"
                 textInput.id = "msg-text"
                 textInput.style.border = "1px solid black"
                 textInput.style.width = "100%"
-                textInput.placeholder = data[i].text
+                textInput.value = data[i].text
 
                 var button1 = document.createElement("button")
                 button1.type = "button"
@@ -1137,6 +1150,8 @@
                 } else {
                     button1.classList.add("disabled")
                     button1.setAttribute("disabled", true)
+
+                    textInput.style.display = "none"
                 }
                 div3.appendChild(textInput)
                 div3.appendChild(button1)
@@ -1352,23 +1367,6 @@
             });
         }
 
-        function getTriggeredDate() {
-            $.ajax({
-                type: 'GET',
-                dataType: "json",
-                url: "/flowchart/api/v1/flowcharts/{{ flowchart_id }}/",
-                success: function (data, status, xhr) {
-                    {% if triggered_date %}
-                        var t = document.getElementById("triggered_date")
-                        if (data.p_triggered_date !== null) {
-                            t.innerHTML = "Triggered at: " + data.p_triggered_date
-                        } else {
-                            t.innerHTML = ""
-                        }
-                    {% endif %}
-                }
-            });
-        }
 
         function sendMSG(blockId, msg_id, members_id) {
             var selectedMembers = $('#select-members-' + blockId.toString()).val();
