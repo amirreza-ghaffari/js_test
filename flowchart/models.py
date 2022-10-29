@@ -1,6 +1,5 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.urls import reverse
 from jsonfield import JSONField
 import jdatetime

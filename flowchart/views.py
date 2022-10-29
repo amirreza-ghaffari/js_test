@@ -1,6 +1,6 @@
 import json
 from django.http import JsonResponse
-from diagram.models import Block, Transition
+from diagram.models import Block
 from users.models import Member
 from .models import Flowchart, HistoryChange
 from django.shortcuts import render
