@@ -89,6 +89,7 @@ class BlockSerializer(serializers.ModelSerializer):
         representation['fill'] = "beige"
         representation['thickness'] = 4
         representation.pop('flowchart')
+        representation['block_info'] = instance.block_info
         return representation
 
 
