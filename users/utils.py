@@ -16,7 +16,8 @@ def custom_send_email(context, to_email_list, subject='BCM Management', template
 
 def next_action(block, member):
     t = {}
-    for b in Block.objects.filter(flowchart_id=block.flowchart_id).order_by('id'):
+    flowchart_id = block.flowchart_id
+    for b in Block.objects.filter(flowchart_id=flowchart_id).order_by('id'):
         out_block_ids, input_block_ids = [], []
         for transition in b.out_transition.all():
             out_block_ids.append(transition.end_block.id)
@@ -26,12 +27,18 @@ def next_action(block, member):
 
         t[b.id] = {'next': out_block_ids, 'previous': input_block_ids}
 
-    candidate_blocks = Block.objects.filter(member=member, flowchart_id=block.flowchart_id).values_list('id', flat=True)
-    next_blocks = t[block.id]['next']
-    if 0 < len(next_blocks) < 2:
+    candidate_blocks = Block.objects.filter(members=member, flowchart_id=flowchart_id,
+                                            is_approved=False, is_active=False,
+                                            is_pre_approved=False).values_list('id', flat=True)
+
+    temp_id = block.id
+    while True:
+        next_blocks = t[temp_id]['next']
+        if len(next_blocks) == 0:
+            return None
         if next_blocks[0] in candidate_blocks:
             return Block.objects.get(id=next_blocks[0])
-    return None
+        temp_id = next_blocks[0]
 
 
 def send_sms(phone_number_lst, message):
@@ -55,21 +62,4 @@ def send_sms(phone_number_lst, message):
     response = requests.request("POST", url, headers=headers, data=payload)
 
     return json.loads(response.text)['status']
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
