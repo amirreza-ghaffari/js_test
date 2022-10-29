@@ -1,8 +1,6 @@
 from django.db.models.signals import post_save
 from .models import Transition, Block
-from .utils import custom_send_email, next_action
 from django.utils.crypto import get_random_string
-from users.models import CustomUser
 import datetime
 
 
@@ -49,16 +47,6 @@ def active_block_on_transient_approve(sender, instance, **kwargs):
 
             end_block.is_active = True
             end_block.save()
-
-            # if not end_block.is_conditional:
-            #     for user_id in end_block.user_groups.all().values_list('user__id', flat=True).distinct():
-            #         if user_id:
-            #             user = CustomUser.objects.get(id=user_id)
-            #             next_action_block = next_action(end_block, user)
-            #             random_text = user.rand_text + '_' + str(end_block.id)
-            #             print('user:', user, 'block:', end_block, 'next_action: ', next_action_block)
-            #             context = {'current_action': end_block.label, 'next_action': next_action, 'random_text': random_text}
-            #             # custom_send_email(context, ['h.pourhaji@digikala.com'])
     except Exception as e:
         print(e)
 

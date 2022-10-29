@@ -31,15 +31,7 @@ color_choices = (
 )
 
 
-class BlockGroup(models.Model):
-    name = models.CharField(max_length=256)
-
-    def __str__(self):
-        return 'Block Group ' + self.name
-
-
 class Block(models.Model):
-    group = models.ForeignKey(BlockGroup, on_delete=models.CASCADE, blank=True, null=True)
     members = models.ManyToManyField(Member, blank=True, null=True)
     flowchart = models.ForeignKey(Flowchart, on_delete=models.CASCADE, related_name='flowchart')
     updated_date = models.DateTimeField(auto_now=True)
