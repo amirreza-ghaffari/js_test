@@ -123,6 +123,7 @@ def reset_flowchart(request):
         return Response({'message': 'flowchart does not exists', 'error': True},
                         status=status.HTTP_400_BAD_REQUEST)
     blocks = Block.objects.filter(flowchart__id=flowchart_id)
+    transitions = Transition.objects.filter(start_block__in=blocks, end_block__in=blocks)
     for block in blocks:
         block.is_active = False
         block.is_approved = False
@@ -133,7 +134,7 @@ def reset_flowchart(request):
     b = Block.objects.get(flowchart__id=flowchart_id, input_transition=None)
     b.is_active = True
     b.save()
-    transitions = Transition.objects.filter(flowchart__id=flowchart_id)
+
     for tr in transitions:
         tr.is_approved = False
         tr.is_active = False

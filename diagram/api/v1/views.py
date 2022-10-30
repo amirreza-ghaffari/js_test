@@ -33,7 +33,7 @@ class BlockViewSet(ModelViewSet):
 
 class TransitionViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['is_approved', 'is_active', 'flowchart']
+    filterset_fields = ['is_approved', 'is_active']
 
     permission_classes = [IsAuthenticated]
     serializer_class = TransitionSerializer
@@ -41,9 +41,8 @@ class TransitionViewSet(ModelViewSet):
     def get_queryset(self):
         flowchart_id = self.request.query_params.get('flowchart_id')
         if flowchart_id:
-            blocks = Block.objects.filter(flowchart_id=flowchart_id).values('id')
-            id_list = [block['id'] for block in blocks]
-            return Transition.objects.filter(id__in=id_list)
+            blocks = Block.objects.filter(flowchart_id=flowchart_id)
+            return Transition.objects.filter(start_block__in=blocks, end_block__in=blocks)
         return Transition.objects.all()
 
 

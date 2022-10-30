@@ -89,7 +89,7 @@ class Block(models.Model):
 
 
 class Transition(models.Model):
-    flowchart = models.ForeignKey(Flowchart, on_delete=models.CASCADE, related_name='transition_flowchart')
+    # flowchart = models.ForeignKey(Flowchart, on_delete=models.CASCADE, related_name='transition_flowchart')
     label = models.CharField(max_length=256)
     updated_date = models.DateTimeField(auto_now=True)
     start_block = models.ForeignKey(Block, on_delete=models.CASCADE, related_name='out_transition')
@@ -99,7 +99,7 @@ class Transition(models.Model):
     is_approved = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('start_block', 'end_block', 'flowchart')
+        unique_together = ('start_block', 'end_block')
 
     def clean(self):
         if self.start_block == self.end_block:

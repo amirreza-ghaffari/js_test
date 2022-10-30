@@ -103,7 +103,7 @@ class UserSerializer(serializers.ModelSerializer):
 class TransitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transition
-        fields = ['start_block', 'end_block', 'is_approved', 'color', 'label', 'id', 'flowchart']
+        fields = ['start_block', 'end_block', 'is_approved', 'color', 'label', 'id']
         read_only_fields = ('color',)
 
     def validate(self, data):

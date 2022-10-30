@@ -1,5 +1,7 @@
 from django.contrib import admin
 from .models import Block, Transition, Comment
+from django.contrib.admin import ModelAdmin, SimpleListFilter
+from flowchart.models import Flowchart
 
 
 class BlockAdmin(admin.ModelAdmin):
@@ -10,12 +12,31 @@ class BlockAdmin(admin.ModelAdmin):
     search_fields = ['label', 'flowchart__name']
 
 
+class FlowchartFilter(SimpleListFilter):
+    title = "Flowchart"  # a label for our filter
+    parameter_name = "flow"  # you can put anything here
+
+    def lookups(self, request, model_admin):
+        list_of_flows = []
+        queryset = Flowchart.objects.all()
+        for flow in queryset:
+            list_of_flows.append(
+                (str(flow.id), flow.__str__())
+            )
+        return sorted(list_of_flows, key=lambda tp: tp[1])
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(start_block__flowchart_id=self.value(), end_block__flowchart_id=self.value())
+        return queryset
+
+
 class TransitionAdmin(admin.ModelAdmin):
 
-    list_display = ('label', 'start_block', 'end_block', 'is_approved', 'is_active', 'last_modified', 'flowchart')
-    list_filter = ('is_approved', 'is_active', 'flowchart')
+    list_display = ('label', 'start_block', 'end_block', 'is_approved', 'is_active', 'last_modified')
+    list_filter = ('is_approved', 'is_active', FlowchartFilter)
     fieldsets = (
-        (None, {'fields': ('label', 'start_block', 'end_block', 'is_active', 'is_approved', 'flowchart')}),
+        (None, {'fields': ('label', 'start_block', 'end_block', 'is_active', 'is_approved')}),
     )
     search_fields = ['start_block', 'end_block']
     autocomplete_fields = ['start_block', 'end_block']
