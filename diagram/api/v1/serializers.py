@@ -70,6 +70,10 @@ class BlockSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
+
+        representation['fill'] = "beige"
+        representation['thickness'] = 4
+
         representation['key'] = instance.id
         representation['text'] = instance.label
         representation.pop('is_approved')
@@ -81,13 +85,16 @@ class BlockSerializer(serializers.ModelSerializer):
         else:
             representation['size'] = "450 150"
 
-        if instance.is_active and not instance.is_conditional:
-            representation['figure'] = "CreateRequest"
+        if instance.is_active:
+            representation['fill'] = '#f50001'
+            if not instance.is_conditional:
+                representation['size'] = "480 170"
+                representation['figure'] = "CreateRequest"
+                # representation['color'] = 'black'
+
         if len(instance.out_transition.all()) == 0:
             representation['figure'] = "Ellipse"
 
-        representation['fill'] = "beige"
-        representation['thickness'] = 4
         representation.pop('flowchart')
         representation['block_info'] = instance.block_info
         return representation

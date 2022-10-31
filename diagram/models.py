@@ -73,13 +73,6 @@ class Block(models.Model):
              update_fields=None):
         if self.is_approved:
             self.color = 'green'
-        elif self.is_active:
-            if self.is_pre_approved:
-                self.color = 'red'
-            else:
-                self.color = 'orange'
-        else:
-            self.color = 'black'
 
         if self.is_conditional:
             self.figure = 'Diamond'
