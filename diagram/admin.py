@@ -8,7 +8,7 @@ class BlockAdmin(admin.ModelAdmin):
     fields = ('label', 'is_approved', 'is_pre_approved', 'is_active', 'is_conditional', 'color', 'flowchart',
               'figure', 'description', 'loc_height', 'loc_length', 'members')
     list_display = ('id', 'label', 'is_approved', 'is_pre_approved', 'is_active', 'last_modified')
-    list_filter = ('is_approved', 'is_active', 'flowchart')
+    list_filter = ('is_approved', 'is_active', 'is_pre_approved', 'flowchart')
     search_fields = ['label', 'flowchart__name']
 
 
@@ -33,13 +33,19 @@ class FlowchartFilter(SimpleListFilter):
 
 class TransitionAdmin(admin.ModelAdmin):
 
-    list_display = ('label', 'start_block', 'end_block', 'is_approved', 'is_active', 'last_modified')
+    list_display = ('label', 'start_block_label', 'end_block_label', 'is_approved', 'is_active', 'last_modified')
     list_filter = ('is_approved', 'is_active', FlowchartFilter)
     fieldsets = (
         (None, {'fields': ('label', 'start_block', 'end_block', 'is_active', 'is_approved')}),
     )
     search_fields = ['start_block', 'end_block']
     autocomplete_fields = ['start_block', 'end_block']
+
+    def start_block_label(self, obj):
+        return obj.start_block.label
+
+    def end_block_label(self, obj):
+        return obj.start_block.label
 
 
 class CommentAdmin(admin.ModelAdmin):
