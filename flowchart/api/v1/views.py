@@ -1,4 +1,5 @@
 from django.db.models import Count, Sum
+from django.db.models.functions import Coalesce
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from flowchart.models import Flowchart, Location, HistoryChange, ContingencyPlan
@@ -193,6 +194,7 @@ def end_incident(request):
 
         flowchart.is_active = False
         flowchart.triggered_date = None
+        flowchart.increase_incident()
         flowchart.save()
 
         response = requests.request("POST", url, headers=headers, data=payload)
@@ -353,11 +355,19 @@ def ff(request):
 @api_view(['Get'])
 def incident_per_location(request):
     temp = {}
+    opened = []
     queryset = Flowchart.objects.all()
     locs = queryset.exclude(location=None).values('location__name').annotate(count=Sum('incident_counter')).order_by('location__name')
     temp['names'] = locs.values_list('location__name', flat=True)
     temp['closed'] = locs.values_list('count', flat=True)
-    temp['opened'] = queryset.filter(is_active=True).values('location__name').annotate(count=Count('is_active')).order_by('location__name').values_list('count', flat=True)
+    for loc_name in temp['names']:
+        opens = queryset.filter(is_active=True, location__name=loc_name).values('location__name').annotate(count=Count('is_active'))
+        if len(opens) == 0:
+            opened.append(0)
+        else:
+            opened.append(opens[0]['count'])
+
+    temp['opened'] = opened
     return Response(temp, status=status.HTTP_200_OK)
 
 
