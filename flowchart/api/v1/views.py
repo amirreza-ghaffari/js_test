@@ -1,11 +1,11 @@
-from django.db.models import Count
+from django.db.models import Count, Sum
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from flowchart.models import Flowchart, Location, HistoryChange
+from flowchart.models import Flowchart, Location, HistoryChange, ContingencyPlan
 from diagram.models import Block, Transition
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .serializers import FlowchartSerializer, LocationSerializer, HistoryChangeSerializer
+from .serializers import FlowchartSerializer, LocationSerializer, HistoryChangeSerializer, ContingencyPlanSerializer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
 from django.urls import reverse
@@ -32,6 +32,11 @@ class LocationViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = LocationSerializer
     queryset = Location.objects.all()
+
+
+class ContingencyPlanViewSet(viewsets.ModelViewSet):
+    serializer_class = ContingencyPlanSerializer
+    queryset = ContingencyPlan.objects.all()
 
 
 @api_view(['Get'])
@@ -343,3 +348,40 @@ def ff(request):
         return f_reset(flowchart_id)
     elif task == 'end':
         return f_end(flowchart_id)
+
+
+@api_view(['Get'])
+def incident_per_location(request):
+    temp = {}
+    queryset = Flowchart.objects.all()
+    locs = queryset.exclude(location=None).values('location__name').annotate(count=Sum('incident_counter')).order_by('location__name')
+    temp['names'] = locs.values_list('location__name', flat=True)
+    temp['closed'] = locs.values_list('count', flat=True)
+    temp['opened'] = queryset.filter(is_active=True).values('location__name').annotate(count=Count('is_active')).order_by('location__name').values_list('count', flat=True)
+    return Response(temp, status=status.HTTP_200_OK)
+
+
+@api_view(['Get'])
+def total_incident(request):
+    temp = {}
+    queryset = Flowchart.objects.all()
+    closed = queryset.values('incident_counter').aggregate(count=Sum('incident_counter'))['count']
+    opened = queryset.filter(is_active=True).count()
+    temp['closed'] = closed
+    temp['open'] = opened
+    return Response(temp, status=status.HTTP_200_OK)
+
+
+@api_view(['Get'])
+def incident_per_contingency(request):
+    temp = {}
+    counts = []
+    names = []
+    flowchart_names = list(Flowchart.objects.filter(primary=True).values_list('name', flat=True).order_by('name'))
+    for name in flowchart_names:
+        c = Flowchart.objects.filter(primary=False, name__contains=name).values('incident_counter').aggregate(count=Sum('incident_counter'))['count']
+        counts.append(c)
+        names.append(name)
+    temp['names'] = names
+    temp['counts'] = counts
+    return Response(temp, status=status.HTTP_200_OK)

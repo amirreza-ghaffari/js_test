@@ -7,12 +7,6 @@ import jdatetime
 
 class Location(models.Model):
     name = models.CharField(max_length=256, unique=True)
-    incident_number = models.PositiveIntegerField(default=0)
-
-    def increase_incident(self):
-        self.incident_number += 1
-        self.save()
-        return self.incident_number
 
     def __str__(self):
         return self.name
@@ -24,6 +18,7 @@ class Flowchart(models.Model):
     primary = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     triggered_date = models.DateTimeField(null=True, blank=True)
+    incident_counter = models.PositiveIntegerField(default=0)
 
     class Meta:
         unique_together = ('name', 'location')
@@ -31,6 +26,11 @@ class Flowchart(models.Model):
     @property
     def get_absolute_url(self):
         return reverse('flowchart:flowchart_view', kwargs={'pk': self.id})
+
+    def increase_incident(self):
+        self.incident_counter += 1
+        self.save()
+        return self.incident_counter
 
     def clean(self):
         if self.location and self.primary:
@@ -61,3 +61,9 @@ class HistoryChange(models.Model):
             return self.flowchart.name + str(self.initial_date)
 
 
+class ContingencyPlan(models.Model):
+    completed = models.PositiveIntegerField(default=0)
+    in_progress = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return 'Contingency plans progress'
