@@ -30,6 +30,8 @@
         <option value="$MODULE_DIR$/templates" />
         <option value="$MODULE_DIR$/flowchart/templates" />
         <option value="$MODULE_DIR$/index/templates" />
+        <option value="$MODULE_DIR$/users/templates" />
+        <option value="$MODULE_DIR$/diagram/templates" />
       </list>
     </option>
   </component>

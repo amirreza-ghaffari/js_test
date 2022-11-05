@@ -71,6 +71,7 @@ class Block(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        self.color = 'black'
         if self.is_approved:
             self.color = 'green'
 
