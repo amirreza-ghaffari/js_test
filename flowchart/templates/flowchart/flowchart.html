@@ -1183,8 +1183,15 @@
                     op2.value = "email";
                     op2.innerText = "email";
                     op2.setAttribute("selected", true)
+
+                    var op3 = document.createElement("option")
+                    op3.value = "mm";
+                    op3.innerText = "MatterMost";
+                    op3.setAttribute("selected", true)
+
                     select2.appendChild(op1)
                     select2.appendChild(op2)
+                    select2.appendChild(op3)
                     div5.appendChild(select2)
                 }
 
