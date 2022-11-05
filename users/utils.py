@@ -4,9 +4,10 @@ from diagram.models import Block
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
+from mattermostdriver import Driver
 
 
-def custom_send_email(context, to_email_list, subject='BCM Management', template_address='email/rac/rac.html'):
+def custom_send_email(context, to_email_list, subject='BCM Management', template_address='users/email.html'):
 
     template = render_to_string(template_address, context=context)
     email = EmailMultiAlternatives(subject, template, settings.EMAIL_HOST_USER, to_email_list)
@@ -62,4 +63,31 @@ def send_sms(phone_number_lst, message):
     response = requests.request("POST", url, headers=headers, data=payload)
 
     return json.loads(response.text)['status']
+
+
+def mattermost(usernames: list, msg: str):
+    driver = Driver({
+        'url': 'im.dkservices.ir',
+        "token": settings.MM_TOKEN,
+        'scheme': 'https',
+        'port': 443
+    })
+    driver.login()
+
+    res = driver.users.get_users_by_usernames(options=usernames)
+    ids = []
+    for item in res:
+        ids.append(item['id'])
+
+    if len(ids) < 2:
+        raise AssertionError('One of users not founded')
+    res = driver.channels.create_direct_message_channel(options=ids)
+    channel_id = res['id']
+
+    res = driver.posts.create_post(options={
+      'channel_id': channel_id,
+      'message': msg
+    })
+
+    return None
 

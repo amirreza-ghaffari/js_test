@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'crispy_forms',
     'jdatetime',
+    'mattermostdriver',
 
 
     # users Module #
@@ -182,11 +183,5 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 
-ORG_EMAIL = "@gmail.com"
-FROM_EMAIL = "dovominmail" + ORG_EMAIL
-FROM_PWD = 'yndsxanmvigmgkae'
-SMTP_SERVER = "imap.gmail.com"
-SMTP_PORT = 993
-
-
 SMS_PANEL_PASSWORD = 'Basic ZGlnaV9IUi9kaWdpa2FsYTpIR1BEU0lOTmxwQXRjeVlL'
+MM_TOKEN = "eczwqqf4d7najfi7fatsnprtzo"
