@@ -41,6 +41,11 @@ def custom_send_smg(request):
             mobile_lst = list(members.values_list('mobile_number', flat=True))
             status_code = send_sms(mobile_lst, msg_text)
 
+        if 'mm' in msg_type:
+            for member in members:
+                username = member.email.replace('@digikala.com', '')
+                mattermost(['amirreza.ghafari', username], msg_text)
+
         if 'email' in msg_type:
             email_lst = list(members.values_list('email', flat=True))
             context = {'current_action': msg_text}
