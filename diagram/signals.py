@@ -2,18 +2,24 @@ from django.db.models.signals import post_save
 from .models import Transition, Block
 from django.utils.crypto import get_random_string
 import datetime
+from flowchart.utils import f_end
 
 
 def active_transition_on_block_approve(sender, instance, created, **kwargs):
     try:
         start_block = instance
+        flowchart = start_block.flowchart
         if start_block.is_approved:
+            end_blocks = flowchart.blocks.filter(out_transition=None)
 
             if len(start_block.input_transition.all()) == 0:
-                flowchart = start_block.flowchart
                 flowchart.is_active = True
                 flowchart.triggered_date = datetime.datetime.now()
                 flowchart.save()
+
+            if end_blocks.count() > 0:
+                if end_blocks.count() == end_blocks.filter(is_approved=True).count():
+                    f_end(flowchart.id)
 
             transients = Transition.objects.filter(start_block=start_block)
             for obj in transients:
