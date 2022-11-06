@@ -141,172 +141,232 @@
                 </div>
             </form>
         </section>
+    </div>
+</aside>
 
+    <script>
 
-        <script>
-
-            // jquery for show incident page
-            $(".add-flowchart").click(function () {
-                $("section.incidentPage").css({
-                    "display": 'block',
-                    "transitionDuration": "0.5s",
-                })
-                $(".content-wrapper").css({
-                    "filter": "blur(5px)"
-                })
+        // jquery for show incident page
+        $(".add-flowchart").click(function () {
+            $("section.incidentPage").css({
+                "display": 'block',
+                "transitionDuration": "0.5s",
             })
-            // jquery for closing incident page
-            $("section.incidentPage>i").click(function () {
-                $("section.incidentPage").css({
-                    "display": 'none',
-                    "transitionDuration": "0.5s",
-                })
-                $(".content-wrapper").css({
-                    "filter": "blur(0px)"
-                })
+            $(".content-wrapper").css({
+                "filter": "blur(5px)"
             })
+        })
+        // jquery for closing incident page
+        $("section.incidentPage>i").click(function () {
+            $("section.incidentPage").css({
+                "display": 'none',
+                "transitionDuration": "0.5s",
+            })
+            $(".content-wrapper").css({
+                "filter": "blur(0px)"
+            })
+        })
 
+        function createFlowchartElement(data) {
+            if (data.primary) {
+                var flowchart = document.getElementById("flowchart-list")
+            } else {
+                var flowchart = document.getElementById("incident-list")
+            }
+            var li = document.createElement("li")
+            li.classList.add('nav-item')
 
-            function createFlowchartElement(data) {
-                if (data.primary) {
-                    var flowchart = document.getElementById("flowchart-list")
-                } else {
-                    var flowchart = document.getElementById("incident-list")
+            var a = document.createElement('a')
+            a.classList.add('nav-link')
+            a.href = data.get_absolute_url
+
+            var i_ = document.createElement('i')
+            i_.classList.add("fas")
+            i_.classList.add("fa-fire")
+            i_.classList.add("nav-icon")
+
+            var p = document.createElement('p')
+            p.innerHTML = data.name
+
+            a.appendChild(i_)
+            a.appendChild(p)
+
+            li.appendChild(a)
+
+            flowchart.appendChild(li)
+        }
+
+        function getFlowcharts() {
+            $.ajax({
+                type: 'GET',
+                dataType: "json",
+                url: "/flowchart/api/v1/flowcharts/",
+                success: function (data, status, xhr) {
+                    for (let i = 0; i < data.length; i++) {
+                        createFlowchartElement(data[i])
+                    }
                 }
-                var li = document.createElement("li")
-                li.classList.add('nav-item')
+            });
+        }
 
-                var a = document.createElement('a')
-                a.classList.add('nav-link')
-                a.href = data.get_absolute_url
-
-                var i_ = document.createElement('i')
-                i_.classList.add("fas")
-                i_.classList.add("fa-fire")
-                i_.classList.add("nav-icon")
-
-                var p = document.createElement('p')
-                p.innerHTML = data.name
-
-                a.appendChild(i_)
-                a.appendChild(p)
-
-                li.appendChild(a)
-
-                flowchart.appendChild(li)
-            }
-
-            function getFlowcharts() {
-                $.ajax({
-                    type: 'GET',
-                    dataType: "json",
-                    url: "/flowchart/api/v1/flowcharts/",
-                    success: function (data, status, xhr) {
-                        for (let i = 0; i < data.length; i++) {
-                            createFlowchartElement(data[i])
-                        }
+        function createIncident() {
+            <!-- Add Plans -->
+            $.ajax({
+                type: 'GET',
+                dataType: "json",
+                url: "/flowchart/api/v1/flowcharts/?primary=true",
+                success: function (data, status, xhr) {
+                    incidentLocation = document.getElementById('contingency_plan')
+                    for (let i = 0; i < data.length; i++) {
+                        var option = document.createElement('option')
+                        option.innerHTML = data[i].name
+                        option.value = data[i].id
+                        incidentLocation.appendChild(option)
                     }
-                });
-            }
-
-            function createIncident() {
-                <!-- Add Plans -->
-                $.ajax({
-                    type: 'GET',
-                    dataType: "json",
-                    url: "/flowchart/api/v1/flowcharts/?primary=true",
-                    success: function (data, status, xhr) {
-                        incidentLocation = document.getElementById('contingency_plan')
-                        for (let i = 0; i < data.length; i++) {
-                            var option = document.createElement('option')
-                            option.innerHTML = data[i].name
-                            option.value = data[i].id
-                            incidentLocation.appendChild(option)
-                        }
+                }
+            });
+            <!-- Add Locations -->
+            $.ajax({
+                type: 'GET',
+                dataType: "json",
+                url: "/flowchart/api/v1/locations",
+                success: function (data, status, xhr) {
+                    incidentLocation = document.getElementById('incidentLocation')
+                    for (let i = 0; i < data.length; i++) {
+                        var option = document.createElement('option')
+                        option.innerHTML = data[i].name
+                        option.value = data[i].id
+                        incidentLocation.appendChild(option)
                     }
-                });
-                <!-- Add Locations -->
-                $.ajax({
-                    type: 'GET',
-                    dataType: "json",
-                    url: "/flowchart/api/v1/locations",
-                    success: function (data, status, xhr) {
-                        incidentLocation = document.getElementById('incidentLocation')
-                        for (let i = 0; i < data.length; i++) {
-                            var option = document.createElement('option')
-                            option.innerHTML = data[i].name
-                            option.value = data[i].id
-                            incidentLocation.appendChild(option)
-                        }
+                }
+            });
+        }
+
+
+        function create() {
+            var el = document.getElementById("incident-error")
+            el.style.display = "none"
+            var location = document.getElementById('incidentLocation').value
+            var contingencyPlan = document.getElementById('contingency_plan').value
+            $.ajax({
+                type: 'POST',
+                dataType: "json",
+                headers: {
+                    "X-CSRFToken": '{{ csrf_token }}'
+                },
+                data: {
+                    "flowchart_id": contingencyPlan,
+                    "location_id": location,
+                    "task": "create"
+                },
+                url: "/flowchart/api/v1/flowchart-utility/",
+                success: function (data, status, xhr) {
+                    window.location.replace(data.url)
+                },
+                error: function (xhr, status, error) {
+                    var obj = JSON.parse(xhr.responseText);
+                    var msgEl = document.getElementById("error-msg")
+
+                    var errorCode = obj.error_code
+                    if (errorCode === 3) {
+                        console.log('x')
+                        end(contingencyPlan)
+
+                    } else {
+                        msgEl.innerHTML = obj.message
+                        el.style.display = "block"
                     }
-                });
+                }
+            });
+        }
 
+        getFlowcharts()
+        createIncident()
+
+    </script>
+
+    <style>
+        section.incidentPage > i {
+            font-size: 30px;
+            color: red;
+            position: absolute;
+            right: 5px;
+            cursor: pointer;
+        }
+
+        section.incidentPage {
+            display: none;
+            border-radius: 15px;
+            width: 500px;
+            background-color: white;
+            z-index: 111;
+            position: fixed;
+            margin: 0 auto;
+            left: calc(50% - 250px);
+            top: 200px;
+            border: 1px solid black;
+            /*transition-duration: 0.5s;*/
+
+        }
+
+        form {
+            /*width: 80%;*/
+            /*background-color: wheat;*/
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        form > label {
+            display: block;
+            /*color: red;*/
+        {#font-family: Calibri;#} font-size: 18px;
+            margin-top: 30px;
+        }
+
+        select.incident {
+            display: block;
+            margin: 0 auto !important;
+            width: 400px;
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid black;
+            outline: none;
+        }
+
+        select.incidentLocation {
+            display: block;
+            margin: 0 auto !important;
+            width: 400px;
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid black;
+            outline: none;
+        }
+
+        input[type='text'] {
+            display: block;
+            width: 400px;
+            margin: 0px auto;
+            padding: 5px;
+            box-sizing: border-box;
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid black;
+            outline: none;
+        }
+
+        @keyframes fly-1 {
+            from {
+                transform: translateY(0.1em);
             }
 
-            function create() {
-                var el = document.getElementById("incident-error")
-                el.style.display = "none"
-                var location = document.getElementById('incidentLocation').value
-                var contingencyPlan = document.getElementById('contingency_plan').value
-                $.ajax({
-                    type: 'POST',
-                    dataType: "json",
-                    headers: {
-                        "X-CSRFToken": '{{ csrf_token }}'
-                    },
-                    data: {
-                        "primary_id": contingencyPlan,
-                        "location_id": location
-                    },
-                    url: "/flowchart/api/v1/new-flowchart/",
-                    success: function (data, status, xhr) {
-                        window.location.replace(data.url)
-                    },
-                    error: function (xhr, status, error) {
-                        var obj = JSON.parse(xhr.responseText);
-                        var msgEl = document.getElementById("error-msg")
-
-                        var errorCode = obj.error_code
-                        if (errorCode === 3) {
-                            console.log('x')
-                        } else {
-                            msgEl.innerHTML = obj.message
-                            el.style.display = "block"
-                        }
-                    }
-                });
+            to {
+                transform: translateY(-0.1em);
             }
+        }
 
-
-            getFlowcharts()
-            createIncident()
-
-        </script>
-
-        <style>
-            section.incidentPage > i {
-                font-size: 30px;
-                color: red;
-                position: absolute;
-                right: 5px;
-                cursor: pointer;
-            }
-
-            section.incidentPage {
-                display: none;
-                border-radius: 15px;
-                width: 500px;
-                background-color: white;
-                z-index: 111;
-                position: fixed;
-                margin: 0 auto;
-                left: calc(50% - 250px);
-                top: 200px;
-                border: 1px solid black;
-                /*transition-duration: 0.5s;*/
-
-            }
-
+        @media only screen and (max-width: 1000px) {
             form {
                 /*width: 80%;*/
                 /*background-color: wheat;*/
@@ -325,7 +385,7 @@
             select.incident {
                 display: block;
                 margin: 0 auto !important;
-                width: 400px;
+                width: 200px;
                 background-color: transparent;
                 border: none;
                 border-bottom: 1px solid black;
@@ -335,7 +395,7 @@
             select.incidentLocation {
                 display: block;
                 margin: 0 auto !important;
-                width: 400px;
+                width: 200px;
                 background-color: transparent;
                 border: none;
                 border-bottom: 1px solid black;
@@ -344,7 +404,7 @@
 
             input[type='text'] {
                 display: block;
-                width: 400px;
+                width: 200px;
                 margin: 0px auto;
                 padding: 5px;
                 box-sizing: border-box;
@@ -355,62 +415,55 @@
             }
 
             /* From uiverse.io by @adamgiebl */
-            {#button.submit {#}
-            {#    /*width: 150px;*/#}
-            {#    height: 40px;#}
-            {#    font-family: inherit;#}
-            {#    font-size: 15px;#}
-            {#    /*background: royalblue;*/#}
-            {#    color: white;#}
-            {#    padding: 0.7em 1em;#}
-            {#    padding-left: 0.9em;#}
-            {#    display: flex;#}
-            {#    align-items: center;#}
-            {#    border: none;#}
-            {#    border-radius: 16px;#}
-            {#    overflow: hidden;#}
-            {#    transition: all 0.2s;#}
-            {#    background-color: green;#}
-            {#    /*margin-top: 20px;*/#}
-            {#    margin: 20px auto;#}
-            {##}
-            {
-            #}#}
-            {##}
-            {#button.submit span {#}
-            {#    display: block;#}
-            {#    margin-left: 0.3em;#}
-            {#    transition: all 0.3s ease-in-out;#}
-            {
-            #}#}
-            {##}
-            {#button.submit svg {#}
-            {#    display: block;#}
-            {#    transform-origin: center center;#}
-            {#    transition: transform 0.3s ease-in-out;#}
-            {
-            #}#}
-            {##}
-            {#button.submit:hover .svg-wrapper {#}
-            {#    animation: fly-1 0.6s ease-in-out infinite alternate;#}
-            {
-            #}#}
-            {##}
-            {#button.submit:hover svg {#}
-            {#    transform: translateX(1.2em) rotate(45deg) scale(1.1);#}
-            {
-            #}#}
-            {##}
-            {#button.submit:hover span {#}
-            {#    transform: translateX(5em);#}
-            {#    overflow-x: hidden;#}
-            {
-            #}#}
-            {##}
-            {#button.submit:active {#}
-            {#    transform: scale(0.95);#}
-            {
-            #}#}
+            button.submit {
+                /*width: 150px;*/
+                height: 40px;
+                font-family: inherit;
+                font-size: 15px;
+                /*background: royalblue;*/
+                color: white;
+                padding: 0.7em 1em;
+                padding-left: 0.9em;
+                display: flex;
+                align-items: center;
+                border: none;
+                border-radius: 16px;
+                overflow: hidden;
+                transition: all 0.2s;
+                background-color: green;
+                /*margin-top: 20px;*/
+                margin: 20px auto;
+
+            }
+
+            button.submit span {
+                display: block;
+                margin-left: 0.3em;
+                transition: all 0.3s ease-in-out;
+            }
+
+            button.submit svg {
+                display: block;
+                transform-origin: center center;
+                transition: transform 0.3s ease-in-out;
+            }
+
+            button.submit:hover .svg-wrapper {
+                animation: fly-1 0.6s ease-in-out infinite alternate;
+            }
+
+            button.submit:hover svg {
+                transform: translateX(1.2em) rotate(45deg) scale(1.1);
+            }
+
+            button.submit:hover span {
+                transform: translateX(5em);
+                overflow-x: hidden;
+            }
+
+            button.submit:active {
+                transform: scale(0.95);
+            }
 
             @keyframes fly-1 {
                 from {
@@ -421,114 +474,5 @@
                     transform: translateY(-0.1em);
                 }
             }
-
-            @media only screen and (max-width: 1000px) {
-                form {
-                    /*width: 80%;*/
-                    /*background-color: wheat;*/
-                    margin: 0 auto;
-                    padding: 20px;
-                    box-sizing: border-box;
-                }
-
-                form > label {
-                    display: block;
-                    /*color: red;*/
-                {#font-family: Calibri;#} font-size: 18px;
-                    margin-top: 30px;
-                }
-
-                select.incident {
-                    display: block;
-                    margin: 0 auto !important;
-                    width: 200px;
-                    background-color: transparent;
-                    border: none;
-                    border-bottom: 1px solid black;
-                    outline: none;
-                }
-
-                select.incidentLocation {
-                    display: block;
-                    margin: 0 auto !important;
-                    width: 200px;
-                    background-color: transparent;
-                    border: none;
-                    border-bottom: 1px solid black;
-                    outline: none;
-                }
-
-                input[type='text'] {
-                    display: block;
-                    width: 200px;
-                    margin: 0px auto;
-                    padding: 5px;
-                    box-sizing: border-box;
-                    background-color: transparent;
-                    border: none;
-                    border-bottom: 1px solid black;
-                    outline: none;
-                }
-
-                /* From uiverse.io by @adamgiebl */
-                button.submit {
-                    /*width: 150px;*/
-                    height: 40px;
-                    font-family: inherit;
-                    font-size: 15px;
-                    /*background: royalblue;*/
-                    color: white;
-                    padding: 0.7em 1em;
-                    padding-left: 0.9em;
-                    display: flex;
-                    align-items: center;
-                    border: none;
-                    border-radius: 16px;
-                    overflow: hidden;
-                    transition: all 0.2s;
-                    background-color: green;
-                    /*margin-top: 20px;*/
-                    margin: 20px auto;
-
-                }
-
-                button.submit span {
-                    display: block;
-                    margin-left: 0.3em;
-                    transition: all 0.3s ease-in-out;
-                }
-
-                button.submit svg {
-                    display: block;
-                    transform-origin: center center;
-                    transition: transform 0.3s ease-in-out;
-                }
-
-                button.submit:hover .svg-wrapper {
-                    animation: fly-1 0.6s ease-in-out infinite alternate;
-                }
-
-                button.submit:hover svg {
-                    transform: translateX(1.2em) rotate(45deg) scale(1.1);
-                }
-
-                button.submit:hover span {
-                    transform: translateX(5em);
-                    overflow-x: hidden;
-                }
-
-                button.submit:active {
-                    transform: scale(0.95);
-                }
-
-                @keyframes fly-1 {
-                    from {
-                        transform: translateY(0.1em);
-                    }
-
-                    to {
-                        transform: translateY(-0.1em);
-                    }
-                }
-            }
-        </style>
+        }
+    </style>

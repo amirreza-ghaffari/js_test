@@ -33,7 +33,7 @@ color_choices = (
 
 class Block(models.Model):
     members = models.ManyToManyField(Member, blank=True, null=True)
-    flowchart = models.ForeignKey(Flowchart, on_delete=models.CASCADE, related_name='flowchart')
+    flowchart = models.ForeignKey(Flowchart, on_delete=models.CASCADE, related_name='blocks')
     updated_date = models.DateTimeField(auto_now=True)
     created_date = models.DateTimeField(auto_now_add=True)
     label = models.CharField(max_length=256, null=False, blank=False)

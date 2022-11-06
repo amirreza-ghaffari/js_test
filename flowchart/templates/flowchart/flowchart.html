@@ -1039,7 +1039,7 @@
             $.ajax({
                 type: 'GET',
                 dataType: "json",
-                url: "/diagram/api/v1/transitions/?flowchart={{ flowchart_id }}&is_active=true",
+                url: "/diagram/api/v1/transitions/?flowchart_id={{ flowchart_id }}&is_active=true",
                 success: function (data, status, xhr) {
                     transientTableElement(data)
                 }
@@ -1231,7 +1231,6 @@
                     var commentBtn = document.getElementById("btn_comment");
                     commentBtn.innerHTML = "submit New Comment";
 
-
                 }
             });
         }
@@ -1292,7 +1291,6 @@
                     getComments()
                 }
             });
-
         }
 
         function submitComment() {
@@ -1336,15 +1334,14 @@
             $.ajax({
                 type: 'POST',
                 dataType: "json",
-                url: "/flowchart/api/v1/reset-flowchart/",
+                url: "/flowchart/api/v1/flowchart-utility/",
                 headers: {
                     "X-CSRFToken": '{{ csrf_token }}'
                 },
 
-                data: {'flowchart_id': {{flowchart_id}}},
+                data: {'flowchart_id': {{flowchart_id}}, 'task': 'reset'},
                 success: function (data, status, xhr) {
 
-                    {#getActivBlock()#}
                     getPreApprovedBlocks()
                     getActiveTransitions()
                     getComments()
@@ -1357,15 +1354,13 @@
             $.ajax({
                 type: 'POST',
                 dataType: "json",
-                url: "/flowchart/api/v1/end-incident/",
+                url: "/flowchart/api/v1/flowchart-utility/",
                 headers: {
                     "X-CSRFToken": '{{ csrf_token }}'
                 },
-
-                data: {'flowchart_id': {{flowchart_id}}},
+                data: {'flowchart_id': {{flowchart_id}}, 'task': 'end'},
                 success: function (data, status, xhr) {
 
-                    {#getActivBlock()#}
                     getActiveTransitions()
                     getPreApprovedBlocks()
                     getComments()
@@ -1374,13 +1369,10 @@
             });
         }
 
-
         function sendMSG(blockId, msg_id, members_id) {
             var selectedMembers = $('#select-members-' + blockId.toString()).val();
             var selectedMSG = $('#select-msg-type' + blockId.toString()).val();
             var msgText = document.getElementById("msg-text").value
-            console.log(msgText)
-
 
             $.ajax({
                 type: 'POST',
@@ -1398,12 +1390,10 @@
                 }
             });
 
-
         }
 
         getTriggeredDate()
         getPreApprovedBlocks()
-        {#getActivBlock()#}
         getActiveTransitions()
         getComments()
 
