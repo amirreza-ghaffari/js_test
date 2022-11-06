@@ -2,7 +2,6 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.permissions import IsAuthenticated
 from ...models import Member
 from diagram.models import Block
-from flowchart.models import Flowchart
 from rest_framework import status
 from rest_framework.response import Response
 from users.utils import send_sms, custom_send_email, next_action, mattermost
@@ -49,7 +48,7 @@ def custom_send_smg(request):
         if 'email' in msg_type:
             email_lst = list(members.values_list('email', flat=True))
             context = {'current_action': msg_text}
-            custom_send_email(context, email_lst, subject='BCM Management', template_address='email/rac/rac.html')
+            custom_send_email(context, email_lst, subject='BCM Management', template_address='users/email.html')
 
     return Response({'message': 'message sent'}, status=status.HTTP_200_OK)
 
