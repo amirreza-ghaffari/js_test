@@ -17,8 +17,8 @@
     {% endif %}
 
     <div class="col">
-        <div class="card">
-            <div style="background-color: #6fc7c3" class="card-header ">
+        <div class="card card-dark">
+            <div class="card-header ">
                 <h1 class="card-title primary">Create Member</h1>
                 <p class="card-category"></p>
             </div>
@@ -93,7 +93,7 @@
                             </div>
                             <div class="card-footer">
                                 <div class="text-right">
-                                    <a href="{% url 'users:save_member_session' member.id %}" class="btn btn-sm bg-teal">
+                                    <a href="{% url 'users:save_member_session' member.id %}" class="btn btn-sm bg-dark">
                                         <i class="fas fa-comments"> Send Message</i>
                                     </a>
                                 </div>
