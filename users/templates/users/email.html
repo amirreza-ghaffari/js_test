@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>BCM - Email</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+</head>
+<body style="font-family: Roboto;font-weight: bold">
+<section class="main" style="background-color: rgba(214,221,236,0.48) !important; padding: 15px;box-sizing: border-box">
+    <section class="image" style="text-align: center">
+        <img src="https://oklozo.stripocdn.email/content/guids/3e3dbdd3-0d1a-4d99-a03b-fc2ba51665dc/images/79831610455841928.png"
+             alt="" style="width: 140px;height: 50px;margin-top: 10px">
+    </section>
+    <section class="title">
+        <p style="text-align: center;font-size: 35px;background-color: crimson;color: white;margin-top: 15px">BCM ALERT
+            !</p>
+        <hr style="background-color: #151515">
+        <p style="font-family: Roboto;font-size: 18px;margin-top: 15px">Dear {{ name }}, <br>
+            Regarding <span style="color: red;font-weight: bold">{{ contingency_name }}</span> contingency plan, kindly
+            find your actions :</p>
+    </section>
+    <section class="table" style="width: 100%;margin: 0 auto">
+        <table style="border-collapse: collapse;
+        width: 50%;
+        margin: 20px auto;
+    /*margin: 25px 0;*/
+    font-size: 0.9em;
+    font-family: sans-serif;
+    /*min-width: 400px;*/
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);">
+            <thead>
+            <tr style="background-color: rgba(25,10,26,0.71);
+    color: #ffffff;
+    text-align: center;">
+                <th style="font-family: Arial">Current Action</th>
+                {% if next_action %}
+                    <th style="font-family: Arial">Next Action</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td style="font-family: Roboto;font-size: 24px;text-align: center">{{ current_action }} </td>
+                {% if next_action %}
+                    <td style="font-family: Roboto;font-size: 24px;text-align: center">{{ next_action }}</td>
+                {% endif %}
+            </tr>
+            </tbody>
+        </table>
+
+    </section>
+    <span style="color: crimson ;font-size: 30px;text-align: center;display: block;width: 50%;margin: 0 auto">NOTE :</span>
+    <p style="font-family: Roboto;font-size: 22px;text-align: center;margin-top: 15px">If you read this email please
+        confirm it :</p>
+    <a href="#" style="color: #090909;
+             padding: 0.7em 1.7em;
+             font-family: Roboto;
+             text-align: center;
+             display: block;
+             width: 200px;
+             margin: 0 auto;
+             font-size: 18px;
+             color: white;
+             border-radius: 0.5em;
+             background: rgba(238,25,25,0.96);
+             border: 1px solid #e8e8e8;
+             box-shadow: 6px 6px 12px #c5c5c5,
+             -6px -6px 12px #ffffff;">I've read this email</a>
+
+</body>
+</html>
