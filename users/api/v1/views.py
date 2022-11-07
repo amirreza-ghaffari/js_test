@@ -82,6 +82,8 @@ def send_block_msg(request):
     if len(members) > 0 and len(msg_type) > 0 and block_id and msg_text != '':
 
         block = Block.objects.get(id=block_id)
+        if len(block.input_transition.all()) == 0 or block.label == 'شروع':
+            msg_text = "بحرانی با موضوع " + block.flowchart.name + " در منطقه ی " + block.flowchart.location.name + " اتفاق افتاد"
         flowchart_name = block.flowchart.name
         block.members.add(*members)
         block.save()
@@ -93,7 +95,6 @@ def send_block_msg(request):
         if 'mm' in msg_type:
             for member in members:
                 username = member.email.replace('@digikala.com', '')
-                print(username)
                 mattermost(['amirreza.ghafari', username], msg_text)
 
         if 'email' in msg_type:
