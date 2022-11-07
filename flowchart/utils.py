@@ -27,9 +27,11 @@ def f_create(flowchart_id, location_id):
 
     flowchart, created = Flowchart.objects.get_or_create(name=primary_flowchart.name, location=location_obj)
     if not created:
-        return Response({'message': 'This Flowchart Already Exists', 'error_code': 3,
-                         'flowchart_id': flowchart.id, 'url': reverse('flowchart:flowchart_view', kwargs={'pk': flowchart.id}), 'error':  True},
-                        status=status.HTTP_400_BAD_REQUEST)
+        f_end(flowchart.id)
+        return Response({'message': 'Flowchart already existed, only Reset', 'error_code': 3,
+                         'flowchart_id': flowchart.id,
+                         'url': reverse('flowchart:flowchart_view', kwargs={'pk': flowchart.id})},
+                        status=status.HTTP_200_OK)
 
     blocks = Block.objects.filter(flowchart=primary_flowchart).order_by('id')
     transitions = Transition.objects.filter((Q(start_block__in=blocks) | Q(end_block__in=blocks)))
