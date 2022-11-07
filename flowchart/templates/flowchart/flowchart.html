@@ -17,6 +17,7 @@
     <div style="text-align: left">
         <button type="button" class="btn btn-outline-primary" onclick="resetFlowchart()">Reset Flowchart</button>
         <button type="button" class="btn btn-outline-secondary" onclick="endIncident()">End Incident</button>
+        <button type="button" class="btn btn-outline-info" id="loadModel" onclick="load()">Load</button>
     </div>
 
 
@@ -36,15 +37,13 @@
             <div style="position: absolute; width: 1px; height: 1px;"></div>
         </div>
     </div>
-    <div style="text-align: center; height: 60px;padding-top: 10px;padding-bottom: 20px">
-        <button class="btn btn-primary" id="loadModel" onclick="load()">Load</button>
-        <button class="btn btn-secondary" id="saveModel">Save Location</button>
-    </div>
+
+    <br>
 
     <!-- Sent Card --->
     <div class="card card-dark">
         <div class="card-header">
-            <h3 class="card-title">Approvements</h3>
+            <h3 class="card-title">Approve</h3>
         </div>
         <div class="card-body" id="send-table">
         </div>
@@ -78,9 +77,9 @@
 
 
     <!-- comment Card --->
-    <div class="card">
-        <div style="background-color: rgb(64, 78, 89);text-align: center" class="card-header">
-            <h4 style="color: white">Comments and Messages</h4>
+    <div class="card card-dark">
+        <div class="card-header">
+            <h3 class="card-title">Comments and Messages</h3>
         </div>
 
         <div class="card-body">
