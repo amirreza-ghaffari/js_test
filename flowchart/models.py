@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from jsonfield import JSONField
+from django_jalali.db import models as jmodels
 import jdatetime
 
 
@@ -56,9 +57,18 @@ class HistoryChange(models.Model):
         comment_history = JSONField(default=dict)
         block_history = JSONField(default=dict)
         initial_date = models.DateTimeField()
+        j_initial_date = jmodels.jDateField(null=True, blank=True)
 
         def __str__(self):
             return self.flowchart.name + str(self.initial_date)
+
+        def convert_to_j(self):
+            j = jdatetime.datetime.fromgregorian(day=self.initial_date.day, month=self.initial_date.month,
+                                             year=self.initial_date.year, hour=self.initial_date.hour,
+                                             minute=self.initial_date.minute)
+            self.j_initial_date = j
+            self.save()
+            return self.j_initial_date
 
 
 class ContingencyPlan(models.Model):
