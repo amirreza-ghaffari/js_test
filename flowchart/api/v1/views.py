@@ -1,4 +1,5 @@
 from django.db.models import Count, Sum
+from django.db.models.functions import TruncMonth
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from flowchart.models import Flowchart, Location, HistoryChange, ContingencyPlan
@@ -16,7 +17,7 @@ class FlowchartViewSet(viewsets.ModelViewSet):
     """
     permission_classes = [IsAuthenticated]
     serializer_class = FlowchartSerializer
-    queryset = Flowchart.objects.all()
+    queryset = Flowchart.objects.all().order_by('-is_active')
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['primary', 'is_active']
 
@@ -119,5 +120,19 @@ def incident_per_contingency(request):
         counts.append(c)
         names.append(name)
     temp['names'] = names
+    temp['counts'] = counts
+    return Response(temp, status=status.HTTP_200_OK)
+
+
+@api_view(['Get'])
+def incident_per_month(request):
+    temp = {}
+    months = []
+    counts = []
+    histories = HistoryChange.objects.annotate(month=TruncMonth('j_initial_date')).values('month').annotate(count=Count('id')).values('month', 'count')
+    for item in histories:
+        months.append(str(item['month']))
+        counts.append(item['count'])
+    temp['months'] = months
     temp['counts'] = counts
     return Response(temp, status=status.HTTP_200_OK)

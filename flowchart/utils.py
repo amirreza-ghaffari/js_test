@@ -27,11 +27,11 @@ def f_create(flowchart_id, location_id):
 
     flowchart, created = Flowchart.objects.get_or_create(name=primary_flowchart.name, location=location_obj)
     if not created:
-        f_end(flowchart.id)
-        return Response({'message': 'Flowchart already existed, only Reset', 'error_code': 3,
+        # f_end(flowchart.id)
+        return Response({'message': 'Flowchart already exists', 'error_code': 3,
                          'flowchart_id': flowchart.id,
                          'url': reverse('flowchart:flowchart_view', kwargs={'pk': flowchart.id})},
-                        status=status.HTTP_200_OK)
+                        status=status.HTTP_406_NOT_ACCEPTABLE)
 
     blocks = Block.objects.filter(flowchart=primary_flowchart).order_by('id')
     transitions = Transition.objects.filter((Q(start_block__in=blocks) | Q(end_block__in=blocks)))
@@ -89,7 +89,9 @@ def f_reset(flowchart_id):
         tr.save()
     flowchart.is_active = False
     flowchart.save()
-    return Response({'message': 'Flowchart reset successfully', 'error': False}, status=status.HTTP_200_OK)
+    return Response({'message': 'Flowchart reset successfully', 'error': False,
+                     'url': reverse('flowchart:flowchart_view', kwargs={'pk': flowchart.id})},
+                    status=status.HTTP_200_OK)
 
 
 def f_end(flowchart_id):
@@ -118,6 +120,7 @@ def f_end(flowchart_id):
         if len(comment_history) > 0 or len(block_history) > 0:
             h = HistoryChange(flowchart=flowchart, comment_history=comment_history, block_history=block_history,
                               initial_date=flowchart.triggered_date)
+            h.convert_to_j()
             h.save()
 
         flowchart.is_active = False
