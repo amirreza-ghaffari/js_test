@@ -12,7 +12,7 @@ class FlowchartSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['name'] = representation['__str__']
+        representation['name'] = representation['__str__'].title().replace(' - Primary', '')
         representation.pop('__str__')
         return representation
 
