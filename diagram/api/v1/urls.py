@@ -1,8 +1,5 @@
-from django.contrib import admin
-from django.urls import path, include, re_path
+from django.urls import path
 from . import views
-from rest_framework.routers import DefaultRouter
-from rest_framework import routers
 
 
 urlpatterns = [
@@ -16,8 +13,6 @@ urlpatterns = [
 
     # ----------- History ----------
     path('block-history/<str:pk>/', views.BlockHistory.as_view({'get': 'retrieve'})),
-
-    path('history_diff/<str:pk>/', views.HistoryChangeView.as_view({'get': 'retrieve'}), name='his_diff'),
     path('comment-history/<str:pk>/', views.CommentHistory.as_view({'get': 'retrieve'})),
 
     # ---------- Comment -----------

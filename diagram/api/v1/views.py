@@ -46,28 +46,6 @@ class TransitionViewSet(ModelViewSet):
         return Transition.objects.all()
 
 
-class HistoryChangeView(ViewSet):
-
-    permission_classes = [IsAuthenticated]
-    serializer_class = Custom2
-    queryset = Block.objects.all()
-
-    def retrieve(self, request, pk=None):
-        block = get_object_or_404(self.queryset, pk=pk)
-        histories = block.history.all()
-        if len(histories) > 1:
-            new_record, old_record = block.history.all()[0:2]
-            delta = new_record.diff_against(old_record, included_fields=['is_approved', 'is_active', 'label'])
-            serializer = self.serializer_class(delta.changes, many=True)
-            data = serializer.data
-            user = new_record.history_user.full_name
-            change_date = new_record.history_date
-            z = {'changes': data, 'user': user, 'change_date': naturaltime(change_date)}
-            return Response(z, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': 'this object has no history_change change'}, status=status.HTTP_404_NOT_FOUND)
-
-
 class BlockHistory(ViewSet):
 
     # permission_classes = [IsAuthenticated]
@@ -143,34 +121,22 @@ class CommentViewSet(ModelViewSet):
 
     permission_classes = [IsAuthenticated]
     serializer_class = CommentSerializer
-    queryset = Comment.objects.all().order_by('-updated_date')
+
+    def get_queryset(self):
+        flowchart_id = self.request.query_params.get('flowchart_id')
+        if flowchart_id:
+            blocks = Block.objects.filter(flowchart_id=flowchart_id, is_active=True)
+            return Comment.objects.filter(block__in=blocks).order_by('-updated_date')
+        return Comment.objects.all()
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
         user = self.request.user
-        if instance.author == user:
+        instance = self.get_object()
+        if instance.author == user or instance.author.is_superuser:
             self.perform_destroy(instance)
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response({'message': "You are not author of this comment", 'error': True},
+        return Response({'message': "You are not authorize to delete this comment", 'error': True},
                         status=status.HTTP_401_UNAUTHORIZED)
-
-    def list(self, request, *args, **kwargs):
-        flowchart_id = self.request.GET.get('flowchart_id')
-
-        queryset = self.filter_queryset(self.get_queryset())
-        if flowchart_id:
-            queryset = queryset.filter(block__is_active=True, block__flowchart_id=flowchart_id)
-        else:
-            queryset = queryset.filter(block__is_active=True)
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
 
 
 

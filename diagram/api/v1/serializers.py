@@ -28,12 +28,6 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
                 self.fields.pop(field_name)
 
 
-class GroupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Group
-        fields = ('name',)
-
-
 class MemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
@@ -90,7 +84,6 @@ class BlockSerializer(serializers.ModelSerializer):
             if not instance.is_conditional:
                 representation['size'] = "480 170"
                 representation['figure'] = "CreateRequest"
-                # representation['color'] = 'black'
 
         if len(instance.out_transition.all()) == 0:
             representation['figure'] = "Ellipse"
