@@ -9,7 +9,8 @@ from diagram.models import Comment
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
-@login_required(login_url='users:login')
+
+
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('index:dashboard')
@@ -49,6 +50,7 @@ class ContactListView(ListView):
         else:
             messages.error(request,  'The Email field or Phone number field is not correct' )
             return redirect(request.META['HTTP_REFERER'])
+
 
 @login_required(login_url='users:login')
 def mail_response_view(request, random_text):
