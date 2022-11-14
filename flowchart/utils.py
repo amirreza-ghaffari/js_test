@@ -27,7 +27,6 @@ def f_create(flowchart_id, location_id):
 
     flowchart, created = Flowchart.objects.get_or_create(name=primary_flowchart.name, location=location_obj)
     if not created:
-        # f_end(flowchart.id)
         return Response({'message': 'Flowchart already exists', 'error_code': 3,
                          'flowchart_id': flowchart.id,
                          'url': reverse('flowchart:flowchart_view', kwargs={'pk': flowchart.id})},
@@ -120,7 +119,6 @@ def f_end(flowchart_id):
         if len(comment_history) > 0 or len(block_history) > 0:
             h = HistoryChange(flowchart=flowchart, comment_history=comment_history, block_history=block_history,
                               initial_date=flowchart.triggered_date)
-            h.convert_to_j()
             h.save()
 
         flowchart.is_active = False

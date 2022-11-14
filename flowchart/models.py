@@ -66,9 +66,11 @@ class HistoryChange(models.Model):
             j = jdatetime.datetime.fromgregorian(day=self.initial_date.day, month=self.initial_date.month,
                                              year=self.initial_date.year, hour=self.initial_date.hour,
                                              minute=self.initial_date.minute)
-            self.j_initial_date = j
-            self.save()
-            return self.j_initial_date
+            return j
+
+        def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+            self.j_initial_date = self.convert_to_j()
+            return super(HistoryChange, self).save()
 
 
 class ContingencyPlan(models.Model):
