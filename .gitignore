@@ -35,6 +35,7 @@ idea/**/workspace.xml
 .idea/**/uiDesigner.xml
 .idea/**/gradle.xml
 .idea/**/libraries
+**/.idea
 *.iws /out/
 
 
