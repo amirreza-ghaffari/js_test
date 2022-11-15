@@ -96,7 +96,7 @@ def send_block_msg(request):
         if 'mm' in msg_type:
             for member in members:
                 username = member.email.replace('@digikala.com', '')
-                mattermost(['amirreza.ghafari', username], msg_text)
+                mattermost(['digikalacrisis.softw', username], msg_text)
 
         if 'email' in msg_type:
             for member in members:

@@ -184,4 +184,4 @@ EMAIL_USE_TLS = True
 
 
 SMS_PANEL_PASSWORD = 'Basic ZGlnaV9IUi9kaWdpa2FsYTpIR1BEU0lOTmxwQXRjeVlL'
-MM_TOKEN = "eczwqqf4d7najfi7fatsnprtzo"
+MM_TOKEN = "wcwz775tpbye7rg9m4cwqtr6ao"
