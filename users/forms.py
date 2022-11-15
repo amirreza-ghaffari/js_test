@@ -46,7 +46,3 @@ class MemberForm(forms.ModelForm):
     class Meta:
         model = Member
         fields = '__all__'
-        # widgets = {
-        #     'first_name': forms.TextInput(attrs={'class': 'form-control', 'border': '1px solid black !important'}),
-        #     'email': forms.TextInput(attrs={'class': 'form-control', 'border': '1px solid black'}),
-        # }

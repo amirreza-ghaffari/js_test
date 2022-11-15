@@ -42,14 +42,12 @@ def get_member_profile_image_filepath(self, filename):
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
-    mobile_number = models.CharField(max_length=11, null=True, blank=False, validators=[validate_phone_number], unique=True)
     first_name = models.CharField(max_length=256, null=True, blank=False)
     last_name = models.CharField(max_length=256, null=True, blank=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
     rand_text = models.CharField(max_length=16, default=None, blank=False, null=True)
-    department = models.CharField(max_length=256, choices=department_choice, null=True)
     profile_image = models.ImageField(max_length=255, upload_to=get_profile_image_filepath, null=True, blank=True,
                                       default=get_default_profile_image)
 
@@ -77,9 +75,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 class Member(models.Model):
     email = models.EmailField(_('email address'), unique=True)
-    mobile_number = models.CharField(max_length=11, null=True, blank=False, validators=[validate_phone_number])
+    mobile_number = models.CharField(max_length=11, null=True, blank=False, validators=[validate_phone_number], unique=True)
     first_name = models.CharField(max_length=256, null=True, blank=False)
     last_name = models.CharField(max_length=256, null=True, blank=False)
+    department = models.CharField(max_length=256, choices=department_choice, null=True)
     profile_image = models.ImageField(upload_to='member_profile_images/', null=False, blank=False,
                                       default=get_default_profile_image)
 
@@ -89,7 +88,3 @@ class Member(models.Model):
     @property
     def full_name(self):
         return self.last_name + ' - ' + self.first_name
-
-class MembersGroup(models.Model):
-    name = models.CharField(max_length=256, unique=True)
-    user = models.ManyToManyField(Member)

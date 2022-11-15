@@ -10,13 +10,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 
-
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('index:dashboard')
     form = LoginForm(request.POST or None)
 
-    msg = None
     if request.method == "POST":
         if form.is_valid():
             email = form.cleaned_data.get("email")
