@@ -3,8 +3,8 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a class="brand-link">
-        <img src="{% static 'img/Badge.png' %}" alt="AdminLTE Logo" class="brand-image ">
-        <span class="brand-text font-weight-light"> BCM Software</span>
+        <img src="{% static 'img/Badge.png' %}" alt="AdminLTE Logo" class="brand-image">
+        <span class="brand-text font-weight-light"><strong>Crisis Software</strong></span>
     </a>
 
     <!-- Sidebar -->
@@ -186,11 +186,11 @@
         i_.classList = "far fa-circle nav-icon"
 
         var p = document.createElement('p')
-        p.innerHTML = data.name;
+        p.innerHTML = '  ' + data.name;
         if (data.is_active) {
             i_.classList = "nav-icon far fa-circle text-danger"
         } else if (data.is_active === false && data.primary === false) {
-            i_.classList = "nav-icon far fa-circle text-success"
+            i_.classList = "far fa-check-circle"
         }
 
         a.appendChild(i_)
