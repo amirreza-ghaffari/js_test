@@ -83,7 +83,7 @@ def send_block_msg(request):
 
         block = Block.objects.get(id=block_id)
         if len(block.input_transition.all()) == 0 or block.label == 'شروع':
-            msg_text = "بحرانی با موضوع " + block.flowchart.name.replace(' - primary', '') + \
+            msg_text = "بحرانی با موضوع " + block.flowchart.name.replace('_', ' ').title() + \
                        " در منطقه ی " + block.flowchart.location.name + " اتفاق افتاد"
         flowchart_name = block.flowchart.name
         block.members.add(*members)
