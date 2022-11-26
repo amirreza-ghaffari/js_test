@@ -1099,7 +1099,9 @@
                 button3.type = "button"
                 button3.classList = "btn btn-outline-success"
                 button3.innerText = "By pass"
-                button3.onclick = ""
+                button3.onclick = function () {
+                    byPassBlock(data[i].key)
+                }
 
                 var mainDiv = document.createElement("div")
                 mainDiv.classList = "form-group"
@@ -1162,6 +1164,7 @@
                 div3.appendChild(textInput)
                 div3.appendChild(button1)
                 div3.appendChild(button2)
+                div3.appendChild(button3)
 
                 div2.appendChild(div3)
                 div1.appendChild(div2)
@@ -1396,6 +1399,35 @@
                 }
             });
 
+        }
+
+        function byPassBlock(blockId) {
+            $.ajax({
+                type: 'PATCH',
+                dataType: "json",
+                url: "/diagram/api/v1/blocks/" + blockId + '/',
+                headers: {
+                    "X-CSRFToken": '{{ csrf_token }}'
+                },
+                data: {'is_pre_approved': true},
+                success: function (data, status, xhr) {
+                    $.ajax({
+                        type: 'PATCH',
+                        dataType: "json",
+                        url: "/diagram/api/v1/blocks/" + blockId + '/',
+                        headers: {
+                            "X-CSRFToken": '{{ csrf_token }}'
+                        },
+                        data: {'is_approved': true},
+                        success: function (data, status, xhr) {
+                            getPreApprovedBlocks()
+                            getActiveTransitions()
+                            getComments()
+                            load()
+                        }
+                    });
+                }
+            });
         }
 
         getTriggeredDate()
