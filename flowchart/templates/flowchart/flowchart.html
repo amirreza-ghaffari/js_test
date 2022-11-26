@@ -1017,7 +1017,6 @@
                         butt.innerHTML = "-"
                         butt2 = document.createElement("p")
                         butt2.innerHTML = "-"
-
                     }
 
                     td3.appendChild(butt)
@@ -1043,7 +1042,6 @@
                     transientTableElement(data)
                 }
             });
-
         }
 
         function getActivBlock() {
@@ -1097,6 +1095,12 @@
                     approveBlock(data[i].key)
                 }
 
+                var button3 = document.createElement("button")
+                button3.type = "button"
+                button3.classList = "btn btn-outline-success"
+                button3.innerText = "By pass"
+                button3.onclick = ""
+
                 var mainDiv = document.createElement("div")
                 mainDiv.classList = "form-group"
                 mainDiv.style.border = "1px solid grey"
@@ -1149,6 +1153,9 @@
                 } else {
                     button1.classList.add("disabled")
                     button1.setAttribute("disabled", true)
+
+                    button3.classList.add("disabled")
+                    button3.setAttribute("disabled", true)
 
                     textInput.style.display = "none"
                 }

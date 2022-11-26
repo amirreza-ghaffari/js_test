@@ -42,6 +42,9 @@ class Flowchart(models.Model):
     def __str__(self):
         if self.primary:
             return self.name.replace('_', ' ') + ' - primary'
+
+        if self.location.name.lower() == 'no location':
+            return self.name.replace('_', ' ') + ' (No location provided)'
         return self.name.replace('_', ' ') + ' - ' + str(self.location)
 
     def p_triggered_date(self):
