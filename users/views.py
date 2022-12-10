@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login
-from .forms import LoginForm, MemberForm
+from .forms import LoginForm, MemberForm, CustomUserForm
 from django.views.generic.list import ListView
 from django.shortcuts import render
 from users.models import CustomUser, Member
@@ -8,6 +8,7 @@ from diagram.models import Block
 from diagram.models import Comment
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+import jdatetime
 
 
 def login_view(request):
@@ -99,3 +100,24 @@ def sms_panel_view(request):
 def save_member_session(request, member_id):
     request.session["member_id"] = member_id
     return redirect('users:sms-panel')
+
+
+@login_required(login_url='users:login')
+def update_user(request):
+    l = request.user.last_login
+    last_login = str(jdatetime.datetime.fromgregorian(day=l.day, month=l.month, year=l.year,
+                                                      hour=l.hour, minute=l.minute))
+    user_form = CustomUserForm(instance=request.user)
+
+    if request.method == 'POST':
+        user_form = CustomUserForm(request.POST, request.FILES, instance=request.user)
+
+        if user_form.is_valid():
+            user_form.save()
+            return redirect('index:dashboard')
+
+    return render(request, 'users/update_user.html', {'user_form': user_form, 'last_login': last_login})
+
+
+
+

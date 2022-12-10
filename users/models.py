@@ -50,6 +50,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     rand_text = models.CharField(max_length=16, default=None, blank=False, null=True)
     profile_image = models.ImageField(max_length=255, upload_to=get_profile_image_filepath, null=True, blank=True,
                                       default=get_default_profile_image)
+    mobile_number = models.CharField(max_length=11, null=True, blank=False, validators=[validate_phone_number],
+                                     unique=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
