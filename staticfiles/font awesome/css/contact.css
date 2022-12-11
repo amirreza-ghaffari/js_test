@@ -1,0 +1,66 @@
+section.contact {
+    width: 100%;
+    padding: 50px;
+}
+
+section.contact .contact_title {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+section.contact .contact_title>i {
+    color: #d84848;
+    font-size: 30px;
+    margin-left: 10px;
+}
+
+section.contact .contact_title>h2 {
+    display: inline-block;
+    vertical-align: top;
+}
+
+
+
+
+
+section.contact form {
+    width: 50%;
+    margin: 0  auto;
+    text-align: center;
+}
+
+section.contact form>label {
+    display: block;
+}
+
+section.contact form>input {
+    display: block;
+    width: 50%;
+    margin: 0 auto;
+    padding: 5px;
+    font-family: "iransans";
+    background-color: transparent;
+    border: none;
+    outline: none;
+    border-bottom: 1px solid #999;
+    border-right: 1px solid #999;
+    margin-bottom: 10px;
+}
+
+section.contact form>textarea {
+    width: 50%;
+    outline: none;
+}
+
+section.contact form>input[type="submit"] {
+    width: 100px;
+    border: 1px solid #fff;
+    border-radius: 5px;
+    color: #fff;
+    background-color: #d84848;
+    transition: 400ms;
+}
+
+section.contact form>input[type="submit"]:hover {
+    background-color: #da2020;
+}
