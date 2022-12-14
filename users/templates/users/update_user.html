@@ -1,0 +1,75 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block dashboard %}
+    <h3>User Info</h3>
+{% endblock %}
+
+
+
+{% block content %}
+    <h3>Your last login was on '{{ last_login }}'</h3>
+    <br>
+
+    <div class="col">
+        <div class="card card-dark">
+            <div class="card-header ">
+                <h1 class="card-title primary">Update Your Info</h1>
+                <p class="card-category"></p>
+            </div>
+
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div style="alignment: center" class="form-group row">
+                        <div class="col-sm-4">
+                            <label for="first-name">First Name</label>
+                            <input type="text" name="first_name" id="first-name" class="form-control"
+                                   style="border: 1px solid grey!important;margin: 0!important;padding: 5px!important;"
+                                   value="{{ user_form.first_name.value }}"
+                                   placeholder="First Name">
+                            <span class="help-block" style="color: red">{{ user_form.errors.first_name }}</span>
+                            <br>
+                            <label for="last-name">Last Name</label>
+                            <input type="text" name="last_name" id="last-name" class="form-control"
+                                   style="border: 1px solid grey!important;margin: 0!important;"
+                                   value="{{ user_form.last_name.value }}"
+                                   placeholder="Last Name">
+                            <span class="help-block" style="color: red">{{ user_form.errors.last_name }}</span>
+                            <br>
+                            <label for="myfile">Profile Image</label>
+                            <input type="file" name="profile_image" id="myfile" class="form-control"
+                                   style="border: 1px solid grey!important;margin: 0!important;width: 400px"
+                                   value="{% if user_form.profile_image.value %} {{ user_form.profile_image.value }} {% endif %}">
+                            <span class="help-block" style="color: red">{{ form.errors.profile_image }}</span>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="email">Email</label>
+                            <input type="email" name="email" id="email" class="form-control"
+                                   style="border: 1px solid grey!important;margin: 0!important;width: 400px"
+                                   value="{{ user_form.email.value }}" readonly
+                                   placeholder="{{ request.user.email }}">
+                            <span class="help-block" style="color: red">{{ user_form.errors.email }}</span>
+                            <br>
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" name="mobile_number" id="phone" class="form-control"
+                                   style="border: 1px solid grey!important;margin: 0!important;width: 400px"
+                                   value="{% if user_form.mobile_number.value %} {{ user_form.mobile_number.value }} {% endif %}"
+                                   placeholder="Phone Number">
+                            <span class="help-block" style="color: red">{{ user_form.errors.mobile_number }}</span>
+
+                            <span class="help-block"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="row col-12">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
