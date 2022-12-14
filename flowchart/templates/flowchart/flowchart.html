@@ -782,7 +782,7 @@
             $.ajax({
                 type: 'GET',
                 dataType: "json",
-                url: '/diagram/api/v1/transitions/?flowchart={{ flowchart_id }}',
+                url: '/diagram/api/v1/transitions/?flowchart_id={{ flowchart_id }}',
                 success: function (data, status, xhr) {
                     linkDataArray = data;
                     fullDataArray.nodeDataArray = nodeDataArray;
