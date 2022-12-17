@@ -767,8 +767,17 @@
         }
 
         async function load() {
-            await sleep(3000);
+                        await sleep(1000);
             <!-- Get Blocks -->
+            $.ajax({
+                type: 'GET',
+                dataType: "json",
+                url: '/diagram/api/v1/transitions/?flowchart_id={{ flowchart_id }}',
+                success: function (data, status, xhr) {
+                    linkDataArray = data;
+
+                }
+            });
             $.ajax({
                 type: 'GET',
                 dataType: "json",
@@ -776,18 +785,8 @@
                 success: function (data, status, xhr) {
                     nodeDataArray = data;
                     totalObjects = Object.keys(nodeDataArray).length;
-                }
-            });
-            <!-- Get Transitions -->
-            $.ajax({
-                type: 'GET',
-                dataType: "json",
-                url: '/diagram/api/v1/transitions/?flowchart_id={{ flowchart_id }}',
-                success: function (data, status, xhr) {
-                    linkDataArray = data;
                     fullDataArray.nodeDataArray = nodeDataArray;
                     fullDataArray.linkDataArray = linkDataArray;
-
                     myDiagram.model = go.Model.fromJson(fullDataArray);
                 }
             });
