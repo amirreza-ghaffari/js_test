@@ -44,10 +44,18 @@ class CustomUserChangeForm(UserChangeForm):
 
 
 class CustomUserForm(forms.ModelForm):
-
     class Meta:
         model = user
-        fields = ('first_name', 'last_name', 'mobile_number', 'profile_image')
+        fields = ('first_name', 'last_name', 'mobile_number', 'profile_image', 'email')
+    def __init__(self, *args, **kwargs):
+        super(CustomUserForm, self).__init__(*args, **kwargs)
+        self.fields['first_name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['last_name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['mobile_number'].widget.attrs.update({'class': 'form-control'})
+        self.fields['profile_image'].widget.attrs.update({'class': 'custom-file-input', 'type':'file'})
+        self.fields['email'].widget.attrs.update({'class': 'form-control'})
+        self.fields['email'].disabled = True
+        self.fields['mobile_number'].disabled = True
 
 
 class MemberForm(forms.ModelForm):
