@@ -7,14 +7,6 @@
 
 {% block  content %}
 
-    {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li style="text-align: center;color: red;width: 500px;font-weight: bold" {% if message.tags %}
-                    class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
 
     <div class="col">
         <div class="card card-dark">
@@ -26,35 +18,33 @@
             <div class="card-body">
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
+                    <h6 style="color: red">{{ form.errors }}</h6>
                     <div style="alignment: center" class="form-group row">
-                        <div class="col-sm-4">
-                            <label for="first-name">First Name</label>
-                            <input type="text" name="first_name" id="first-name" class="form-control" style="border: 1px solid grey!important;margin: 0!important;padding: 5px!important;"
-                                   value="{% if form.first_name.value %} {{ form.first_name.value }} {% endif %}" placeholder="First Name">
-                            <span class="help-block">{{ form.errors.first_name }}</span>
+                        <div class="col-6">
+                            {{ form.first_name.label }}
+                            {{ form.first_name }}
                             <br>
-                            <label for="last-name">Last Name</label>
-                            <input type="text" name="last_name" id="last-name" class="form-control"  style="border: 1px solid grey!important;margin: 0!important;"
-                                   value="{% if form.last_name.value %} {{ form.last_name.value }} {% endif %}" placeholder="Last Name">
-                            <span class="help-block">{{ form.errors.last_name }}</span>
+                            {{ form.last_name.label }}
+                            {{ form.last_name }}
                             <br>
-                            <label for="myfile">Profile Image</label>
-                            <input type="file" name="profile_image" id="myfile" class="form-control" style="border: 1px solid grey!important;margin: 0!important;width: 400px"
-                                   value="{% if form.profile_image.value %} {{ form.profile_image.value }} {% endif %}">
-                            <span class="help-block">{{ form.errors.profile_image }}</span>
-                        </div>
-                        <div class="col-sm-4">
-                            <label for="email">Email</label>
-                            <input type="email" name="email" id="email" class="form-control" style="border: 1px solid grey!important;margin: 0!important;width: 400px"
-                                   value="{% if form.email.value %} {{ form.email.value }} {% endif %}" placeholder="Email">
-                            <span class="help-block">{{ form.errors.email }}</span>
-                            <br>
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" name="mobile_number" id="phone" class="form-control" style="border: 1px solid grey!important;margin: 0!important;width: 400px"
-                                   value="{% if form.mobile_number.value %} {{ form.mobile_number.value }} {% endif %}" placeholder="Phone Number">
-                            <span class="help-block">{{ form.errors.mobile_number }}</span>
+                            <div class="custom-file">
+                                <label class="custom-file-label" for="exampleInputFile">Choose file</label>
+                                {{ form.profile_image }}
+                            </div>
 
-                            <span class="help-block"></span>
+                        </div>
+                        <div class="col-6">
+                            {{ form.email.label }}
+                            {{ form.email }}
+                            <br>
+                            {{ form.mobile_number.label }}
+                            {{ form.mobile_number }}
+                            <br>
+                            <div class="form-check">
+                                {{ form.department }}
+
+                                <label class="form-check-label">Checkbox</label>
+                            </div>
                         </div>
 
                     </div>
@@ -82,7 +72,8 @@
                                     <div class="col-7">
                                         <h2 class="lead"><b>{{ member.full_name }}</b></h2>
                                         <p class="text-muted text-sm"><b>Email: </b> {{ member.email }}</p>
-                                        <p class="text-muted text-sm"><b>Phone Number: </b> {{ member.mobile_number }}</p>
+                                        <p class="text-muted text-sm"><b>Phone Number: </b> {{ member.mobile_number }}
+                                        </p>
                                     </div>
                                     <div class="col-5 text-center">
                                         <img src="{{ member.profile_image.url }}" alt="user-avatar"
@@ -93,7 +84,8 @@
                             </div>
                             <div class="card-footer">
                                 <div class="text-right">
-                                    <a href="{% url 'users:save_member_session' member.id %}" class="btn btn-sm bg-dark">
+                                    <a href="{% url 'users:save_member_session' member.id %}"
+                                       class="btn btn-sm bg-dark">
                                         <i class="fas fa-comments"> Send Message</i>
                                     </a>
                                 </div>

@@ -80,8 +80,8 @@ class Member(models.Model):
     mobile_number = models.CharField(max_length=11, null=True, blank=False, validators=[validate_phone_number], unique=True)
     first_name = models.CharField(max_length=256, null=True, blank=False)
     last_name = models.CharField(max_length=256, null=True, blank=False)
-    department = models.CharField(max_length=256, choices=department_choice, null=True)
-    profile_image = models.ImageField(upload_to='member_profile_images/', null=False, blank=False,
+    department = models.CharField(max_length=256, choices=department_choice, null=False, blank=False)
+    profile_image = models.ImageField(upload_to='member_profile_images/', null=True, blank=True,
                                       default=get_default_profile_image)
 
     def __str__(self):

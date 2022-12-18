@@ -48,7 +48,7 @@ class ContactListView(ListView):
             return redirect(request.META['HTTP_REFERER'])
         else:
             messages.error(request,  'The Email field or Phone number field is not correct' )
-            return redirect(request.META['HTTP_REFERER'])
+            return render(request, 'users/contacts.html', {'form': form})
 
 
 @login_required(login_url='users:login')

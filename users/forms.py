@@ -54,3 +54,11 @@ class MemberForm(forms.ModelForm):
     class Meta:
         model = Member
         fields = '__all__'
+    def __init__(self, *args, **kwargs):
+        super(MemberForm, self).__init__(*args, **kwargs)
+        self.fields['first_name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['last_name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['mobile_number'].widget.attrs.update({'class': 'form-control'})
+        self.fields['email'].widget.attrs.update({'class': 'form-control'})
+        self.fields['profile_image'].widget.attrs.update({'class': 'custom-file-input', 'type':'file'})
+        self.fields['department'].widget.attrs.update({'class': 'form-check-input', 'type':'checkbox'})
