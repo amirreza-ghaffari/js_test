@@ -97,7 +97,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'department', 'full_name']
+        fields = ['email', 'full_name']
 
 
 class TransitionSerializer(serializers.ModelSerializer):
