@@ -132,7 +132,6 @@ def incident_per_month(request):
     histories = HistoryChange.objects.annotate(month=TruncMonth('j_initial_date')).values('month').annotate(count=Count('id')).values('month', 'count')
     for item in histories:
         months.append('-'.join(str(item['month']).split('-')[0:2]))
-        print(item['month'])
         counts.append(item['count'])
     temp['months'] = months
     temp['counts'] = counts
