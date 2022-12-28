@@ -118,7 +118,7 @@ def f_end(flowchart_id, request):
 
     try:
         if len(comment_history) > 0 or len(block_history) > 0:
-            h = HistoryChange(flowchart=flowchart, comment_history=comment_history, block_history=block_history,
+            h = HistoryChange(flowchart=flowchart, comment_history=json.dumps(comment_history), block_history=json.dumps(block_history),
                               initial_date=flowchart.triggered_date)
             h.save()
 
