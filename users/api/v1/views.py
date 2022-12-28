@@ -4,7 +4,7 @@ from ...models import Member
 from diagram.models import Block
 from rest_framework import status
 from rest_framework.response import Response
-from users.utils import send_sms, custom_send_email, next_action, mattermost
+from users.utils import send_sms, custom_send_email, next_action, mattermost, en2fa
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from diagram.api.v1.serializers import MemberSerializer
@@ -68,7 +68,6 @@ def send_block_msg(request):
         msg_type = [str(x) for x in msg_type]
 
         msg_text = request.data.get('text')
-
         block_id = request.data.get('block_id')
 
     except Exception as e:
@@ -83,7 +82,7 @@ def send_block_msg(request):
 
         block = Block.objects.get(id=block_id)
         if len(block.input_transition.all()) == 0 or block.label == 'شروع':
-            msg_text = "بحرانی با موضوع " + block.flowchart.name.replace('_', ' ').title() + \
+            msg_text = "بحرانی با موضوع " + en2fa(block.flowchart.name) + \
                        " در منطقه ی " + block.flowchart.location.name + " اتفاق افتاد"
         flowchart_name = block.flowchart.name
         block.members.add(*members)
@@ -100,7 +99,7 @@ def send_block_msg(request):
 
         if 'email' in msg_type:
             for member in members:
-                context = {'current_action': msg_text, 'name': member.full_name, 'contingency_name': flowchart_name.replace('_', ' ').title(),
+                context = {'current_action': msg_text, 'name': member.full_name, 'contingency_name': flowchart_name.replace('_', ' ').title(), 'flowchart_name': en2fa(flowchart_name),
                            'next_action': next_action(block, member) if block else None}
                 custom_send_email(context, [member.email], subject='BCM Management', template_address='users/email.html')
     return Response({'message': 'message sent'}, status=status.HTTP_200_OK)

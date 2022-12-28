@@ -90,3 +90,14 @@ class Member(models.Model):
     @property
     def full_name(self):
         return self.last_name + ' - ' + self.first_name
+
+
+class EmailResponse(models.Model):
+    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='email_res')
+    message = models.TextField()
+
+    def __str__(self):
+        return self.member
+
+    class Meta:
+        unique_together = ('member', 'message')

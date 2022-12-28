@@ -9,6 +9,7 @@ from diagram.models import Comment
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import jdatetime
+from notifications.models import Notification
 
 
 def login_view(request):
@@ -119,5 +120,11 @@ def update_user(request):
     return render(request, 'users/update_user.html', {'user_form': user_form, 'last_login': last_login})
 
 
+def email_response_view(request):
+    notif = Notification.objects.filter(unread=True, recipient=request.user)
 
+    if request.method == 'POST':
+        notif.mark_all_as_read()
+        return render(request, 'users/notifications.html')
 
+    return render(request, 'users/notifications.html', {'notif_unread': notif})
