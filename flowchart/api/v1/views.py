@@ -76,7 +76,7 @@ def flowchart_utility(request):
     elif task == 'reset':
         return f_reset(flowchart_id)
     elif task == 'end':
-        return f_end(flowchart_id)
+        return f_end(flowchart_id, request)
 
 
 @api_view(['Get'])

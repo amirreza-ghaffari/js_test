@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from diagram.models import Block, Transition
 from flowchart.models import Flowchart, Location, HistoryChange
 from rest_framework import status
+from django.urls import reverse
 
 
 def f_create(flowchart_id, location_id):
@@ -93,22 +94,22 @@ def f_reset(flowchart_id):
                     status=status.HTTP_200_OK)
 
 
-def f_end(flowchart_id):
+def f_end(flowchart_id, request):
 
     try:
         flowchart = Flowchart.objects.get(id=flowchart_id)
     except Flowchart.DoesNotExist:
         return Response({'message': 'flowchart does not exists', 'error': True},
                         status=status.HTTP_400_BAD_REQUEST)
-
-    url = "http://127.0.0.1:8000/diagram/api/v1/block-history/" + str(flowchart_id) + "/"
+    domain = request.META.get("REMOTE_ADDR")
+    url = "http://" + domain + "/diagram/api/v1/block-history/" + str(flowchart_id) + "/"
     response = requests.request("GET", url)
     if response.status_code == 200:
         block_history = json.loads(response.text)
     else:
         block_history = {}
 
-    url = "http://127.0.0.1:8000/diagram/api/v1/comment-history/" + str(flowchart_id) + "/"
+    url = "http://" + domain + "/diagram/api/v1/comment-history/" + str(flowchart_id) + "/"
     response = requests.request("GET", url)
     if response.status_code == 200:
         comment_history = json.loads(response.text)
