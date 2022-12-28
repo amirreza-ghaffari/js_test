@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'jdatetime',
     'mattermostdriver',
+    'notifications',
 
 
     # users Module #

@@ -39,8 +39,8 @@ def flowchart_view(request, pk):
 def history_detail(request, pk):
     context = {}
     history = get_object_or_404(HistoryChange, pk=pk)
-    block_h = json.loads(history.block_history)
-    comment_h = json.loads(history.comment_history)
+    block_h = history.block_history
+    comment_h = history.comment_history
     flowchart = Flowchart.objects.get(id=history.flowchart.id)
 
     context['block_history'] = block_h

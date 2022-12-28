@@ -101,7 +101,7 @@ def f_end(flowchart_id, request):
     except Flowchart.DoesNotExist:
         return Response({'message': 'flowchart does not exists', 'error': True},
                         status=status.HTTP_400_BAD_REQUEST)
-    domain = request.META.get("REMOTE_ADDR")
+    domain = request.get_host()
     url = "http://" + domain + "/diagram/api/v1/block-history/" + str(flowchart_id) + "/"
     response = requests.request("GET", url)
     if response.status_code == 200:

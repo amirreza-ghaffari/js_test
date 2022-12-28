@@ -36,3 +36,4 @@ urllib3==1.26.11
 django_jalali
 mattermostdriver
 jdatetime
+beautifulsoup4
