@@ -70,8 +70,19 @@ function fill_notification_list(data) {
     var aTag = document.createElement("a")
     aTag.href = "/users/email-response/"
     aTag.classList = "dropdown-item dropdown-footer"
-    aTag.innerText = "See All Email Responses"
+    aTag.innerText = "See All Email Response"
     main.appendChild(aTag)
+
+    var divide2 = document.createElement("div")
+    divide2.classList = "dropdown-divider"
+    main.appendChild(divide2)
+
+    var aTag2 = document.createElement("a")
+    aTag2.href = "/users/mark_as_read/"
+    aTag2.classList = "dropdown-item dropdown-footer"
+    aTag2.innerText = "Mark all as read"
+    main.appendChild(aTag2)
+
 
     if (data.unread_count > count) {
         var x = document.getElementById("popUp");
@@ -81,7 +92,6 @@ function fill_notification_list(data) {
         }, 2000);
         count = data.unread_count
     }
-    console.log(count, 'xxx')
 
 }
 

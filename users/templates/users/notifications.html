@@ -1,0 +1,57 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block dashboard %}
+    <p3>Email Responses</p3>
+{% endblock %}
+
+
+{% block content %}
+    <br>
+    <div class="card-body table-responsive">
+
+        <table id="dtverTable" class="table table-striped table-bordered table-sm">
+            <thead class="thead-dark">
+            <tr>
+                <th style="min-width:200px" class="text-center" scope="col">Member</th>
+                <th class="text-center" scope="col">Date</th>
+                <th class="text-center" scope="col">Response Message</th>
+
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for notif in notif_unread %}
+                <tr class="text-center">
+
+                    <td class="text-center"> {{ notif.actor }}</td>
+                    <td class="text-center"> {{ notif.timestamp|naturaltime }}</td>
+                    <td class="text-center"> {{ notif.description }}</td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <hr>
+    <div style="text-align: center">
+        <form action="" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-primary">Mark all as read</button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#dtverTable').DataTable({
+                "scrollY": "600px",
+                "scrollCollapse": true,
+            });
+            $('.dataTables_length').addClass('bs-select');
+        });
+
+
+    </script>
+{% endblock %}
+

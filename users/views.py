@@ -128,3 +128,11 @@ def email_response_view(request):
         return render(request, 'users/notifications.html')
 
     return render(request, 'users/notifications.html', {'notif_unread': notif})
+
+
+def mark_as_read(request):
+    notif = Notification.objects.filter(unread=True,recipient=request.user)
+    notif.mark_all_as_read()
+    return redirect(request.META['HTTP_REFERER'])
+
+

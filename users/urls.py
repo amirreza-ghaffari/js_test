@@ -11,6 +11,7 @@ urlpatterns = [
     path('save_member_session/<str:member_id>/', views.save_member_session, name='save_member_session'),
     path('update_user/', views.update_user, name='update_user'),
     path('email-response/', views.email_response_view, name='email_response'),
+    path('mark_as_read/', views.mark_as_read, name='mark_as_read'),
     path('api/v1/', include('users.api.v1.urls')),
     path('', include('django.contrib.auth.urls')),
 
