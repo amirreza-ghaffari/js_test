@@ -767,7 +767,7 @@
         }
 
         async function load() {
-                        await sleep(1000);
+            await sleep(1000);
             <!-- Get Blocks -->
             $.ajax({
                 type: 'GET',
@@ -1075,6 +1075,7 @@
                 textInput.id = "msg-text"
                 textInput.style.border = "1px solid black"
                 textInput.style.width = "100%"
+                textInput.style.textAlign = "right"
                 textInput.value = data[i].text
 
                 var button1 = document.createElement("button")
