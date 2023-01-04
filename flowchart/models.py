@@ -77,8 +77,9 @@ class HistoryChange(models.Model):
 
 
 class ContingencyPlan(models.Model):
-    completed = models.PositiveIntegerField(default=0)
+    developed = models.PositiveIntegerField(default=0)
     in_progress = models.PositiveIntegerField(default=0)
+    not_developed = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return 'Contingency plans progress'
