@@ -33,7 +33,7 @@ class FlowchartFilter(SimpleListFilter):
 
 class TransitionAdmin(admin.ModelAdmin):
 
-    list_display = ('label', 'start_block_label', 'end_block_label', 'is_approved', 'is_active', 'last_modified')
+    list_display = ('start_block_label', 'end_block_label', 'is_approved', 'is_active', 'last_modified')
     list_filter = ('is_approved', 'is_active', FlowchartFilter)
     fieldsets = (
         (None, {'fields': ('label', 'start_block', 'end_block', 'is_active', 'is_approved')}),
@@ -45,7 +45,7 @@ class TransitionAdmin(admin.ModelAdmin):
         return obj.start_block.label
 
     def end_block_label(self, obj):
-        return obj.start_block.label
+        return obj.end_block.label
 
 
 class CommentAdmin(admin.ModelAdmin):
