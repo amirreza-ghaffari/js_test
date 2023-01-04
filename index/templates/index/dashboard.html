@@ -355,16 +355,19 @@
     </script>
 
     <script>
-        var completed = null;
+        var developed = null;
+        var notDeveloped = null;
         var inProgress = null;
         $.ajax({
             method: "GET",
             url: "/flowchart/api/v1/contingency-plans/",
             success: function (data, status, xhr) {
-                completed = data[0].completed
                 inProgress = data[0].in_progress
-                console.log(completed)
-                console.log(inProgress)
+                developed = data[0].developed
+                notDeveloped = data[0].not_developed
+
+
+
                 setContingencyDevelopedChart()
             },
 
@@ -390,13 +393,14 @@
                 type: 'doughnut',
                 data: {
                     labels: [
-                        'Completed',
-                        'In Progress'
+                        'Developed',
+                        'Not Developed',
+                        'In Progress',
                     ],
                     datasets: [
                         {
-                            data: [completed, inProgress],
-                            backgroundColor: ['#00a65a', '#F70F0F']
+                            data: [developed, notDeveloped, inProgress],
+                            backgroundColor: ['#00a65a', '#F70F0F', '#FF6F00']
                         }
                     ]
                 },

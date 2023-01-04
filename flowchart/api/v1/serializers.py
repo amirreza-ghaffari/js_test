@@ -32,4 +32,4 @@ class HistoryChangeSerializer(serializers.ModelSerializer):
 class ContingencyPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContingencyPlan
-        fields = ['completed', 'in_progress']
+        fields = ['developed', 'in_progress', 'not_developed']
