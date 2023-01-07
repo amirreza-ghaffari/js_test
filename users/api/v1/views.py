@@ -4,7 +4,7 @@ from ...models import Member
 from diagram.models import Block
 from rest_framework import status
 from rest_framework.response import Response
-from users.utils import send_sms, custom_send_email, next_action, mattermost, en2fa
+from users.utils import send_sms, custom_send_email, next_action, mattermost, en2fa, loc_name
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from diagram.api.v1.serializers import MemberSerializer
@@ -82,8 +82,7 @@ def send_block_msg(request):
 
         block = Block.objects.get(id=block_id)
         if len(block.input_transition.all()) == 0 or block.label == 'شروع':
-            msg_text = "بحرانی با موضوع " + en2fa(block.flowchart.name) + \
-                       " در منطقه ی " + block.flowchart.location.name + " اتفاق افتاد"
+            msg_text = "بحرانی با موضوع " + en2fa(block.flowchart.name) + loc_name(block.flowchart.location.name) + " اتفاق افتاد"
         flowchart_name = block.flowchart.name
         block.members.add(*members)
         block.save()
@@ -92,14 +91,16 @@ def send_block_msg(request):
             mobile_lst = list(members.values_list('mobile_number', flat=True))
             status_code = send_sms(mobile_lst, msg_text)
 
-        if 'mm' in msg_type:
-            for member in members:
-                username = member.email.replace('@digikala.com', '')
-                mattermost(['digikalacrisis.softw', username], msg_text)
-
         if 'email' in msg_type:
             for member in members:
                 context = {'current_action': msg_text, 'name': member.full_name, 'contingency_name': flowchart_name.replace('_', ' ').title(), 'flowchart_name': en2fa(flowchart_name),
                            'next_action': next_action(block, member) if block else None}
                 custom_send_email(context, [member.email], subject='BCM Management', template_address='users/email.html')
+
+        if 'mm' in msg_type:
+            for member in members:
+                username = member.email.replace('@digikala.com', '')
+                mattermost(['digikalacrisis.softw', username], msg_text)
+
+
     return Response({'message': 'message sent'}, status=status.HTTP_200_OK)

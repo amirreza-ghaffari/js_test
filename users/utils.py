@@ -18,9 +18,23 @@ def en2fa(string):
     if string.lower() == 'people_protest':
         return 'اعتراضات و اعتصابات مردمی'
     elif string.lower() == 'staff_strike':
-      return 'شورش'
+        return 'شورش'
+    elif string.lower() == 'seller_strike':
+        return 'اعتصاب فروشندگان'
 
-    return None
+    elif string.lower() == 'earth_quake':
+        return 'زمین لرزه'
+
+    elif string.lower() == 'fire':
+        return 'وقوع آتش سوزی'
+
+    elif string.lower() == 'data_leakage':
+        return 'درز اطلاعات'
+
+    elif string.lower() == 'driver_strike':
+        return 'اعتصاب رانندگان'
+
+    return ''
 
 def custom_send_email(context, to_email_list, subject='BCM Management', template_address='users/email.html'):
 
@@ -95,7 +109,7 @@ def mattermost(usernames: list, msg: str):
         ids.append(item['id'])
 
     if len(ids) < 2:
-        raise AssertionError('One of users not founded')
+        return None
     res = driver.channels.create_direct_message_channel(options=ids)
     channel_id = res['id']
 
@@ -169,6 +183,13 @@ def email_response(n=5):
     # close the connection and logout
     imap.close()
     imap.logout()
+
+
+def loc_name(location):
+    if location.lower() != 'no location':
+        temp = ' در مطقه ی ' + location
+        return temp
+    return ''
 
 
 
