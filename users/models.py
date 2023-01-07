@@ -26,6 +26,8 @@ department_choice = (
         ('Business Development', 'Business Development'),
         ('commercial', 'commercial'),
         ('security', 'security'),
+        ('HSE', 'HSE'),
+        ('Customer Service', 'CS'),
         ('Operation', 'Operation'),
     )
 
