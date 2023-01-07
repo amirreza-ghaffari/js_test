@@ -24,6 +24,8 @@ department_choice = (
         ('User Experience', 'User Experience'),
         ('Financial', 'Financial'),
         ('Business Development', 'Business Development'),
+        ('commercial', 'commercial'),
+        ('security', 'security'),
         ('Operation', 'Operation'),
     )
 
