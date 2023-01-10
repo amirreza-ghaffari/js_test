@@ -20,7 +20,6 @@ class MemberViewSet(ModelViewSet):
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def custom_send_smg(request):
-
     try:
         members_id = request.data.get('members')
         members_id = ast.literal_eval(members_id)
@@ -82,25 +81,28 @@ def send_block_msg(request):
 
         block = Block.objects.get(id=block_id)
         if len(block.input_transition.all()) == 0 or block.label == 'شروع':
-            msg_text = "بحرانی با موضوع " + en2fa(block.flowchart.name) + loc_name(block.flowchart.location.name) + " اتفاق افتاد"
+            msg_text = "بحرانی با موضوع " + en2fa(block.flowchart.name) + loc_name(
+                block.flowchart.location.name) + " اتفاق افتاد"
         flowchart_name = block.flowchart.name
         block.members.add(*members)
         block.save()
 
-        if 'sms' in msg_type:
-            mobile_lst = list(members.values_list('mobile_number', flat=True))
-            status_code = send_sms(mobile_lst, msg_text)
+        for member in members:
+            if 'sms' in msg_type:
+                mobile_lst = [member.mobile_number]
+                sms_text = 'جناب آقای / خانم ' + member.full_name + "\n" * 2 + "با توجه به وقوع بحران " + en2fa(block.flowchart.name) + loc_name(block.flowchart.location.name) + "، لیست اقادامات شما به شرح زیر است: " + "\n" * 2 + msg_text
+                status_code = send_sms(mobile_lst, sms_text)
 
-        if 'email' in msg_type:
-            for member in members:
-                context = {'current_action': msg_text, 'name': member.full_name, 'contingency_name': flowchart_name.replace('_', ' ').title(), 'flowchart_name': en2fa(flowchart_name),
+            if 'email' in msg_type:
+                context = {'current_action': msg_text, 'name': member.full_name,
+                           'contingency_name': flowchart_name.replace('_', ' ').title(),
+                           'flowchart_name': en2fa(flowchart_name),
                            'next_action': next_action(block, member) if block else None}
-                custom_send_email(context, [member.email], subject='BCM Management', template_address='users/email.html')
+                custom_send_email(context, [member.email], subject='BCM Management',
+                                  template_address='users/email.html')
 
-        if 'mm' in msg_type:
-            for member in members:
+            if 'mm' in msg_type:
                 username = member.email.replace('@digikala.com', '')
-                mattermost(['digikalacrisis.softw', username], msg_text)
-
+                mattermost(['digikalacrisis.softw', username], sms_text)
 
     return Response({'message': 'message sent'}, status=status.HTTP_200_OK)
