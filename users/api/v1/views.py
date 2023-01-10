@@ -87,10 +87,14 @@ def send_block_msg(request):
         block.members.add(*members)
         block.save()
 
+
         for member in members:
+            sms_text = 'جناب آقای / خانم ' + member.full_name + "\n" * 2 + "با توجه به وقوع بحران " + en2fa(
+                block.flowchart.name) + loc_name(
+                block.flowchart.location.name) + "، لیست اقادامات شما به شرح زیر است: " + "\n" * 2 + msg_text
+
             if 'sms' in msg_type:
                 mobile_lst = [member.mobile_number]
-                sms_text = 'جناب آقای / خانم ' + member.full_name + "\n" * 2 + "با توجه به وقوع بحران " + en2fa(block.flowchart.name) + loc_name(block.flowchart.location.name) + "، لیست اقادامات شما به شرح زیر است: " + "\n" * 2 + msg_text
                 status_code = send_sms(mobile_lst, sms_text)
 
             if 'email' in msg_type:
