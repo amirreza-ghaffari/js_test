@@ -52,7 +52,7 @@ class CustomUserForm(forms.ModelForm):
         self.fields['first_name'].widget.attrs.update({'class': 'form-control'})
         self.fields['last_name'].widget.attrs.update({'class': 'form-control'})
         self.fields['mobile_number'].widget.attrs.update({'class': 'form-control'})
-        self.fields['profile_image'].widget.attrs.update({'class': 'custom-file-input', 'type':'file'})
+        self.fields['profile_image'].widget.attrs.update({'type':'file'})
         self.fields['email'].widget.attrs.update({'class': 'form-control'})
         self.fields['email'].disabled = True
         self.fields['mobile_number'].disabled = True
