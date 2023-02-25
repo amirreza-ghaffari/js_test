@@ -200,15 +200,15 @@ class ScreenViewSet(ModelViewSet):
             image_name = image.name
 
             temp_name = image_name.split('.')[0]
-            flowchart_name = temp_name.split('-')[0].strip().lower()
-            location_name = temp_name.split('-')[1].strip().lower()
+            flowchart_name = temp_name.split('-')[0].strip().lower().replace(' ', '_')
+            location_name = temp_name.split('-')[1].strip().lower().replace(' ', '_')
 
             try:
                 flowchart = Flowchart.objects.get(name__iexact=flowchart_name, location__name__iexact=location_name)
                 data['name'] = flowchart.id
                 data['flowchart'] = flowchart.id
             except Flowchart.DoesNotExist:
-                return Response({"detail": "connection to Min.io service error"}, status=status.HTTP_404_NOT_FOUND)
+                return Response({"detail": "Flowchart Does not exists"}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = self.get_serializer(data=data)
         if serializer.is_valid(raise_exception=True):
