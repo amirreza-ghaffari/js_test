@@ -7,6 +7,8 @@
     <script src="{% static 'js/DrawCommandHandler.js' %}"></script>
     <script src="{% static 'js/figures.js' %}"></script>
     <script src="{% static 'js/hyperlink.js' %}"></script>
+    <!-- HTML To Canvas for screenshots --->
+    <script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 {% endblock %}
 
@@ -24,6 +26,10 @@
 {% endblock %}
 
 {% block content %}
+
+    <p>
+        <button id="capture-screenshot">Capture Screenshot</button>
+    </p>
 
     <div id="sample">
     <div id="myDiagramDiv"
@@ -130,8 +136,6 @@
             </div>
         </div>
     </div>
-
-
 
 
     <textarea id="mySavedModel" style="width:100%;height:300px;display: none">
@@ -1379,6 +1383,10 @@
         }
 
         function sendMSG(blockId, msg_id, members_id) {
+
+            <!-- Save ScreenShot -->
+            saveScreenShot()
+
             var selectedMembers = $('#select-members-' + blockId.toString()).val();
             var selectedMSG = $('#select-msg-type' + blockId.toString()).val();
             var msgText = document.getElementById("msg-text").value
@@ -1437,11 +1445,102 @@
 
     </script>
 
+
+    <script>
+        function b64toBlob(b64Data, contentType, sliceSize) {
+            contentType = contentType || '';
+            sliceSize = sliceSize || 512;
+
+            var byteCharacters = atob(b64Data);
+            var byteArrays = [];
+
+            for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                var slice = byteCharacters.slice(offset, offset + sliceSize);
+                var byteNumbers = new Array(slice.length);
+                for (var i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+                var byteArray = new Uint8Array(byteNumbers);
+                byteArrays.push(byteArray);
+            }
+
+            var blob = new Blob(byteArrays, {type: contentType});
+            return blob;
+        }
+
+        function saveScreenShot () {
+            const screenshotTarget = document.getElementById("myDiagramDiv");
+            html2canvas(screenshotTarget).then(canvas => {
+                // to image as png use below line
+                // const base64image = canvas.toDataURL("image/png");
+                // show the image in window use below line
+                // window.location.href = base64image;
+
+                // screenshot appended to the body as canvas
+                {#document.body.appendChild(canvas);#}
+                image_data = canvas.toDataURL('image/png');
+                // to print the screenshot in console use below line
+                // console.log(dataURL);
+
+                var block = image_data.split(";");
+                var contentType = block[0].split(":")[1]
+                var realData = block[1].split(",")[1];
+
+                var blob = b64toBlob(realData, contentType);
+                var formData = new FormData();
+                formData.append("image", blob, '{{ flowchart_name }}.png');
+                // following line is optional and it is to save the screenshot
+                // on the server side. It initiates an ajax call
+                pushScreenshotToServer(formData);
+            });
+        }
+
+        $('#capture-screenshot').click(function () {
+            const screenshotTarget = document.getElementById("myDiagramDiv");
+            html2canvas(screenshotTarget).then(canvas => {
+                // to image as png use below line
+                // const base64image = canvas.toDataURL("image/png");
+                // show the image in window use below line
+                // window.location.href = base64image;
+
+                // screenshot appended to the body as canvas
+                image_data = canvas.toDataURL('image/png');
+                // to print the screenshot in console use below line
+                // console.log(dataURL);
+
+                var block = image_data.split(";");
+                var contentType = block[0].split(":")[1]
+                var realData = block[1].split(",")[1];
+
+                var blob = b64toBlob(realData, contentType);
+                var formData = new FormData();
+                formData.append("image", blob, '{{ flowchart_name }}.png');
+                // following line is optional and it is to save the screenshot
+                // on the server side. It initiates an ajax call
+                pushScreenshotToServer(formData);
+            });
+        });
+
+
+        function pushScreenshotToServer(formData) {
+            $.ajax({
+                url: "/flowchart/api/v1/screenshot/",
+                headers: {
+                    "X-CSRFToken": '{{ csrf_token }}'
+                },
+                type: "POST",
+                timeout: 0,
+                processData: false,
+                mimeType: "multipart/form-data",
+                contentType: false,
+                data: formData,
+                dataType: "json",
+                success: function () {
+                    console.log('Screenshot pushed to server.');
+                }
+            });
+        }
+    </script>
+
 {% endblock %}
-
-
-
-
-
-
 
