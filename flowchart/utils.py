@@ -2,11 +2,13 @@ import json
 import requests
 from django.db.models import Q
 from django.urls import reverse
+from minio import Minio
 from rest_framework.response import Response
 from diagram.models import Block, Transition
 from flowchart.models import Flowchart, Location, HistoryChange
 from rest_framework import status
 from django.urls import reverse
+from django.conf import settings
 
 
 def f_create(flowchart_id, location_id):
@@ -132,3 +134,40 @@ def f_end(flowchart_id, request):
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def get_connection():
+    try:
+        client = Minio(
+            endpoint=settings.MINIO_SERVER_URL,
+            secure=False,
+            access_key=settings.MINIO_SERVER_ACCESS_KEY,
+            secret_key=settings.MINIO_SERVER_SECRET_KEY,
+        )
+        return client
+    except Exception as e:
+        return False
+
+
+def minio_setter(name, file, size, bucket_name):
+    client = get_connection()
+    if client is False:
+        return False
+
+    found = client.bucket_exists(bucket_name)
+    client.make_bucket(bucket_name) if not found else None
+    client.put_object(bucket_name, name, file, length=size)
+
+    return name
+
+
+def minio_getter(file_name, bucket_name):
+    try:
+        client = get_connection()
+        if client is False:
+            return False
+        url = client.presigned_get_object(bucket_name, file_name)
+        return url
+
+    except Exception as e:
+        return None

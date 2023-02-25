@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from flowchart.models import Flowchart, Location, HistoryChange, ContingencyPlan
+from flowchart.models import Flowchart, Location, HistoryChange, ContingencyPlan, Screenshot
 from django.contrib.auth import get_user_model
+from flowchart.utils import minio_setter, minio_getter
+
 User = get_user_model()
 
 
@@ -33,3 +35,10 @@ class ContingencyPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContingencyPlan
         fields = ['developed', 'in_progress', 'not_developed']
+
+
+class ScreenshotSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Screenshot
+        fields = ['image', 'flowchart']

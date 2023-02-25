@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Flowchart, Location, ContingencyPlan
+from .models import Flowchart, Location, ContingencyPlan, Screenshot
 
 
 class FlowchartAdmin(admin.ModelAdmin):
@@ -29,3 +29,5 @@ class ContingencyPlanAdmin(admin.ModelAdmin):
 admin.site.register(Flowchart, FlowchartAdmin)
 admin.site.register(Location, LocationAdmin)
 admin.site.register(ContingencyPlan, ContingencyPlanAdmin)
+admin.site.register(Screenshot)
+

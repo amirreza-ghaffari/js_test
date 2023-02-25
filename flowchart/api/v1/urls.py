@@ -18,4 +18,10 @@ urlpatterns = [
     path('HistoryChange/<str:pk>/', views.HistoryChangeViewSet.as_view({'get': 'retrieve'}), name='history-change-detail'),
     path('flowchart-utility/', views.flowchart_utility, name='flowchart-utility'),
 
+    # ---------------------------------- ScreenShot ----------------------------------------
+    path('screenshot/', views.ScreenViewSet.as_view({'post': 'create'})),
+    path('screenshot/<str:pk>/', views.ScreenViewSet.as_view({'get': 'retrieve'})),
+
+
+
 ]

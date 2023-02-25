@@ -3,7 +3,12 @@ from django.db import models
 from django.urls import reverse
 from jsonfield import JSONField
 from django_jalali.db import models as jmodels
+from .storage import OverwriteStorage
 import jdatetime
+
+
+def screenshot_path(self, filename):
+    return 'screenshots/' + str(self.flowchart.name) + '.png'
 
 
 class Location(models.Model):
@@ -83,3 +88,12 @@ class ContingencyPlan(models.Model):
 
     def __str__(self):
         return 'Contingency plans progress'
+
+
+class Screenshot(models.Model):
+    created_date = models.DateTimeField(auto_now_add=True)
+    flowchart = models.ForeignKey(Flowchart, on_delete=models.CASCADE, related_query_name='image')
+    image = models.ImageField(upload_to=screenshot_path, storage=OverwriteStorage)
+
+    def __str__(self):
+        return self.flowchart.name

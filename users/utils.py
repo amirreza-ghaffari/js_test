@@ -11,6 +11,8 @@ import email
 from bs4 import BeautifulSoup
 from .models import Member, CustomUser, EmailResponse
 from notifications.models import Notification
+from email.mime.image import MIMEImage
+from functools import lru_cache
 from notifications.signals import notify
 
 
@@ -36,11 +38,15 @@ def en2fa(string):
 
     return ''
 
-def custom_send_email(context, to_email_list, subject='BCM Management', template_address='users/email.html'):
+def custom_send_email(context, to_email_list, image_name=None, subject='BCM Management', template_address='users/email.html'):
 
     template = render_to_string(template_address, context=context)
     email = EmailMultiAlternatives(subject, template, settings.EMAIL_HOST_USER, to_email_list)
     email.content_subtype = 'html'
+    if image_name:
+        print('yes')
+        email.attach(logo_data(image_name))
+
     email.send(fail_silently=False)
 
 
@@ -192,7 +198,12 @@ def loc_name(location):
     return ''
 
 
-
-
-
-
+@lru_cache()
+def logo_data(image_name):
+    if 'png' in image_name:
+        image_name = image_name.split('.')[0]
+    with open('media/screenshots/' + image_name + '.png', 'rb') as f:
+        temp_data = f.read()
+    img = MIMEImage(temp_data)
+    img.add_header('Content-ID', '<logo>')
+    return img

@@ -1,14 +1,22 @@
+import io
+
+import requests
+import urllib3
 from django.db.models import Count, Sum
 from django.db.models.functions import TruncMonth
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from flowchart.models import Flowchart, Location, HistoryChange, ContingencyPlan
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.viewsets import ModelViewSet
+
+from flowchart.models import Flowchart, Location, HistoryChange, ContingencyPlan, Screenshot
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .serializers import FlowchartSerializer, LocationSerializer, HistoryChangeSerializer, ContingencyPlanSerializer
+from .serializers import FlowchartSerializer, LocationSerializer, HistoryChangeSerializer, ContingencyPlanSerializer, \
+    ScreenshotSerializer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
-from flowchart.utils import f_reset, f_end, f_create
+from flowchart.utils import f_reset, f_end, f_create, minio_setter, minio_getter, get_connection
+from PIL import Image
 
 
 class FlowchartViewSet(viewsets.ModelViewSet):
@@ -136,3 +144,79 @@ def incident_per_month(request):
     temp['months'] = months
     temp['counts'] = counts
     return Response(temp, status=status.HTTP_200_OK)
+
+
+# class ScreenViewSet(ModelViewSet):
+#
+#     permission_classes = [IsAuthenticated]
+#     serializer_class = ScreenshotSerializer
+#     queryset = Screenshot.objects.all()
+#
+#     def create(self, request, *args, **kwargs):
+#         data = request.data
+#         if 'image' in data:
+#             image = data.get('image')
+#             img_file = image.file
+#             try:
+#                 minio_setter(image.name, img_file, image.size, 'email')
+#                 link = minio_getter(image.name, 'email')
+#                 data['img_url'] = link
+#                 temp_name = image.name.split('.')[0]
+#                 flowchart_name = temp_name.split('-')[0].strip().lower()
+#                 location_name = temp_name.split('-')[1].strip().lower()
+#                 try:
+#                     flowchart = Flowchart.objects.get(name__iexact=flowchart_name, location__name__iexact=location_name)
+#                     data['name'] = flowchart.id
+#                 except Flowchart.DoesNotExist:
+#                     return Response({"detail": "connection to Min.io service error"},
+#                                     status=status.HTTP_404_NOT_FOUND)
+#
+#                 data.pop('image')
+#             except urllib3.exceptions.MaxRetryError:
+#                 return Response({"detail": "connection to Min.io service error"},
+#                                 status=status.HTTP_503_SERVICE_UNAVAILABLE)
+#         serializer = self.get_serializer(data=data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#
+#         return Response({"detail": serializer.data}, status=status.HTTP_201_CREATED)
+#
+#     def retrieve(self, request, *args, **kwargs):
+#         instance = self.get_object()
+#         serializer = self.get_serializer(instance)
+#         return Response(serializer.data)
+
+
+class ScreenViewSet(ModelViewSet):
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = ScreenshotSerializer
+    queryset = Screenshot.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        if not data.get('flowchart'):
+            image = data.get('image')
+            image_name = image.name
+
+            temp_name = image_name.split('.')[0]
+            flowchart_name = temp_name.split('-')[0].strip().lower()
+            location_name = temp_name.split('-')[1].strip().lower()
+
+            try:
+                flowchart = Flowchart.objects.get(name__iexact=flowchart_name, location__name__iexact=location_name)
+                data['name'] = flowchart.id
+                data['flowchart'] = flowchart.id
+            except Flowchart.DoesNotExist:
+                return Response({"detail": "connection to Min.io service error"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+
+        return Response({"detail": serializer.data}, status=status.HTTP_201_CREATED)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
