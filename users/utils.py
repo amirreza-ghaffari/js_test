@@ -38,14 +38,22 @@ def en2fa(string):
 
     return ''
 
-def custom_send_email(context, to_email_list, image_name=None, subject='BCM Management', template_address='users/email.html'):
+
+def custom_send_email(context, to_email_list, flowchart_id=None, subject='BCM Management', template_address='users/email.html'):
 
     template = render_to_string(template_address, context=context)
     email = EmailMultiAlternatives(subject, template, settings.EMAIL_HOST_USER, to_email_list)
     email.content_subtype = 'html'
-    if image_name:
-        print('yes')
-        email.attach(logo_data(image_name))
+
+    if flowchart_id:
+        try:
+            email.attach(screenshot_cache(flowchart_id))
+        except Exception as e:
+            print(e)
+        try:
+            email.attach(severity_cache(flowchart_id))
+        except Exception as e:
+            print(e)
 
     email.send(fail_silently=False)
 
@@ -199,10 +207,18 @@ def loc_name(location):
 
 
 @lru_cache()
-def logo_data(image_name):
-    if 'png' in image_name:
-        image_name = image_name.split('.')[0]
-    with open('media/screenshots/' + image_name + '.png', 'rb') as f:
+def screenshot_cache(flowchart_id):
+
+    with open('media/screenshots/' + str(flowchart_id) + '/' + str(flowchart_id) + '.png', 'rb') as f:
+        temp_data = f.read()
+    img = MIMEImage(temp_data)
+    img.add_header('Content-ID', '<logo>')
+    return img
+
+
+@lru_cache()
+def severity_cache(flowchart_id):
+    with open('media/severity/' + str(flowchart_id) + '/' + str(flowchart_id) + '.png', 'rb') as f:
         temp_data = f.read()
     img = MIMEImage(temp_data)
     img.add_header('Content-ID', '<logo>')

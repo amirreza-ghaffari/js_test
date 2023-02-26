@@ -198,13 +198,10 @@ class ScreenViewSet(ModelViewSet):
         if not data.get('flowchart'):
             image = data.get('image')
             image_name = image.name
-
-            temp_name = image_name.split('.')[0]
-            flowchart_name = temp_name.split('-')[0].strip().lower().replace(' ', '_')
-            location_name = temp_name.split('-')[1].strip().lower().replace(' ', '_')
+            flowchart_id = image_name.split('.png')[0]
 
             try:
-                flowchart = Flowchart.objects.get(name__iexact=flowchart_name, location__name__iexact=location_name)
+                flowchart = Flowchart.objects.get(id=flowchart_id)
                 data['name'] = flowchart.id
                 data['flowchart'] = flowchart.id
             except Flowchart.DoesNotExist:
