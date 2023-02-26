@@ -101,7 +101,7 @@ def send_block_msg(request):
                            'contingency_name': flowchart_name.replace('_', ' ').title(),
                            'flowchart_name': en2fa(flowchart_name),
                            'next_action': next_action(block, member) if block else None}
-                custom_send_email(context, [member.email], image_name='test', subject='BCM Management',
+                custom_send_email(context, [member.email], image_name=flowchart_name, subject='BCM Management',
                                   template_address='users/email.html')
 
             if 'mm' in msg_type:
