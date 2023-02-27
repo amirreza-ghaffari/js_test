@@ -5,6 +5,10 @@ from jsonfield import JSONField
 from django_jalali.db import models as jmodels
 from .storage import OverwriteStorage
 import jdatetime
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.files.base import ContentFile
+from PIL import Image
+from io import BytesIO
 
 
 def screenshot_path(self, filename):
@@ -107,6 +111,24 @@ class Screenshot(models.Model):
             img.delete()
         except Screenshot.DoesNotExist:
             pass
+
+        img = Image.open(self.image)
+        width, height = img.size
+        box = (0, int(height*0.1), width, height)
+        img = img.crop(box)
+
+        buffer = BytesIO()
+        img.save(fp=buffer, format='png')
+        content = ContentFile(buffer.getvalue())
+        cropped_image = InMemoryUploadedFile(
+            content,  # file
+            None,  # field_name
+            self.image.name,  # file name
+            'image/png',  # content_type
+            content.tell,  # size
+            None)  # content_type_extra
+
+        self.image = cropped_image
         super(Screenshot, self).save(*args, **kwargs)
 
 
