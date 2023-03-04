@@ -14,6 +14,8 @@ from notifications.models import Notification
 from email.mime.image import MIMEImage
 from functools import lru_cache
 from notifications.signals import notify
+import string
+import random
 
 
 def en2fa(string):
@@ -41,17 +43,18 @@ def en2fa(string):
 
 def custom_send_email(context, to_email_list, flowchart_id=None, subject='BCM Management', template_address='users/email.html'):
 
+    res = ''.join(random.choices(string.ascii_uppercase +
+                                 string.digits, k=7))
+    rand_string = str(res)
+    context['rand_string'] = rand_string
+
     template = render_to_string(template_address, context=context)
     email = EmailMultiAlternatives(subject, template, settings.EMAIL_HOST_USER, to_email_list)
     email.content_subtype = 'html'
 
     if flowchart_id:
         try:
-            email.attach(screenshot_cache(flowchart_id))
-        except Exception as e:
-            print(e)
-        try:
-            email.attach(severity_cache(flowchart_id))
+            email.attach(screenshot_cache(flowchart_id, rand_string=rand_string))
         except Exception as e:
             print(e)
 
@@ -207,12 +210,12 @@ def loc_name(location):
 
 
 @lru_cache()
-def screenshot_cache(flowchart_id):
+def screenshot_cache(flowchart_id, rand_string):
 
     with open('media/screenshots/' + str(flowchart_id) + '/' + str(flowchart_id) + '.png', 'rb') as f:
         temp_data = f.read()
     img = MIMEImage(temp_data)
-    img.add_header('Content-ID', '<logo>')
+    img.add_header('Content-ID', '<' + rand_string + '>')
     return img
 
 

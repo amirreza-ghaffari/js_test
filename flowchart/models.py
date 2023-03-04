@@ -131,23 +131,3 @@ class Screenshot(models.Model):
         self.image = cropped_image
         super(Screenshot, self).save(*args, **kwargs)
 
-
-class CrisisSeverityImage(models.Model):
-    image = models.ImageField(upload_to=severity_path, storage=OverwriteStorage)
-    flowchart = models.OneToOneField(Flowchart, on_delete=models.CASCADE, related_query_name='severity_image')
-
-    class Meta:
-        verbose_name = 'Crisis Image'
-        verbose_name_plural = 'Crisis Images'
-
-    def __str__(self):
-        return self.flowchart.name.replace('_', ' ').title()
-
-    def save(self, *args, **kwargs):
-        try:
-            img = Screenshot.objects.get(flowchart__name=self.flowchart.name)
-            img.delete()
-        except Screenshot.DoesNotExist:
-            pass
-        self.image.name = str(self.flowchart.id) + '.png'
-        super(CrisisSeverityImage, self).save(*args, **kwargs)
