@@ -1,3 +1,5 @@
+import time
+
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from ...models import Member
@@ -101,6 +103,8 @@ def send_block_msg(request):
                            'contingency_name': flowchart_name.replace('_', ' ').title(),
                            'flowchart_name': en2fa(flowchart_name),
                            'next_action': next_action(block, member) if block else None}
+                # ---- for creating Delay between send MSG and save screenshot  API ---- #
+                time.sleep(3)
                 custom_send_email(context, [member.email], flowchart_id=block.flowchart.id, subject='BCM Management',
                                   template_address='users/email.html')
 
