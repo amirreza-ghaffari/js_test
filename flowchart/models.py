@@ -114,7 +114,7 @@ class Screenshot(models.Model):
 
         img = Image.open(self.image)
         width, height = img.size
-        box = (0, int(height*0.01), width, height)
+        box = (0, int(height*0.03), width, int(height*0.97))
         img = img.crop(box)
 
         buffer = BytesIO()
