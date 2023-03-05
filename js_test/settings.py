@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'jdatetime',
     'mattermostdriver',
     'notifications',
+    'django_celery_beat',
 
 
     # users Module #
@@ -150,7 +151,7 @@ TIME_ZONE = 'Asia/Tehran'
 
 USE_I18N = True
 
-USE_TZ = False
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -182,6 +183,10 @@ EMAIL_HOST_USER = 'Crisis.software@digikala.com'
 EMAIL_HOST_PASSWORD = '4AXc@xEbskZRrrF'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
 
 SMS_PANEL_PASSWORD = 'Basic ZGlnaV9IUi9kaWdpa2FsYTpIR1BEU0lOTmxwQXRjeVlL'
