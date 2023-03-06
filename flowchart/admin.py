@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Flowchart, Location, ContingencyPlan, Screenshot
+from .models import Flowchart, Location, ContingencyPlan, Screenshot, CrisisSeverityImage
 
 
 class FlowchartAdmin(admin.ModelAdmin):
@@ -18,6 +18,12 @@ class LocationAdmin(admin.ModelAdmin):
     )
 
 
+class SeverityAdmin(admin.ModelAdmin):
+    list_display = ('flowchart', )
+    list_filter = ('flowchart', 'flowchart__location')
+    fieldsets = (
+        (None, {'fields': ('image', 'flowchart')}),
+    )
 
 
 class ScreenshotAdmin(admin.ModelAdmin):
@@ -40,4 +46,5 @@ admin.site.register(Flowchart, FlowchartAdmin)
 admin.site.register(Location, LocationAdmin)
 admin.site.register(ContingencyPlan, ContingencyPlanAdmin)
 admin.site.register(Screenshot, ScreenshotAdmin)
+admin.site.register(CrisisSeverityImage, SeverityAdmin)
 
