@@ -1,3 +1,5 @@
+import datetime
+import jdatetime
 from django import template
 register = template.Library()
 
@@ -32,6 +34,13 @@ def replace(value, arg):
 def upper_case(value):
     value = value.replace('_', ' ')
     return value.title()
+
+
+@register.filter
+def to_jalali(value):
+    en_date = datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+    value = jdatetime.datetime.fromgregorian(datetime=en_date)
+    return value
 
 
 
