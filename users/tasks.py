@@ -58,7 +58,8 @@ def email_response(n=5):
                         member = Member.objects.get(email__iexact=member_email.lower())
                         email_res_obj, created = EmailResponse.objects.get_or_create(member=member, message=res_text)
                         if created:
-                            notify.send(member, recipient=CustomUser.objects.all(), verb='email_response', description=res_text)
+                            notify.send(sender=member, recipient=CustomUser.objects.all(),
+                                        verb='email_response', description=res_text)
 
                     except Member.DoesNotExist:
                         pass
