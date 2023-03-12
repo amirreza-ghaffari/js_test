@@ -41,7 +41,7 @@ def history_detail(request, pk):
     block_h = json.loads(history.block_history)
     comment_h = json.loads(history.comment_history)
     flowchart = get_object_or_404(Flowchart, pk=history.flowchart.id)
-    email_responses = json.loads(history.email_response)
+    email_responses = history.email_response
 
     context['block_history'] = block_h
     context['comment_history'] = comment_h
