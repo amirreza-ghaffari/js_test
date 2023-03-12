@@ -55,20 +55,24 @@ def email_response(n=5):
                     sections = soup.find_all("section")
                     if len(sections) > 1:
                         flowchart_id = int(sections[0].find(id="flowchart_id").text)
-                        flowchart = Flowchart.objects.get(id=flowchart_id)
-                        flowchart_name = flowchart.__str__()
-
-                        res_text = soup.find("body").text.split("From: Digikala Crisis.software")[0].strip().replace('\n\n', '').split('From')[0]
-                        member_email = from_.split('<')[1][:-1]
+                        print(flowchart_id)
                         try:
-                            member = Member.objects.get(email__iexact=member_email.lower())
-                            email_res_obj, created = EmailResponse.objects.get_or_create(member=member, message=res_text, flowchart=flowchart)
-                            if created:
-                                notify.send(sender=member, recipient=CustomUser.objects.all(),
+                            flowchart = Flowchart.objects.get(id=flowchart_id)
+                            flowchart_name = flowchart.__str__()
 
-                                            verb=flowchart_name, description=res_text)
+                            res_text = soup.find("body").text.split("From: Digikala Crisis.software")[0].strip().replace('\n\n', '').split('From')[0]
+                            member_email = from_.split('<')[1][:-1]
+                            try:
+                                member = Member.objects.get(email__iexact=member_email.lower())
+                                email_res_obj, created = EmailResponse.objects.get_or_create(member=member, message=res_text, flowchart=flowchart)
+                                if created:
+                                    notify.send(sender=member, recipient=CustomUser.objects.all(),
 
-                        except Member.DoesNotExist:
+                                                verb=flowchart_name, description=res_text)
+
+                            except Member.DoesNotExist:
+                                pass
+                        except Flowchart.DoesNotExist:
                             pass
 
     # close the connection and logout
