@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from .managers import CustomUserManager
 from django.core.exceptions import ValidationError
+from flowchart.models import Flowchart
 
 
 def validate_phone_number(value):
@@ -99,9 +100,11 @@ class Member(models.Model):
 class EmailResponse(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='email_res')
     message = models.TextField()
+    flowchart = models.ForeignKey(Flowchart, on_delete=models.CASCADE, related_name='email_res', null=True)
+    created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.member
+        return self.member.email
 
     class Meta:
         unique_together = ('member', 'message')

@@ -72,6 +72,7 @@ class HistoryChange(models.Model):
         flowchart = models.ForeignKey(Flowchart, on_delete=models.CASCADE)
         comment_history = JSONField(default=dict)
         block_history = JSONField(default=dict)
+        email_response = JSONField(default=dict)
         initial_date = models.DateTimeField()
         j_initial_date = jmodels.jDateField(null=True, blank=True)
 

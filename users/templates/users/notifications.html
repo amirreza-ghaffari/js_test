@@ -15,6 +15,7 @@
             <thead class="thead-dark">
             <tr>
                 <th style="min-width:200px" class="text-center" scope="col">Member</th>
+                <th class="text-center" scope="col">Flowchart</th>
                 <th class="text-center" scope="col">Date</th>
                 <th class="text-center" scope="col">Response Message</th>
 
@@ -26,6 +27,7 @@
                 <tr class="text-center">
 
                     <td class="text-center"> {{ notif.actor }}</td>
+                    <td class="text-center"> {{ notif.verb }}</td>
                     <td class="text-center"> {{ notif.timestamp|naturaltime }}</td>
                     <td class="text-center"> {{ notif.description }}</td>
 

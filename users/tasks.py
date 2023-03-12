@@ -6,6 +6,7 @@ from celery import shared_task
 from bs4 import BeautifulSoup
 from .models import Member, CustomUser, EmailResponse
 from notifications.signals import notify
+from flowchart.models import Flowchart
 
 
 @shared_task()
@@ -15,7 +16,6 @@ def email_response(n=5):
 
     status, messages = imap.select("INBOX")
     # number of top emails to fetch
-    # total number of emails
     messages = int(messages[0])
     if messages < n:
         n = messages
@@ -52,17 +52,24 @@ def email_response(n=5):
                     body = msg.get_payload(decode=True).decode()
                 if body:
                     soup = BeautifulSoup(body, "html.parser")
-                    res_text = soup.find("body").text.split("From: Digikala Crisis.software")[0].strip().replace('\n\n', '')
-                    member_email = from_.split('<')[1][:-1]
-                    try:
-                        member = Member.objects.get(email__iexact=member_email.lower())
-                        email_res_obj, created = EmailResponse.objects.get_or_create(member=member, message=res_text)
-                        if created:
-                            notify.send(sender=member, recipient=CustomUser.objects.all(),
-                                        verb='email_response', description=res_text)
+                    sections = soup.find_all("section")
+                    if len(sections) > 1:
+                        flowchart_id = int(sections[0].find(id="flowchart_id").text)
+                        flowchart = Flowchart.objects.get(id=flowchart_id)
+                        flowchart_name = flowchart.__str__()
 
-                    except Member.DoesNotExist:
-                        pass
+                        res_text = soup.find("body").text.split("From: Digikala Crisis.software")[0].strip().replace('\n\n', '').split('From')[0]
+                        member_email = from_.split('<')[1][:-1]
+                        try:
+                            member = Member.objects.get(email__iexact=member_email.lower())
+                            email_res_obj, created = EmailResponse.objects.get_or_create(member=member, message=res_text, flowchart=flowchart)
+                            if created:
+                                notify.send(sender=member, recipient=CustomUser.objects.all(),
+
+                                            verb=flowchart_name, description=res_text)
+
+                        except Member.DoesNotExist:
+                            pass
 
     # close the connection and logout
     imap.close()

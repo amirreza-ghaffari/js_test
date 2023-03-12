@@ -34,13 +34,15 @@ def en2fa(string):
     return ''
 
 
-def custom_send_email(context, to_email_list, flowchart_id=None, subject='BCM Management', template_address='users/email.html'):
+def custom_send_email(context, to_email_list, flowchart_id=None, subject='BCM Management',
+                      template_address='users/email.html'):
 
-    res = ''.join(random.choices(string.ascii_uppercase +
-                                 string.digits, k=7))
-    rand_string = str(res)
+    rand_string = str(''.join(random.choices(string.ascii_uppercase + string.digits, k=7)))
     context['rand_string'] = rand_string
 
+    # set a flowchart_id in html to make it unique
+    if flowchart_id:
+        context['flowchart_id'] = flowchart_id
     template = render_to_string(template_address, context=context)
     email = EmailMultiAlternatives(subject, template, settings.EMAIL_HOST_USER, to_email_list)
     email.content_subtype = 'html'

@@ -1,7 +1,6 @@
 import json
 import requests
 from django.db.models import Q
-from django.urls import reverse
 from minio import Minio
 from rest_framework.response import Response
 from diagram.models import Block, Transition
@@ -120,8 +119,13 @@ def f_end(flowchart_id, request):
 
     try:
         if len(comment_history) > 0 or len(block_history) > 0:
-            h = HistoryChange(flowchart=flowchart, comment_history=json.dumps(comment_history), block_history=json.dumps(block_history),
-                              initial_date=flowchart.triggered_date)
+
+            email_responses = flowchart.email_res.filter(created_date__gte=flowchart.triggered_date).values_list('message', 'created_date', 'member__email')
+            temp = {}
+            for idx, obj in enumerate(email_responses):
+                temp[idx] = {'message': obj[0], 'date': obj[1].strftime("%Y-%m-%d %H:%M:%S"), 'member': obj[2]}
+            h = HistoryChange(flowchart=flowchart, comment_history=comment_history, block_history=block_history,
+                              initial_date=flowchart.triggered_date, email_response=temp)
             h.save()
 
         flowchart.is_active = False
