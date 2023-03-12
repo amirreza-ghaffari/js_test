@@ -3,10 +3,9 @@ from django.http import JsonResponse
 from diagram.models import Block
 from users.models import Member
 from .models import Flowchart, HistoryChange
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
 import jdatetime
 
 
@@ -41,12 +40,14 @@ def history_detail(request, pk):
     history = get_object_or_404(HistoryChange, pk=pk)
     block_h = json.loads(history.block_history)
     comment_h = json.loads(history.comment_history)
-    flowchart = Flowchart.objects.get(id=history.flowchart.id)
+    flowchart = get_object_or_404(Flowchart, pk=history.flowchart.id)
+    email_responses = json.loads(history.email_response)
 
     context['block_history'] = block_h
     context['comment_history'] = comment_h
     context['flowchart'] = flowchart
     context['history_id'] = history.id
+    context['email_responses'] = email_responses
 
     return render(request, 'flowchart/history_detail.html', context)
 
