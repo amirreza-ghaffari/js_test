@@ -38,8 +38,8 @@ def flowchart_view(request, pk):
 def history_detail(request, pk):
     context = {}
     history = get_object_or_404(HistoryChange, pk=pk)
-    block_h = json.loads(history.block_history)
-    comment_h = json.loads(history.comment_history)
+    block_h = history.block_history
+    comment_h = history.comment_history
     flowchart = get_object_or_404(Flowchart, pk=history.flowchart.id)
     email_responses = history.email_response
 
