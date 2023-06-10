@@ -10,6 +10,8 @@ from functools import lru_cache
 import string
 import random
 
+from js_test.business_rules import MATTERMOST_TEAM_NAME_TEST, MATTERMOST_GROUP_NAME_TEST, MATTERMOST_ACCOUNTS_TEST
+
 
 def en2fa(string):
     if string.lower() == 'people_protest':
@@ -36,7 +38,6 @@ def en2fa(string):
 
 def custom_send_email(context, to_email_list, flowchart_id=None, subject='BCM Management',
                       template_address='users/email.html'):
-
     rand_string = str(''.join(random.choices(string.ascii_uppercase + string.digits, k=7)))
     context['rand_string'] = rand_string
 
@@ -128,14 +129,138 @@ def mattermost(usernames: list, msg: str):
     if len(ids) < 2:
         return None
     res = driver.channels.create_direct_message_channel(options=ids)
+
+    # temp
+    channel_x = driver.channels.get_channel_by_name_and_team_name(settings.MATTERMOST_TEAM_NAME,
+                                                                  settings.MATTERMOST_CHANNEL_NAME)
+    # create_private_channel()
+
     channel_id = res['id']
 
     res = driver.posts.create_post(options={
-      'channel_id': channel_id,
-      'message': msg
+        'channel_id': channel_id,
+        'message': msg
     })
-
     return None
+
+
+def mattermost_post_in_channel_manager(msg, channel_name, team_name, file_path, msg_type='text', username_list=None, is_pinned=True):
+    driver = mattermost_connection()
+    mattermost_login(driver)
+    channel_obj = mattermost_get_channel(driver, channel_name=channel_name, team_name=team_name)
+    if not channel_obj:
+        user_ids = mattermost_get_user_ids_from_usernames(driver=driver, username_list=username_list)
+        team_id = get_team_by_name(driver, team_name)
+        channel_obj = mattermost_create_group(driver, team_id, channel_name)
+        user_added = mattermost_add_users_to_channel(driver, channel_obj.get("id"), user_ids)
+    if isinstance(channel_obj, dict):
+        mattermost_post_in_channel(
+            driver=driver, channel_id=channel_obj.get("id"), msg=msg,
+            msg_type=msg_type, file_path=file_path, is_pinned=is_pinned
+        )
+
+
+def mattermost_connection(url=None, token=None, *args, **kwargs):
+    driver = Driver({
+        'url': 'im.dkservices.ir',
+        "token": settings.MM_TOKEN,
+        'scheme': 'https',
+        'port': 443
+    })
+    return driver if driver else False
+
+
+def mattermost_login(driver):
+    try:
+        result = driver.login()
+        return result if result else False
+    except Exception as e:
+        return False
+
+
+def get_team_by_name(driver, team_name):
+    try:
+        return driver.teams.get_team_by_name(team_name).get('id')
+    except Exception as e:
+        return False
+
+
+def mattermost_get_channel(driver, channel_name, team_name):
+    try:
+        channel = driver.channels.get_channel_by_name_and_team_name(team_name, channel_name)
+        return channel
+    except Exception as e:
+        return False
+
+
+def mattermost_get_user_ids_from_usernames(driver, username_list):
+    try:
+        user_ids = []
+        users_obj_list = driver.users.get_users_by_usernames(options=username_list)
+        [user_ids.append(user.get('id')) for user in users_obj_list if user]
+        return user_ids
+    except Exception as e:
+        return False
+
+
+def mattermost_create_group(driver, team_id, channel_name):
+    try:
+        return driver.channels.create_channel(options={
+            "team_id": team_id,
+            "name": channel_name,
+            "display_name": channel_name,
+            "purpose": "Business Continuity Management Group",
+            "header": "Business Continuity Management",
+            "type": "P"  # Private Channel
+        })
+    except Exception as e:
+        return False
+
+
+def mattermost_add_users_to_channel(driver, channel_id, user_ids):
+    try:
+        failed_usernames = []
+        for user_id in user_ids:
+            try:
+                driver.channels.add_user(channel_id, options={'user_id': user_id})
+            except Exception as e:
+                failed_usernames.append(driver.users.get_user(user_id).get('username'))
+
+        return True, failed_usernames
+    except Exception as e:
+        return {}
+
+
+def mattermost_post_in_channel(driver, channel_id, msg, file_path, is_pinned, msg_type='text'):
+    post = {}
+    try:
+        if channel_id:
+            if msg_type == 'text':
+                post = driver.posts.create_post(options={
+                    'channel_id': channel_id,
+                    'message': msg
+                })
+            elif msg_type == 'file':
+                form_data = {
+                    "channel_id": ('', channel_id),
+                    "client_ids": ('', "id_for_the_file"),
+                    "files": (file_path, open(file_path, 'rb'))
+                }
+                post = driver.files.upload_file(channel_id, form_data)
+            if is_pinned:
+                driver.posts.pin_post_to_channel(post_id=post.get('id'))
+            return True if post else False
+    except Exception as e:
+        return False
+
+
+# Temp
+mattermost_post_in_channel_manager(
+    msg='post has been pinned successfully!', channel_name=MATTERMOST_GROUP_NAME_TEST,
+    team_name=MATTERMOST_TEAM_NAME_TEST,
+    msg_type='text', file_path='/home/omid/Pictures/test.png',
+    username_list=MATTERMOST_ACCOUNTS_TEST
+)
 
 
 def clean(text):
@@ -152,7 +277,6 @@ def loc_name(location):
 
 @lru_cache()
 def screenshot_cache(flowchart_id, rand_string):
-
     with open('media/screenshots/' + str(flowchart_id) + '/' + str(flowchart_id) + '.png', 'rb') as f:
         temp_data = f.read()
     img = MIMEImage(temp_data)

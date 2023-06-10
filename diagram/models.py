@@ -12,7 +12,7 @@ User = get_user_model()
 
 
 class Block(models.Model):
-    members = models.ManyToManyField(Member, blank=True, null=True)
+    members = models.ManyToManyField(Member, blank=True)
     flowchart = models.ForeignKey(Flowchart, on_delete=models.CASCADE, related_name='blocks')
     updated_date = models.DateTimeField(auto_now=True)
     created_date = models.DateTimeField(auto_now_add=True)
