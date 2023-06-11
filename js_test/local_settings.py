@@ -1,2 +1,1 @@
-MATTERMOST_TEAM_NAME = 'rac'
-MATTERMOST_CHANNEL_NAME = 'bcm2'
+MATTERMOST_SERVER_URL = "https://im.dkservices.ir"

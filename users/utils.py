@@ -144,20 +144,24 @@ def mattermost(usernames: list, msg: str):
     return None
 
 
-def mattermost_post_in_channel_manager(msg, channel_name, team_name, file_path, msg_type='text', username_list=None, is_pinned=True):
+def mattermost_post_in_channel_manager(
+        msg, channel_name, team_name, file_path, msg_type='text', username_list=None, is_pinned=True, *args, **kwargs
+):
     driver = mattermost_connection()
     mattermost_login(driver)
     channel_obj = mattermost_get_channel(driver, channel_name=channel_name, team_name=team_name)
+    user_ids = mattermost_get_user_ids_from_usernames(driver=driver, username_list=username_list)
+
     if not channel_obj:
-        user_ids = mattermost_get_user_ids_from_usernames(driver=driver, username_list=username_list)
-        team_id = get_team_by_name(driver, team_name)
-        channel_obj = mattermost_create_group(driver, team_id, channel_name)
-        user_added = mattermost_add_users_to_channel(driver, channel_obj.get("id"), user_ids)
+        team_id = mattermost_get_team_by_name(driver, team_name)
+        channel_obj = mattermost_create_channel(driver, team_id, channel_name)
+    are_added, failed_to_create_users = mattermost_add_users_to_channel(driver, channel_obj.get("id"), user_ids)
     if isinstance(channel_obj, dict):
         mattermost_post_in_channel(
             driver=driver, channel_id=channel_obj.get("id"), msg=msg,
             msg_type=msg_type, file_path=file_path, is_pinned=is_pinned
         )
+    return True
 
 
 def mattermost_connection(url=None, token=None, *args, **kwargs):
@@ -178,7 +182,7 @@ def mattermost_login(driver):
         return False
 
 
-def get_team_by_name(driver, team_name):
+def mattermost_get_team_by_name(driver, team_name):
     try:
         return driver.teams.get_team_by_name(team_name).get('id')
     except Exception as e:
@@ -203,7 +207,7 @@ def mattermost_get_user_ids_from_usernames(driver, username_list):
         return False
 
 
-def mattermost_create_group(driver, team_id, channel_name):
+def mattermost_create_channel(driver, team_id, channel_name):
     try:
         return driver.channels.create_channel(options={
             "team_id": team_id,
@@ -240,27 +244,26 @@ def mattermost_post_in_channel(driver, channel_id, msg, file_path, is_pinned, ms
                     'channel_id': channel_id,
                     'message': msg
                 })
+                if is_pinned:
+                    driver.posts.pin_post_to_channel(post_id=post.get('id'))
+
             elif msg_type == 'file':
                 form_data = {
                     "channel_id": ('', channel_id),
                     "client_ids": ('', "id_for_the_file"),
-                    "files": (file_path, open(file_path, 'rb'))
+                    "files": (file_path, open(file_path, 'rb')),
                 }
-                post = driver.files.upload_file(channel_id, form_data)
-            if is_pinned:
-                driver.posts.pin_post_to_channel(post_id=post.get('id'))
+                file_post = driver.files.upload_file(channel_id, form_data)
+                file_id = file_post.get("file_infos")[0].get("id")
+                driver.posts.create_post(options={
+                    'channel_id': channel_id,
+                    'message': 'Hi...',
+                    "file_ids": [file_id]
+                })
+
             return True if post else False
     except Exception as e:
         return False
-
-
-# Temp
-mattermost_post_in_channel_manager(
-    msg='post has been pinned successfully!', channel_name=MATTERMOST_GROUP_NAME_TEST,
-    team_name=MATTERMOST_TEAM_NAME_TEST,
-    msg_type='text', file_path='/home/omid/Pictures/test.png',
-    username_list=MATTERMOST_ACCOUNTS_TEST
-)
 
 
 def clean(text):
@@ -291,3 +294,15 @@ def severity_cache(flowchart_id, rand_string):
     img = MIMEImage(temp_data)
     img.add_header('Content-ID', '<' + rand_string + '>')
     return img
+
+
+
+
+
+# Temp
+mattermost_post_in_channel_manager(
+    msg='post has been pinned successfully!', channel_name=MATTERMOST_GROUP_NAME_TEST,
+    team_name=MATTERMOST_TEAM_NAME_TEST,
+    msg_type='text', file_path='/home/omid/Music/In-The-End.mp3',
+    username_list=MATTERMOST_ACCOUNTS_TEST
+)

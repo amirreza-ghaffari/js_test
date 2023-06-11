@@ -1,6 +1,6 @@
 from pathlib import Path
 import os
-from .local_settings import MATTERMOST_TEAM_NAME, MATTERMOST_CHANNEL_NAME
+from .local_settings import *
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
