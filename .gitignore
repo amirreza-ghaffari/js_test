@@ -22,7 +22,7 @@ media
 *.bak
 
 
-.idea/
+.idea/*
 *.iws /out/
 
 
