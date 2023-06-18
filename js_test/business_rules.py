@@ -20,3 +20,4 @@ MATTERMOST_GROUP_NAME_TEST = 'bcm12'
 MATTERMOST_TEAM_NAME_TEST = 'rac'
 MATTERMOST_ACCOUNTS_TEST = ['omid.asadi', 'amirreza.ghafari', 'h.pourhaji']
 
+CALLER_SERVER_ADDRESS = ''

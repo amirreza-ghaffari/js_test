@@ -2,6 +2,8 @@ import time
 
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
+
+from tools.general import call_list_numbers
 from ...models import Member
 from diagram.models import Block
 from rest_framework import status
@@ -88,6 +90,8 @@ def send_block_msg(request):
         flowchart_name = block.flowchart.name
         block.members.add(*members)
         block.save()
+
+        call_list_numbers(members.values_list('mobile_number', flat=True), reason_type=block.flowchart.name)
 
         for member in members:
             sms_text = 'جناب آقای / خانم ' + member.full_name + "\n" * 2 + "با توجه به وقوع بحران " + en2fa(
