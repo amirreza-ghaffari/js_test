@@ -103,6 +103,7 @@ def send_sms(phone_number_lst, message):
         ]
     })
     headers = {
+        ''
         'Authorization': settings.SMS_PANEL_PASSWORD,
         'Content-Type': 'application/json'
     }
@@ -129,11 +130,6 @@ def mattermost(usernames: list, msg: str):
     if len(ids) < 2:
         return None
     res = driver.channels.create_direct_message_channel(options=ids)
-
-    # temp
-    channel_x = driver.channels.get_channel_by_name_and_team_name(settings.MATTERMOST_TEAM_NAME,
-                                                                  settings.MATTERMOST_CHANNEL_NAME)
-    # create_private_channel()
 
     channel_id = res['id']
 
