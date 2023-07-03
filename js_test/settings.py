@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-o*x@=azva7j_9b&cy9^*xq5@ip%)z=65gf8^7*pjj%8l!n(h&6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['172.16.184.135', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
@@ -114,8 +114,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'bcm',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'USER': 'bcm_user',
+        'PASSWORD': 'bcm_user',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -148,10 +148,8 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Tehran'
+#USE_TZ = True
 
-USE_I18N = True
-
-USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
