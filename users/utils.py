@@ -4,11 +4,13 @@ from diagram.models import Block
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
-from mattermostdriver import Driver
+from mattermostdriver.driver import Driver
 from email.mime.image import MIMEImage
 from functools import lru_cache
 import string
 import random
+
+from js_test.business_rules import MATTERMOST_TEAM_NAME_TEST, MATTERMOST_GROUP_NAME_TEST, MATTERMOST_ACCOUNTS_TEST
 
 
 def en2fa(string):
@@ -36,7 +38,6 @@ def en2fa(string):
 
 def custom_send_email(context, to_email_list, flowchart_id=None, subject='BCM Management',
                       template_address='users/email.html'):
-
     rand_string = str(''.join(random.choices(string.ascii_uppercase + string.digits, k=7)))
     context['rand_string'] = rand_string
 
@@ -102,6 +103,7 @@ def send_sms(phone_number_lst, message):
         ]
     })
     headers = {
+        ''
         'Authorization': settings.SMS_PANEL_PASSWORD,
         'Content-Type': 'application/json'
     }
@@ -128,13 +130,13 @@ def mattermost(usernames: list, msg: str):
     if len(ids) < 2:
         return None
     res = driver.channels.create_direct_message_channel(options=ids)
+
     channel_id = res['id']
 
     res = driver.posts.create_post(options={
-      'channel_id': channel_id,
-      'message': msg
+        'channel_id': channel_id,
+        'message': msg
     })
-
     return None
 
 
@@ -152,7 +154,6 @@ def loc_name(location):
 
 @lru_cache()
 def screenshot_cache(flowchart_id, rand_string):
-
     with open('media/screenshots/' + str(flowchart_id) + '/' + str(flowchart_id) + '.png', 'rb') as f:
         temp_data = f.read()
     img = MIMEImage(temp_data)

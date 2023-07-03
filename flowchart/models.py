@@ -64,30 +64,30 @@ class Flowchart(models.Model):
         if self.triggered_date:
             t = self.triggered_date
             return str(jdatetime.datetime.fromgregorian(day=t.day, month=t.month, year=t.year,
-                                                    hour=t.hour, minute=t.minute))
+                                                        hour=t.hour, minute=t.minute))
         return None
 
 
 class HistoryChange(models.Model):
-        flowchart = models.ForeignKey(Flowchart, on_delete=models.CASCADE)
-        comment_history = JSONField(default=dict)
-        block_history = JSONField(default=dict)
-        email_response = JSONField(default=dict)
-        initial_date = models.DateTimeField()
-        j_initial_date = jmodels.jDateField(null=True, blank=True)
+    flowchart = models.ForeignKey(Flowchart, on_delete=models.CASCADE)
+    comment_history = JSONField(default=dict)
+    block_history = JSONField(default=dict)
+    email_response = JSONField(default=dict)
+    initial_date = models.DateTimeField()
+    j_initial_date = jmodels.jDateField(null=True, blank=True)
 
-        def __str__(self):
-            return self.flowchart.name + str(self.initial_date)
+    def __str__(self):
+        return self.flowchart.name + str(self.initial_date)
 
-        def convert_to_j(self):
-            j = jdatetime.datetime.fromgregorian(day=self.initial_date.day, month=self.initial_date.month,
+    def convert_to_j(self):
+        j = jdatetime.datetime.fromgregorian(day=self.initial_date.day, month=self.initial_date.month,
                                              year=self.initial_date.year, hour=self.initial_date.hour,
                                              minute=self.initial_date.minute)
-            return j
+        return j
 
-        def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-            self.j_initial_date = self.convert_to_j()
-            return super(HistoryChange, self).save()
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.j_initial_date = self.convert_to_j()
+        return super(HistoryChange, self).save()
 
 
 class ContingencyPlan(models.Model):
@@ -116,7 +116,7 @@ class Screenshot(models.Model):
         img = Image.open(self.image)
         width, height = img.size
         margin = 0
-        box = (int(width*margin), int(height*margin), int(width*(1-margin)), int(height*(1-margin)))
+        box = (int(width * margin), int(height * margin), int(width * (1 - margin)), int(height * (1 - margin)))
         img = img.crop(box)
 
         buffer = BytesIO()
@@ -146,7 +146,5 @@ class CrisisSeverityImage(models.Model):
         return self.flowchart.name.replace('_', ' ').title()
 
     def save(self, *args, **kwargs):
-
         self.image.name = str(self.flowchart.id) + '.png'
         super(CrisisSeverityImage, self).save(*args, **kwargs)
-

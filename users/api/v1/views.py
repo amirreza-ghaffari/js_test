@@ -1,7 +1,8 @@
 import time
-
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
+from js_test.business_rules import CONTINGENCY_NAMES_VIEW, CALLER_SERVER_ADDRESS
+from tools.general import manager_caller_to_list_numbers
 from ...models import Member
 from diagram.models import Block
 from rest_framework import status
@@ -88,6 +89,12 @@ def send_block_msg(request):
         flowchart_name = block.flowchart.name
         block.members.add(*members)
         block.save()
+
+        manager_caller_to_list_numbers(
+            url=CALLER_SERVER_ADDRESS,
+            number_list=members.values_list('mobile_number', flat=True),
+            call_type=CONTINGENCY_NAMES_VIEW.get(block.flowchart.name)
+        )
 
         for member in members:
             sms_text = 'جناب آقای / خانم ' + member.full_name + "\n" * 2 + "با توجه به وقوع بحران " + en2fa(
