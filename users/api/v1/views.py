@@ -86,15 +86,19 @@ def send_block_msg(request):
         if len(block.input_transition.all()) == 0 or block.label == 'شروع':
             msg_text = "بحرانی با موضوع " + en2fa(block.flowchart.name) + loc_name(
                 block.flowchart.location.name) + " اتفاق افتاد"
+
+            # Call to numbers just at first step
+            manager_caller_to_list_numbers(
+                url=CALLER_SERVER_ADDRESS,
+                number_list=members.values_list('mobile_number', flat=True),
+                call_type=CONTINGENCY_NAMES_VIEW.get(block.flowchart.name)
+            )
+
         flowchart_name = block.flowchart.name
         block.members.add(*members)
         block.save()
 
-        manager_caller_to_list_numbers(
-            url=CALLER_SERVER_ADDRESS,
-            number_list=members.values_list('mobile_number', flat=True),
-            call_type=CONTINGENCY_NAMES_VIEW.get(block.flowchart.name)
-        )
+
 
         for member in members:
             sms_text = 'جناب آقای / خانم ' + member.full_name + "\n" * 2 + "با توجه به وقوع بحران " + en2fa(
