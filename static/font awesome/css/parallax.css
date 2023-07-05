@@ -1,0 +1,47 @@
+section.parallax {
+    width: 100%;
+    height: 500px;
+    padding: 50px;
+    margin-top: 50px;
+    position: relative;
+    background: linear-gradient(to top right, rgba(204, 204, 204, .7), rgba(85, 85, 85, .7)) , url(../images/parallax.jpg) center/cover fixed;
+}
+
+section.parallax div.parallax_content {
+    width: 800px;
+    height: 200px;
+    position: absolute;
+    top: calc(50% - 200px/2);
+    right: calc(50% - 800px/2);
+    background-color: rgba(48, 48, 48, 0.5);
+    border-radius: 3px;
+    padding: 10px;
+
+}
+
+section.parallax div.parallax_content>h1 {
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+section.parallax div.parallax_content>p {
+    color: #fff;
+    margin-bottom: 40px;
+    font-size: 12px;
+}
+
+section.parallax div.parallax_content>input {
+    width: 500px;
+    padding: 5px;
+    border-radius: 3px;
+    outline: none;
+    border: none;
+    font: 12px 'iransans';
+}
+
+section.parallax div.parallax_content>a {
+    color: #fff;
+    background-color: #d84848;
+    padding: 3px 7px;
+    border-radius: 3px;
+}

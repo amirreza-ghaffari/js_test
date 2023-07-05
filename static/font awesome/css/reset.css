@@ -1,0 +1,53 @@
+/* reset */
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+/* end reset */
+
+/* font */
+@font-face {
+    font-family: "iransans";
+    src: url(../fonts/eot/IRANSansWeb.eot);
+    src: url(../fonts/woff2/IRANSansWeb.woff2) format('woff2'),
+         url(../fonts/woff/IRANSansWeb.woff) format('woff'),
+         url(../fonts/ttf/IRANSansWeb.ttf) format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "iransans";
+    src: url(../fonts/eot/IRANSansWeb_Bold.eot);
+    src: url(../fonts/woff2/IRANSansWeb_Bold.woff2) format('woff2'),
+         url(../fonts/woff/IRANSansWeb_Bold.woff) format('woff'),
+         url(../fonts/ttf/IRANSansWeb_Bold.ttf) format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+/* end font */
+
+/* global style */
+body {
+    font: 14px 'iransans';
+}
+
+main {
+    width: 100%;
+}
+
+.container {
+    width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+ul {
+    list-style-type: none;
+}
+
+a {
+    text-decoration: none;
+}
+/* end global style */
