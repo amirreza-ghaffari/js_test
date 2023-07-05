@@ -99,9 +99,9 @@ WSGI_APPLICATION = 'js_test.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'bcm',
-        'USER': 'bcm_user',
-        'PASSWORD': 'bcm_user',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASS,
         'HOST': 'localhost',
         'PORT': '5432',
     }
