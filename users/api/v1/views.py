@@ -91,17 +91,11 @@ def send_block_msg(request):
         if len(block.input_transition.all()) == 0:
             start_flag = True
 
-            # Call to numbers just at first step
-            manager_caller_to_list_numbers(
-                url=CALLER_SERVER_ADDRESS,
-                number_list=members.values_list('mobile_number', flat=True),
-                call_type=CONTINGENCY_NAMES_VIEW.get(block.flowchart.name)
-            )
-
         for member in members:
 
             if 'email' in msg_type:
-                context = {'current_action': msg_text if start_flag is False else 'آماده باش برای بحران و پیگیری اطلاع رسانی ها و دستورالعمل های آتی', 'name': member.full_name,
+                context = {'current_action': msg_text if start_flag is False else 'آماده باش برای بحران و پیگیری اطلاع رسانی ها و دستورالعمل های آتی',
+                           'name': member.full_name,
                            'contingency_name': flowchart_name.replace('_', ' ').title(),
                            'flowchart_name': en2fa(flowchart_name),
                            'next_action': next_action(block, member) if (block and not start_flag) else None}
@@ -125,5 +119,13 @@ def send_block_msg(request):
             if 'sms' in msg_type:
                 mobile_lst = [member.mobile_number]
                 status_code = send_sms(mobile_lst, msg_text)
+
+            # Call to numbers just at first step
+            if start_flag:
+                manager_caller_to_list_numbers(
+                    url=CALLER_SERVER_ADDRESS,
+                    number_list=members.values_list('mobile_number', flat=True),
+                    call_type=CONTINGENCY_NAMES_VIEW.get(block.flowchart.name)
+                )
 
     return Response({'message': 'message sent'}, status=status.HTTP_200_OK)
