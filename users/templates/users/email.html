@@ -20,9 +20,11 @@
         <p style="font-family: 'Noto Sans Arabic', sans-serif;margin-top: 15px"> جناب آقای / خانم {{ name }}<br>
             با توجه به وقوع بحران <span style="color: red;font-weight: bold"> {{ flowchart_name }}</span> لیست اقدامات شما به شرح زیر است :</p>
     </section>
+    {% if current_action %}
     <p style="font-family: 'Noto Sans Arabic', sans-serif;text-align: justify"> <span style="color: red">اقدامات فعلی :</span> <br>
         {{ current_action }}
     </p>
+    {% endif %}
     {% if next_action %}
     <p style="font-family: 'Noto Sans Arabic', sans-serif;"> <span style="color: green">اقدامات بعدی :</span> <br>
         {{ next_action }}

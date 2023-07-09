@@ -59,6 +59,7 @@ def custom_send_smg(request):
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def send_block_msg(request):
+    start_flag = False
     try:
         members_id = request.data.get('members')
         members_id = ast.literal_eval(members_id)
@@ -83,9 +84,12 @@ def send_block_msg(request):
     if len(members) > 0 and len(msg_type) > 0 and block_id and msg_text != '':
 
         block = Block.objects.get(id=block_id)
-        if len(block.input_transition.all()) == 0 or block.label == 'شروع':
-            msg_text = "بحرانی با موضوع " + en2fa(block.flowchart.name) + loc_name(
-                block.flowchart.location.name) + " اتفاق افتاد"
+        flowchart_name = block.flowchart.name
+        block.members.add(*members)
+        block.save()
+
+        if len(block.input_transition.all()) == 0:
+            start_flag = True
 
             # Call to numbers just at first step
             manager_caller_to_list_numbers(
@@ -94,33 +98,32 @@ def send_block_msg(request):
                 call_type=CONTINGENCY_NAMES_VIEW.get(block.flowchart.name)
             )
 
-        flowchart_name = block.flowchart.name
-        block.members.add(*members)
-        block.save()
-
-
-
         for member in members:
-            sms_text = 'جناب آقای / خانم ' + member.full_name + "\n" * 2 + "با توجه به وقوع بحران " + en2fa(
-                block.flowchart.name) + loc_name(
-                block.flowchart.location.name) + "، لیست اقدامات شما به شرح زیر است: " + "\n" * 2 + msg_text
-
-            if 'sms' in msg_type:
-                mobile_lst = [member.mobile_number]
-                status_code = send_sms(mobile_lst, sms_text)
 
             if 'email' in msg_type:
-                context = {'current_action': msg_text, 'name': member.full_name,
+                context = {'current_action': msg_text if start_flag is False else 'آماده باش برای بحران و پیگیری اطلاع رسانی ها و دستورالعمل های آتی', 'name': member.full_name,
                            'contingency_name': flowchart_name.replace('_', ' ').title(),
                            'flowchart_name': en2fa(flowchart_name),
-                           'next_action': next_action(block, member) if block else None}
+                           'next_action': next_action(block, member) if (block and not start_flag) else None}
                 # ---- for creating Delay between send MSG and save screenshot  API ---- #
                 time.sleep(3)
                 custom_send_email(context, [member.email], flowchart_id=block.flowchart.id, subject='BCM Management',
                                   template_address='users/email.html')
 
+            if start_flag:
+                msg_text = "بحرانی با موضوع " + en2fa(block.flowchart.name) + loc_name(
+                    block.flowchart.location.name) + " شروع شده است" + "\n" + " لطفا به طور پیوسته ایمیل و پیامک و Mattermost خود را چک کنید."
+            else:
+                msg_text = 'جناب آقای / خانم ' + member.full_name + "\n" * 2 + "با توجه به وقوع بحران " + en2fa(
+                    block.flowchart.name) + loc_name(
+                    block.flowchart.location.name) + "، لیست اقدامات شما به شرح زیر است: " + "\n" + msg_text
+
             if 'mm' in msg_type:
                 username = member.email.replace('@digikala.com', '')
-                mattermost(['digikalacrisis.softw', username], sms_text)
+                mattermost(['digikalacrisis.softw', username], msg_text)
+
+            if 'sms' in msg_type:
+                mobile_lst = [member.mobile_number]
+                status_code = send_sms(mobile_lst, msg_text)
 
     return Response({'message': 'message sent'}, status=status.HTTP_200_OK)
