@@ -54,8 +54,6 @@ INSTALLED_APPS = [
 ]
 
 
-
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -137,7 +135,6 @@ TIME_ZONE = 'Asia/Tehran'
 #USE_TZ = True
 
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
@@ -161,18 +158,18 @@ TEMPLATE_DIRS = (
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'mail.digikala.com'
-EMAIL_HOST_USER = 'Crisis.software@digikala.com'
-EMAIL_HOST_PASSWORD = '4AXc@xEbskZRrrF'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_BACKEND = EMAIL_BACKEND
+EMAIL_HOST = EMAIL_HOST
+EMAIL_HOST_USER = EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
+EMAIL_PORT = EMAIL_PORT
+EMAIL_USE_TLS = EMAIL_USE_TLS
 
 
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_BROKER_URL = CELERY_BROKER_URL
+CELERY_RESULT_BACKEND = CELERY_RESULT_BACKEND
 
-SMS_PANEL_PASSWORD = 'Basic ZGlnaV9IUi9kaWdpa2FsYTpIR1BEU0lOTmxwQXRjeVlL'
-MM_USERNAME = 'digikalacrisis.softw'
-MM_PASSWORD = '4AXc@xEbskZRrrF'
-MM_TOKEN = "wcwz775tpbye7rg9m4cwqtr6ao"
+SMS_PANEL_PASSWORD = SMS_PANEL_PASSWORD
+MM_USERNAME = MM_USERNAME
+MM_PASSWORD = MM_PASSWORD
+MM_TOKEN = MM_TOKEN
