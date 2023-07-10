@@ -120,23 +120,27 @@ def mattermost(usernames: list, msg: str):
         'scheme': 'https',
         'port': 443
     })
-    driver.login()
+    try:
+        driver.login()
 
-    res = driver.users.get_users_by_usernames(options=usernames)
-    ids = []
-    for item in res:
-        ids.append(item['id'])
+        res = driver.users.get_users_by_usernames(options=usernames)
+        ids = []
+        for item in res:
+            ids.append(item['id'])
 
-    if len(ids) < 2:
-        return None
-    res = driver.channels.create_direct_message_channel(options=ids)
+        if len(ids) < 2:
+            return None
+        res = driver.channels.create_direct_message_channel(options=ids)
 
-    channel_id = res['id']
+        channel_id = res['id']
 
-    res = driver.posts.create_post(options={
-        'channel_id': channel_id,
-        'message': msg
-    })
+        res = driver.posts.create_post(options={
+            'channel_id': channel_id,
+            'message': msg
+        })
+    except Exception as e:
+        print('Mattermost could not login: ', e)
+        pass
     return None
 
 
