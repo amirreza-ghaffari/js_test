@@ -36,7 +36,7 @@ def en2fa(string):
     return ''
 
 
-def custom_send_email(context, to_email_list, flowchart_id=None, subject='Crisis Contingency Plan',
+def custom_send_email(context, to_email_list, flowchart_id=None, subject='DK crisis Contingency Plan',
                       template_address='users/email.html'):
     rand_string = str(''.join(random.choices(string.ascii_uppercase + string.digits, k=7)))
     context['rand_string'] = rand_string
