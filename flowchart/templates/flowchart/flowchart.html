@@ -20,6 +20,12 @@
         <button type="button" class="btn btn-outline-primary" onclick="resetFlowchart()">Reset Flowchart</button>
         <button type="button" class="btn btn-outline-secondary" onclick="endIncident()">End Incident</button>
         <button type="button" class="btn btn-outline-info" id="loadModel" onclick="load()">Load</button>
+
+    </div>
+    <br>
+    <div style="text-align: left">
+
+        <button type="button" class="btn btn-outline-danger" id="loadModel" onclick="caller()">Ring cellphones</button>
     </div>
 
 
@@ -1431,6 +1437,23 @@
                             load()
                         }
                     });
+                }
+            });
+        }
+
+
+        function caller() {
+            $.ajax({
+                type: 'POST',
+                dataType: "json",
+                url: "/users/api/v1/caller/",
+                headers: {
+                    "X-CSRFToken": '{{ csrf_token }}'
+                },
+                data: {
+                    'flowchart_id': {{ flowchart_id }},
+                },
+                success: function (data, status, xhr) {
                 }
             });
         }
