@@ -67,6 +67,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                                       default=get_default_profile_image)
     mobile_number = models.CharField(max_length=11, null=True, blank=False, validators=[validate_phone_number],
                                      unique=True)
+    is_manager = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
