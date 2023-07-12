@@ -22,7 +22,7 @@ department_choice = (
         ('Marketing', 'Marketing'),
         ('Technology', 'Tech'),
         ('Finance', 'Finance'),
-        ('User Experience', 'User Experience'),
+        ('Customer Experience', 'Customer Experience'),
         ('Financial', 'Financial'),
         ('Business Development', 'Business Development'),
         ('commercial', 'commercial'),
@@ -30,6 +30,8 @@ department_choice = (
         ('HSE', 'HSE'),
         ('Customer Service', 'CS'),
         ('Operation', 'Operation'),
+        ('Product', 'Product'),
+        ('Logistic', 'Logistic'),
     )
 
 
