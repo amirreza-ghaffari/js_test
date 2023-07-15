@@ -1,0 +1,58 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block dashboard %}
+    Contacts
+{% endblock %}
+
+{% block  content %}
+
+
+    <div class="col">
+        <div class="card card-dark">
+            <div class="card-header ">
+                <h1 class="card-title primary">Update Contact</h1>
+                <p class="card-category"></p>
+            </div>
+
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h6 style="color: red">{{ form.errors }}</h6>
+                    <div style="alignment: center" class="form-group row">
+                        <div class="col-6">
+                            {{ form.first_name.label }}
+                            {{ form.first_name }}
+                            <br>
+                            {{ form.last_name.label }}
+                            {{ form.last_name }}
+                        </div>
+                        <div class="col-6">
+                            {{ form.email.label }}
+                            {{ form.email }}
+                            <br>
+                            {{ form.mobile_number.label }}
+                            {{ form.mobile_number }}
+                            <br>
+                            <div class="form-check">
+                                {{ form.department }}
+
+                                <label class="form-check-label">Checkbox</label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row col-12">
+                        <button type="submit" class="btn btn-primary">Update Contact</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+    <!-- Default box -->
+
+
+
+{% endblock %}

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block dashboard %}
-    Contacts
+
 {% endblock %}
 
 {% block  content %}
@@ -11,7 +11,7 @@
     <div class="col">
         <div class="card card-dark">
             <div class="card-header ">
-                <h1 class="card-title primary">Create Member</h1>
+                <h1 class="card-title primary">Create Contact</h1>
                 <p class="card-category"></p>
             </div>
 
@@ -85,8 +85,16 @@
                             <div class="card-footer">
                                 <div class="text-right">
                                     <a href="{% url 'users:save_member_session' member.id %}"
-                                       class="btn btn-sm bg-dark">
+                                       class="btn btn-sm bg-green">
                                         <i class="fas fa-comments"> Send Message</i>
+                                    </a>
+                                    <a href="{% url 'users:edit-contact' member.id %}"
+                                       class="btn btn-sm bg-black">
+                                        <i class="fas fa-comments"> Edit Contact</i>
+                                    </a>
+                                    <a href="{% url 'users:delete-contact' member.id %}"
+                                       class="btn btn-sm bg-red">
+                                        <i class="fas fa-comments"> Delete Contact</i>
                                     </a>
                                 </div>
                             </div>

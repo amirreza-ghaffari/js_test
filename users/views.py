@@ -9,6 +9,7 @@ from diagram.models import Comment
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import jdatetime
+from django.shortcuts import get_object_or_404
 from notifications.models import Notification
 
 
@@ -134,5 +135,29 @@ def mark_as_read(request):
     notif = Notification.objects.filter(unread=True,recipient=request.user)
     notif.mark_all_as_read()
     return redirect(request.META['HTTP_REFERER'])
+
+
+def edit_member(request, pk):
+    instance = get_object_or_404(Member, id=pk)
+    if request.method == 'GET':
+        context = {'form': MemberForm(instance=instance)}
+        return render(request, 'users/update_member.html', context)
+
+    elif request.method == 'POST':
+        form = MemberForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            return redirect('users:contacts')
+        else:
+            return render(request, 'users/update_member.html', {'form': form})
+
+
+def delete_member(request, pk):
+    instance = get_object_or_404(Member, id=pk)
+    instance.delete()
+    return redirect('users:contacts')
+
+
+
 
 
