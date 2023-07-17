@@ -40,6 +40,7 @@ department_choice = (
         ('Operation', 'Operation'),
         ('Product', 'Product'),
         ('Logistic, Express', 'Logistic, Express'),
+        ('Manager', 'Manager'),
     )
 
 
