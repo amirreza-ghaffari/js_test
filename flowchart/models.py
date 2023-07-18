@@ -31,6 +31,7 @@ class Flowchart(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True, blank=True)
     primary = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
+    # WHEN FLOWCHART PASS THE 'شروع', IS_ACTIVE GETS TRUE AND TRIGGERED DATE GETS UPDATED
     triggered_date = models.DateTimeField(null=True, blank=True)
     incident_counter = models.PositiveIntegerField(default=0)
 
@@ -50,7 +51,7 @@ class Flowchart(models.Model):
         if self.location and self.primary:
             raise ValidationError('Primary Flowchart can not have a location')
         if self.primary and self.is_active:
-            raise ValidationError('Primary Flowchart can not activated')
+            raise ValidationError('Primary Flowchart can not be activate')
 
     def __str__(self):
         if self.primary:
