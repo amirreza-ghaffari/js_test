@@ -66,7 +66,12 @@ class HistoryChangeViewSet(viewsets.ModelViewSet):
 
 @api_view(['Post'])
 def flowchart_utility(request):
-
+    """ Below view get 3 types of tasks to perform.
+        1. Create an instance from a flowchart template.
+        2. reset it.
+        3. ending it.
+        tip: The only difference between reset and end in front is creating a log history from finished flowchart.
+    """
     flowchart_id = request.data.get('flowchart_id')
     location_id = request.data.get('location_id')
     task = request.data.get('task')
@@ -144,47 +149,6 @@ def incident_per_month(request):
     temp['months'] = months
     temp['counts'] = counts
     return Response(temp, status=status.HTTP_200_OK)
-
-
-# class ScreenViewSet(ModelViewSet):
-#
-#     permission_classes = [IsAuthenticated]
-#     serializer_class = ScreenshotSerializer
-#     queryset = Screenshot.objects.all()
-#
-#     def create(self, request, *args, **kwargs):
-#         data = request.data
-#         if 'image' in data:
-#             image = data.get('image')
-#             img_file = image.file
-#             try:
-#                 minio_setter(image.name, img_file, image.size, 'email')
-#                 link = minio_getter(image.name, 'email')
-#                 data['img_url'] = link
-#                 temp_name = image.name.split('.')[0]
-#                 flowchart_name = temp_name.split('-')[0].strip().lower()
-#                 location_name = temp_name.split('-')[1].strip().lower()
-#                 try:
-#                     flowchart = Flowchart.objects.get(name__iexact=flowchart_name, location__name__iexact=location_name)
-#                     data['name'] = flowchart.id
-#                 except Flowchart.DoesNotExist:
-#                     return Response({"detail": "connection to Min.io service error"},
-#                                     status=status.HTTP_404_NOT_FOUND)
-#
-#                 data.pop('image')
-#             except urllib3.exceptions.MaxRetryError:
-#                 return Response({"detail": "connection to Min.io service error"},
-#                                 status=status.HTTP_503_SERVICE_UNAVAILABLE)
-#         serializer = self.get_serializer(data=data)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#
-#         return Response({"detail": serializer.data}, status=status.HTTP_201_CREATED)
-#
-#     def retrieve(self, request, *args, **kwargs):
-#         instance = self.get_object()
-#         serializer = self.get_serializer(instance)
-#         return Response(serializer.data)
 
 
 class ScreenViewSet(ModelViewSet):
