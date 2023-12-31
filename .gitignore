@@ -20,5 +20,4 @@ media
 *.bak
 *.iws /out/
 *.sqlite
-*.json
 *.db
