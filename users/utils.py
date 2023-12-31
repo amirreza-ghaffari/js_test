@@ -36,7 +36,7 @@ def en2fa(string):
     return ''
 
 
-def custom_send_email(context, to_email_list, flowchart_id=None, subject='BCM Management',
+def custom_send_email(context, to_email_list, flowchart_id=None, subject='DK crisis Contingency Plan',
                       template_address='users/email.html'):
     rand_string = str(''.join(random.choices(string.ascii_uppercase + string.digits, k=7)))
     context['rand_string'] = rand_string
@@ -120,23 +120,27 @@ def mattermost(usernames: list, msg: str):
         'scheme': 'https',
         'port': 443
     })
-    driver.login()
+    try:
+        driver.login()
 
-    res = driver.users.get_users_by_usernames(options=usernames)
-    ids = []
-    for item in res:
-        ids.append(item['id'])
+        res = driver.users.get_users_by_usernames(options=usernames)
+        ids = []
+        for item in res:
+            ids.append(item['id'])
 
-    if len(ids) < 2:
-        return None
-    res = driver.channels.create_direct_message_channel(options=ids)
+        if len(ids) < 2:
+            return None
+        res = driver.channels.create_direct_message_channel(options=ids)
 
-    channel_id = res['id']
+        channel_id = res['id']
 
-    res = driver.posts.create_post(options={
-        'channel_id': channel_id,
-        'message': msg
-    })
+        res = driver.posts.create_post(options={
+            'channel_id': channel_id,
+            'message': msg
+        })
+    except Exception as e:
+        print('Mattermost could not login: ', e)
+        pass
     return None
 
 

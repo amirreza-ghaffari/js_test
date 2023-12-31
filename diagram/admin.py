@@ -1,12 +1,11 @@
 from django.contrib import admin
 from .models import Block, Transition, Comment
-from django.contrib.admin import ModelAdmin, SimpleListFilter
+from django.contrib.admin import SimpleListFilter
 from flowchart.models import Flowchart
 
 
 class BlockAdmin(admin.ModelAdmin):
-    fields = ('label', 'is_approved', 'is_pre_approved', 'is_active', 'is_conditional', 'color', 'flowchart',
-              'figure', 'loc_height', 'loc_length', 'members')
+    fields = ('label', 'is_conditional', 'flowchart', 'members')
     list_display = ('id', 'label', 'is_approved', 'is_pre_approved', 'is_active', 'last_modified')
     list_filter = ('is_approved', 'is_active', 'is_pre_approved', 'flowchart')
     search_fields = ['label', 'flowchart__name']
@@ -36,7 +35,7 @@ class TransitionAdmin(admin.ModelAdmin):
     list_display = ('start_block_label', 'end_block_label', 'is_approved', 'is_active', 'last_modified')
     list_filter = ('is_approved', 'is_active', FlowchartFilter)
     fieldsets = (
-        (None, {'fields': ('label', 'start_block', 'end_block', 'is_active', 'is_approved')}),
+        (None, {'fields': ('label', 'start_block', 'end_block',)}),
     )
     search_fields = ['start_block', 'end_block']
     autocomplete_fields = ['start_block', 'end_block']

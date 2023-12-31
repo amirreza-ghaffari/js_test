@@ -15,6 +15,14 @@ def validate_phone_number(value):
         )
 
 
+def validate_email(value):
+    if value.split('@')[-1] != 'digikala.com':
+        raise ValidationError(
+            _('Email must be in Digikala domain'),
+            params={'value': value},
+        )
+
+
 department_choice = (
         ('Legal', 'Legal'),
         ('Risk Audit Compliance', 'RAC'),
@@ -22,7 +30,7 @@ department_choice = (
         ('Marketing', 'Marketing'),
         ('Technology', 'Tech'),
         ('Finance', 'Finance'),
-        ('User Experience', 'User Experience'),
+        ('Customer Experience', 'Customer Experience'),
         ('Financial', 'Financial'),
         ('Business Development', 'Business Development'),
         ('commercial', 'commercial'),
@@ -30,6 +38,9 @@ department_choice = (
         ('HSE', 'HSE'),
         ('Customer Service', 'CS'),
         ('Operation', 'Operation'),
+        ('Product', 'Product'),
+        ('Logistic, Express', 'Logistic, Express'),
+        ('Manager', 'Manager'),
     )
 
 
@@ -57,6 +68,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                                       default=get_default_profile_image)
     mobile_number = models.CharField(max_length=11, null=True, blank=False, validators=[validate_phone_number],
                                      unique=True)
+    is_manager = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -81,7 +93,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class Member(models.Model):
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_('email address'), unique=True,  validators=[validate_email])
     mobile_number = models.CharField(max_length=11, null=True, blank=False, validators=[validate_phone_number], unique=True)
     first_name = models.CharField(max_length=256, null=True, blank=False)
     last_name = models.CharField(max_length=256, null=True, blank=False)

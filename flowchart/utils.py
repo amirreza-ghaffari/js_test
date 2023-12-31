@@ -40,11 +40,16 @@ def f_create(flowchart_id, location_id):
     data = {}
 
     for block in blocks:
+        members = block.members.all()
         block.pk = None
         block.is_approved = False
         block.is_active = False
         block.flowchart = flowchart
         block.save()
+        for member in members:
+            block.members.add(member)
+        block.save()
+
         data[block.label] = block.id
 
     for transition in transitions:

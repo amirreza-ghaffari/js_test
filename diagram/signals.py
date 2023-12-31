@@ -5,6 +5,21 @@ import datetime
 from flowchart.utils import f_end
 
 
+"""
+Flow: 
+is_active=True means block or transition is active right now
+after approving it, is_active gets False and go to next step.
+
+According to below two signals, two steps usually happens;
+1. After approving a block, its is_active=False and next transition's is_active gets True, but is_approve gets True only if 
+it's previous block is not conditional. If it is conditional, the transition remains active
+
+Tip: In other words, is_approve is gets True by default, except whenever previous block is conditional type. 
+In this case, user should make a decision by choosing from a popup window, then continue.  
+
+"""
+
+
 def active_transition_on_block_approve(sender, instance, created, **kwargs):
     try:
         start_block = instance
