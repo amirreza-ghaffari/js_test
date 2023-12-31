@@ -1,0 +1,23 @@
+.idea/
+/static
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.env
+.venv
+*/local_settings.py
+/logs
+*.log
+*.log.*
+*.pot
+*.pyc
+*/__pycache__/
+*/*/__pycache__/
+db.sqlite5
+media
+*.bak
+*.iws /out/
+*.sqlite
+*.db
